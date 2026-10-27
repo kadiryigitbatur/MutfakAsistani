@@ -1,7 +1,15 @@
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+    <!-- Açılış (intro) teması: sarı zemin üzerinde uygulama simgesi -->
+    <style name="AppTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/icon_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.Main</item>
+    </style>
+
+    <style name="AppTheme.Main" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/bg</item>
     </style>
+
     <color name="bg">#EDF2EA</color>
     <color name="icon_bg">#F2B01E</color>
 </resources>

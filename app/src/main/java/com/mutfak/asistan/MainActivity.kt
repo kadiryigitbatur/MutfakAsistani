@@ -9,6 +9,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
+import android.graphics.Color
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -23,13 +27,18 @@ import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.webkit.WebViewAssetLoader
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var web: WebView
+    private var pageReady = false
+    private val startedAt = SystemClock.uptimeMillis()
 
     // Uygulama dosyaları gerçek bir https adresinden sunulur; böylece localStorage ve fetch sorunsuz çalışır
     private val loader by lazy {
@@ -40,18 +49,30 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Açılış ekranı (intro): sayfa yüklenene kadar, en az 1,2 sn uygulama simgesi görünür
+        val splash = installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        splash.setKeepOnScreenCondition { !pageReady || SystemClock.uptimeMillis() - startedAt < 1200 }
+        splash.setOnExitAnimationListener { sv ->
+            sv.view.animate().alpha(0f).setDuration(300).withEndAction { sv.remove() }.start()
+        }
 
+        // WebView bir kutunun içinde; boşluklar kutuya verilir, böylece içerik
+        // kamera çentiği, alt gezinme çubuğu ve klavyeyle çakışmaz
+        val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         web = WebView(this)
-        setContentView(web)
+        root.addView(web, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        setContentView(root)
 
-        // Sistem çubuklarının altında kalmasın
-        ViewCompat.setOnApplyWindowInsetsListener(web) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val b = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime()
+            )
+            v.setPadding(b.left, b.top, b.right, b.bottom)
             WindowInsetsCompat.CONSUMED
         }
+        hideStatusBar()
 
         web.settings.apply {
             javaScriptEnabled = true
@@ -63,6 +84,8 @@ class MainActivity : ComponentActivity() {
         web.addJavascriptInterface(Bridge(), "Android")
 
         web.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView, url: String) { pageReady = true }
+
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? =
                 loader.shouldInterceptRequest(request.url)
 
@@ -90,6 +113,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
         })
+    }
+
+    // Üst durum çubuğu (saat, wifi, şebeke) gizli; ekranın üstünden aşağı kaydırınca kısa süre görünür
+    private fun hideStatusBar() {
+        val c = WindowCompat.getInsetsController(window, window.decorView)
+        c.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        c.hide(WindowInsetsCompat.Type.statusBars())
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideStatusBar()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
