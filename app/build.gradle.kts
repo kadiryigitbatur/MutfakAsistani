@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// İmza şifresi GitHub gizli değerinden (KEYSTORE_PASSWORD) gelir
+val ksPass: String? = System.getenv("KEYSTORE_PASSWORD")
+
 android {
     namespace = "com.mutfak.asistan"
     compileSdk = 35
@@ -11,15 +14,26 @@ android {
         applicationId = "com.mutfak.asistan"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
+        // Her derlemede sürüm numarası artar, güncelleme eskisinin üzerine kurulur
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionName = "1.0"
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("release.keystore")
+            storePassword = ksPass
+            keyAlias = "mutfak"
+            keyPassword = ksPass
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Kendi imza anahtarın yoksa yüklenebilir olması için debug anahtarıyla imzalanır
-            signingConfig = signingConfigs.getByName("debug")
+            // Sabit anahtarla imzalanır, böylece güncellemeler silmeden kurulur
+            signingConfig = if (!ksPass.isNullOrEmpty()) signingConfigs.getByName("release")
+                            else signingConfigs.getByName("debug")
         }
     }
     compileOptions {
