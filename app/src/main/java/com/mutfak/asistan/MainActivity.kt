@@ -13,6 +13,12 @@ import android.os.SystemClock
 import android.graphics.Color
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.graphics.Typeface
+import android.view.Gravity
+import android.view.View
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -39,6 +45,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var web: WebView
     private var pageReady = false
     private val startedAt = SystemClock.uptimeMillis()
+    private var intro: View? = null
+    private var safeCss = ""
 
     // Uygulama dosyaları gerçek bir https adresinden sunulur; böylece localStorage ve fetch sorunsuz çalışır
     private val loader by lazy {
@@ -49,30 +57,32 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Açılış ekranı (intro): sayfa yüklenene kadar, en az 1,2 sn uygulama simgesi görünür
-        val splash = installSplashScreen()
+        installSplashScreen() // sistem açılış ekranı; hemen ardından kendi intromuz gelir
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        splash.setKeepOnScreenCondition { !pageReady || SystemClock.uptimeMillis() - startedAt < 1200 }
-        splash.setOnExitAnimationListener { sv ->
-            sv.view.animate().alpha(0f).setDuration(300).withEndAction { sv.remove() }.start()
-        }
 
-        // WebView bir kutunun içinde; boşluklar kutuya verilir, böylece içerik
-        // kamera çentiği, alt gezinme çubuğu ve klavyeyle çakışmaz
-        val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
+        // Tam ekran: WebView tüm ekranı kaplar. Kamera çentiği gibi alanlar sayfaya CSS
+        // değişkeni olarak bildirilir; arka plan oraya kadar uzanır, yazılar çentiğe girmez.
+        val root = FrameLayout(this).apply { setBackgroundColor(Color.parseColor("#EDF2EA")) }
         web = WebView(this)
         root.addView(web, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        intro = buildIntro()
+        root.addView(intro, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         setContentView(root)
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val b = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime()
-            )
-            v.setPadding(b.left, b.top, b.right, b.bottom)
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.setPadding(0, 0, 0, ime.bottom) // sadece klavye açıkken alttan yer aç
+            val safe = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val d = resources.displayMetrics.density
+            fun px(i: Int) = "${(i / d).toInt()}px"
+            safeCss = "var s=document.documentElement.style;" +
+                "s.setProperty('--sat','${px(safe.top)}');s.setProperty('--sab','${px(if (ime.bottom > 0) 0 else safe.bottom)}');" +
+                "s.setProperty('--sal','${px(safe.left)}');s.setProperty('--sar','${px(safe.right)}');"
+            if (pageReady) web.evaluateJavascript(safeCss, null)
             WindowInsetsCompat.CONSUMED
         }
-        hideStatusBar()
+        hideSystemBars()
 
         web.settings.apply {
             javaScriptEnabled = true
@@ -84,7 +94,17 @@ class MainActivity : ComponentActivity() {
         web.addJavascriptInterface(Bridge(), "Android")
 
         web.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView, url: String) { pageReady = true }
+            override fun onPageFinished(view: WebView, url: String) {
+                pageReady = true
+                if (safeCss.isNotEmpty()) view.evaluateJavascript(safeCss, null)
+                // Intro en az 1,5 sn görünür, sonra yumuşakça kaybolur
+                val wait = (1500 - (SystemClock.uptimeMillis() - startedAt)).coerceAtLeast(0)
+                intro?.postDelayed({
+                    intro?.animate()?.alpha(0f)?.setDuration(350)?.withEndAction {
+                        (intro?.parent as? ViewGroup)?.removeView(intro); intro = null
+                    }?.start()
+                }, wait)
+            }
 
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? =
                 loader.shouldInterceptRequest(request.url)
@@ -115,16 +135,47 @@ class MainActivity : ComponentActivity() {
         })
     }
 
-    // Üst durum çubuğu (saat, wifi, şebeke) gizli; ekranın üstünden aşağı kaydırınca kısa süre görünür
-    private fun hideStatusBar() {
+    // Üst durum çubuğu ve alt gezinme çubuğu gizli; kenardan kaydırınca kısa süre görünürler
+    private fun hideSystemBars() {
         val c = WindowCompat.getInsetsController(window, window.decorView)
         c.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        c.hide(WindowInsetsCompat.Type.statusBars())
+        c.hide(WindowInsetsCompat.Type.systemBars())
+    }
+
+    // Açılış ekranı: sarı zemin, ortada uygulama simgesi ve adı
+    private fun buildIntro(): View {
+        val d = resources.displayMetrics.density
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(Color.parseColor("#F2B01E"))
+            isClickable = true
+            addView(ImageView(context).apply {
+                setImageResource(R.drawable.ic_launcher_foreground)
+            }, LinearLayout.LayoutParams((220 * d).toInt(), (220 * d).toInt()))
+            addView(TextView(context).apply {
+                text = getString(R.string.app_name)
+                textSize = 32f
+                setTypeface(typeface, Typeface.BOLD)
+                setTextColor(Color.parseColor("#1F6B45"))
+                gravity = Gravity.CENTER
+            }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                topMargin = (-28 * d).toInt()
+            })
+            addView(TextView(context).apply {
+                text = "Yapay zekâ destekli tarif yardımcın"
+                textSize = 15f
+                setTextColor(Color.parseColor("#3D5A47"))
+                gravity = Gravity.CENTER
+            }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                topMargin = (6 * d).toInt()
+            })
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) hideStatusBar()
+        if (hasFocus) hideSystemBars()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

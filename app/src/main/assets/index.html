@@ -33,7 +33,7 @@
 *,*::before,*::after { box-sizing:border-box; }
 html { color-scheme: light; }
 html[data-theme="dark"] { color-scheme: dark; }
-body { margin:0; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); font-family:var(--font-body); background:var(--bg); color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased; }
+body { margin:0; padding:var(--sat,env(safe-area-inset-top)) var(--sar,env(safe-area-inset-right)) var(--sab,env(safe-area-inset-bottom)) var(--sal,env(safe-area-inset-left)); font-family:var(--font-body); background:var(--bg); color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased; }
 h1,h2,h3 { font-family:var(--font-display); margin:0; line-height:1.15; letter-spacing:-.01em; }
 button,input,select,textarea { font:inherit; color:inherit; }
 button { cursor:pointer; }
@@ -135,7 +135,7 @@ button { cursor:pointer; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
 /* ---------- Katmanlar ---------- */
-.overlay { position:fixed; inset:0; z-index:50; background:rgba(5,12,9,.66); display:flex; justify-content:center; align-items:center; padding:16px; }
+.overlay { position:fixed; inset:0; z-index:50; background:rgba(5,12,9,.66); display:flex; justify-content:center; align-items:center; padding:calc(16px + var(--sat,0px)) calc(16px + var(--sar,0px)) calc(16px + var(--sab,0px)) calc(16px + var(--sal,0px)); }
 .sheet { background:var(--surface); border-radius:22px; width:100%; max-width:720px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 30px 80px -20px rgba(0,0,0,.6); overflow:hidden; }
 .sheet-head { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--line); }
 .sheet-head h2 { font-size:1.35rem; font-weight:800; flex:1; min-width:0; }
@@ -186,7 +186,7 @@ button { cursor:pointer; }
 .form-row input { height:44px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); padding:0 12px; }
 
 /* Pişirme modu */
-.cook { background:var(--bg); padding:0; align-items:stretch; z-index:60; }
+.cook { background:var(--bg); padding:var(--sat,0px) var(--sar,0px) var(--sab,0px) var(--sal,0px); align-items:stretch; z-index:60; }
 .cook-inner { width:100%; max-width:900px; margin:0 auto; display:flex; flex-direction:column; padding:18px 20px 24px; gap:18px; }
 .cook-top { display:flex; align-items:center; gap:12px; }
 .cook-top h2 { flex:1; font-size:1.2rem; }
@@ -201,7 +201,7 @@ button { cursor:pointer; }
 .cook-nav .btn { padding:18px; font-size:1.1rem; }
 
 /* Toast */
-.toasts { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:100; display:grid; gap:8px; width:min(92vw, 420px); pointer-events:none; }
+.toasts { position:fixed; left:50%; bottom:calc(20px + var(--sab,0px)); transform:translateX(-50%); z-index:100; display:grid; gap:8px; width:min(92vw, 420px); pointer-events:none; }
 .toast { background:var(--ink); color:var(--bg); padding:12px 16px; border-radius:12px; font-weight:600; box-shadow:var(--shadow); animation:pop .2s ease; }
 @keyframes pop { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 
