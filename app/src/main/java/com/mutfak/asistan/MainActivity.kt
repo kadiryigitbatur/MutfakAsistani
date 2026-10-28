@@ -26,6 +26,7 @@ import android.print.PrintAttributes
 import android.print.PrintManager
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -99,6 +100,7 @@ class MainActivity : ComponentActivity() {
             allowContentAccess = false
         }
         web.addJavascriptInterface(Bridge(), "Android")
+        web.webChromeClient = WebChromeClient() // alert / confirm / prompt kutularını gösterir
 
         web.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
