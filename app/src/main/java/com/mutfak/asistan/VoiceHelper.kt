@@ -83,11 +83,11 @@ class VoiceHelper(
         if (tts == null) {
             tts = TextToSpeech(context) { status ->
                 ttsReady = status == TextToSpeech.SUCCESS
-                if (ttsReady) { tts?.language = loc; tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "step") }
+                if (ttsReady) { tts?.setLanguage(loc); tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "step") }
             }
             return
         }
-        if (ttsReady) { tts?.language = loc; tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "step") }
+        if (ttsReady) { tts?.setLanguage(loc); tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "step") }
     }
 
     fun release() {

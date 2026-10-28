@@ -137,14 +137,14 @@ class MainActivity : ComponentActivity() {
         }
         web.addJavascriptInterface(Bridge(), "Android")
         web.webChromeClient = object : WebChromeClient() { // alert / confirm / prompt kutuları + dosya seçici
-            override fun onShowFileChooser(view: WebView, cb: ValueCallback<Array<Uri>>, params: FileChooserParams): Boolean {
+            override fun onShowFileChooser(view: WebView, cb: ValueCallback<Array<Uri>>, params: WebChromeClient.FileChooserParams): Boolean {
                 fileCallback?.onReceiveValue(null); fileCallback = cb
                 val dir = File(cacheDir, "share").apply { mkdirs() }
                 val photo = File(dir, "camera_${System.currentTimeMillis()}.jpg")
                 cameraUri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", photo)
                 val camera = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE).putExtra(android.provider.MediaStore.EXTRA_OUTPUT, cameraUri)
                 val gallery = Intent(Intent.ACTION_GET_CONTENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "image/*" }
-                val chooser = Intent.createChooser(gallery, null).putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(camera))
+                val chooser = Intent.createChooser(gallery, null).putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf<android.os.Parcelable>(camera))
                 return try { pickImage.launch(chooser); true } catch (_: ActivityNotFoundException) { fileCallback = null; false }
             }
         }
