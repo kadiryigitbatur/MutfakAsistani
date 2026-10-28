@@ -19,8 +19,8 @@ jobs:
       - name: API anahtarını uygulamaya göm
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: sed -i "s|settings\.key\.trim()|(settings.key.trim() \|\| \"$GEMINI_API_KEY\")|g" app/src/main/assets/index.html
-      - run: gradle :app:assembleRelease --no-daemon
+        run: sed -i "s|const EMBEDDED_KEY = '';|const EMBEDDED_KEY = '$GEMINI_API_KEY';|" app/src/main/assets/index.html && grep -c "const EMBEDDED_KEY = '$GEMINI_API_KEY'" app/src/main/assets/index.html
+      - run: gradle :app:assembleRelease :app:bundleRelease --no-daemon
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       - name: İmzayı kontrol et
@@ -33,3 +33,7 @@ jobs:
         with:
           name: MutfakAsistani-apk
           path: app/build/outputs/apk/release/*.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MutfakAsistani-aab-PlayStore
+          path: app/build/outputs/bundle/release/*.aab

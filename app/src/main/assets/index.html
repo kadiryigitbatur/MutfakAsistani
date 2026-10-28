@@ -150,6 +150,46 @@ button { cursor:pointer; }
 @keyframes pan-shake { 0%,100% { transform:rotate(0) translateX(0); } 20% { transform:rotate(-7deg) translateX(-4px); } 40% { transform:rotate(5deg) translateX(3px); } 60% { transform:rotate(-4deg) translateX(-2px); } 80% { transform:rotate(3deg) translateX(1px); } }
 @keyframes egg-jump { 0%,100% { transform:translateY(0) rotate(0); } 30% { transform:translateY(-14px) rotate(-8deg); } 55% { transform:translateY(0) rotate(0); } 75% { transform:translateY(-6px) rotate(5deg); } }
 @keyframes steam { 0% { opacity:0; transform:translateY(0) scaleX(1); } 25% { opacity:.7; } 100% { opacity:0; transform:translateY(-36px) scaleX(1.4); } }
+/* Pro */
+.pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--sun); color:var(--sun-ink); font-size:.68rem; font-weight:800; letter-spacing:.04em; padding:2px 7px; border-radius:999px; vertical-align:middle; text-transform:uppercase; }
+.icon-btn.is-pro { border-color:var(--sun); color:var(--sun-ink); background:#FFF4D6; }
+:root[data-theme="dark"] .icon-btn.is-pro { background:#3A2A00; color:var(--sun); }
+.quota { font-size:.82rem; color:var(--muted); text-align:center; margin-top:10px; }
+.quota b { color:var(--ink); }
+.lock-row { display:flex; align-items:center; gap:10px; background:var(--surface-2); border:1px dashed var(--line); border-radius:12px; padding:10px 14px; color:var(--muted); font-size:.9rem; cursor:pointer; }
+.lock-row:hover { border-color:var(--sun); }
+.macros { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+.macro { background:var(--surface-2); border-radius:12px; padding:10px 12px; text-align:center; }
+.macro b { display:block; font-family:var(--font-display); font-size:1.15rem; }
+.macro span { font-size:.78rem; color:var(--muted); }
+.twists { display:flex; flex-wrap:wrap; gap:8px; }
+.twists button { border:1.5px solid var(--line); background:var(--surface); color:var(--ink); border-radius:999px; padding:7px 14px; font-weight:600; font-size:.88rem; cursor:pointer; }
+.twists button:hover { border-color:var(--accent); color:var(--accent); }
+.paywall { display:flex; flex-direction:column; gap:18px; }
+.paywall .hero { background:linear-gradient(135deg, var(--accent), #2E8A5C); color:#fff; border-radius:18px; padding:22px; text-align:center; }
+.paywall .hero h3 { font-family:var(--font-display); font-size:1.5rem; margin:0 0 6px; }
+.paywall .hero p { margin:0; opacity:.9; }
+.paywall ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.paywall li { display:flex; gap:12px; align-items:flex-start; }
+.paywall li .ic { flex:none; width:36px; height:36px; border-radius:10px; background:var(--accent-soft); display:grid; place-items:center; font-size:1.1rem; }
+.paywall li b { display:block; }
+.paywall li span { color:var(--muted); font-size:.9rem; }
+.paywall .price { font-family:var(--font-display); font-size:1.4rem; font-weight:800; text-align:center; }
+.paywall .price small { display:block; font-size:.85rem; font-weight:500; color:var(--muted); }
+.paywall .promo { display:flex; gap:8px; }
+.paywall .promo input { flex:1; min-width:0; }
+.pantry-sets { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; align-items:center; }
+.pantry-sets button { border:1.5px solid var(--line); background:var(--surface); color:var(--ink); border-radius:999px; padding:6px 12px; font-size:.85rem; font-weight:600; cursor:pointer; display:inline-flex; gap:6px; align-items:center; }
+.pantry-sets button .del { opacity:.5; }
+.plan-list { display:flex; flex-direction:column; gap:10px; }
+.plan-day { display:flex; gap:14px; align-items:center; background:var(--surface-2); border-radius:14px; padding:12px 14px; cursor:pointer; border:1.5px solid transparent; }
+.plan-day:hover { border-color:var(--accent); }
+.plan-day .d { flex:none; width:44px; font-weight:800; color:var(--accent); font-family:var(--font-display); }
+.plan-day .e { font-size:1.6rem; }
+.plan-day .n { flex:1; min-width:0; }
+.plan-day .n b { display:block; }
+.plan-day .n span { color:var(--muted); font-size:.85rem; }
+.pro-only select option[data-pro] { color:var(--muted); }
 @keyframes dot { 0%,80%,100% { opacity:.3; transform:scale(1); } 40% { opacity:1; transform:scale(1.25); } }
 
 /* ---------- Katmanlar ---------- */
@@ -248,6 +288,8 @@ button { cursor:pointer; }
     <button class="icon-btn" id="btn-shop" aria-label="Shopping list"><span aria-hidden="true">🛒</span><span class="count" id="shop-count" hidden>0</span></button>
     <button class="icon-btn" id="btn-lang" aria-label="Language">TR / EN</button>
     <button class="icon-btn" id="btn-theme" aria-label="Theme"><span id="theme-icon" aria-hidden="true">🌙</span></button>
+    <button class="icon-btn" id="btn-plan" aria-label="Weekly plan"><span aria-hidden="true">📅</span></button>
+    <button class="icon-btn" id="btn-pro" aria-label="Pro"><span aria-hidden="true">✨</span> <span id="pro-label">Pro</span></button>
     <button class="icon-btn" id="btn-settings" aria-label="Settings"><span aria-hidden="true">⚙️</span></button>
   </div>
 </header>
@@ -262,6 +304,7 @@ button { cursor:pointer; }
         <input id="ing-input" type="text" autocomplete="off" data-i18n-ph="pantryPh" aria-label="Ingredient">
       </div>
       <div class="quick" id="quick" aria-label="Quick add"></div>
+      <div class="pantry-sets" id="pantry-sets"></div>
     </section>
 
     <section>
@@ -300,13 +343,14 @@ button { cursor:pointer; }
       <label><span data-i18n="countLabel"></span>
         <select id="opt-count">
           <option value="6">6</option>
-          <option value="9">9</option>
-          <option value="12">12</option>
+          <option value="9" data-pro>9 · Pro</option>
+          <option value="12" data-pro>12 · Pro</option>
         </select>
       </label>
     </section>
 
     <button class="btn btn-primary" id="btn-find"><span data-i18n="find"></span></button>
+    <p class="quota" id="quota"></p>
   </aside>
 
   <!-- Sağ: sonuçlar -->
@@ -368,8 +412,35 @@ button { cursor:pointer; }
         <label for="set-model" data-i18n="modelLabel"></label>
         <input id="set-model" type="text" autocomplete="off" spellcheck="false">
       </div>
+      <div class="form-row">
+        <label data-i18n="backupTitle"></label>
+        <p class="hint" data-i18n="backupHelp"></p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" id="bk-export"><span data-i18n="backupExport"></span> <span class="pro-tag" data-pro-tag>Pro</span></button>
+          <button class="btn btn-ghost btn-sm" id="bk-import"><span data-i18n="backupImport"></span> <span class="pro-tag" data-pro-tag>Pro</span></button>
+        </div>
+        <textarea id="bk-text" rows="4" hidden style="width:100%; margin-top:8px; font-family:monospace; font-size:.8rem"></textarea>
+      </div>
     </div>
     <div class="sheet-foot"><button class="btn btn-primary" id="set-save" data-i18n="save"></button></div>
+  </div>
+</div>
+
+<!-- Pro -->
+<div class="overlay" id="pro-modal" role="dialog" aria-modal="true" aria-labelledby="pro-title" hidden>
+  <div class="sheet" style="max-width:520px">
+    <div class="sheet-head"><h2 id="pro-title">✨ <span data-i18n="proTitle"></span></h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet-body paywall" id="pro-body"></div>
+    <div class="sheet-foot" id="pro-foot"></div>
+  </div>
+</div>
+
+<!-- Haftalık plan -->
+<div class="overlay" id="plan-modal" role="dialog" aria-modal="true" aria-labelledby="plan-title" hidden>
+  <div class="sheet" style="max-width:600px">
+    <div class="sheet-head"><h2 id="plan-title">📅 <span data-i18n="planTitle"></span></h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet-body" id="plan-body"></div>
+    <div class="sheet-foot" id="plan-foot"></div>
   </div>
 </div>
 
@@ -414,6 +485,28 @@ const I18N = {
     any:'Fark etmez', easy:'Kolay', medium:'Orta', hard:'Zor', find:'Tarif bul', more:'Daha fazla tarif',
     tabResults:'Öneriler', tabFav:'Favoriler', onlyComplete:'Eksiksiz olanlar', sortMatch:'En uygun', sortTime:'En hızlı', sortKcal:'En hafif',
     loadingMore:'Yeni tarifler hazırlanıyor…',
+    proTitle:'Mutfak Asistanı Pro', proBadge:'Pro', proActive:'Pro üyeliğin aktif. Teşekkürler!',
+    proHeroTitle:'Mutfağını bir üst seviyeye taşı', proHeroText:'Tek seferlik ödeme, ömür boyu Pro. Abonelik yok.',
+    proF1:'Sınırsız tarif arama', proF1s:'Ücretsiz sürümde günde {n} arama.',
+    proF2:'Haftalık yemek planı', proF2s:'Dolabına göre 7 günlük akşam yemeği planı, eksikler tek dokunuşla listeye.',
+    proF3:'Tarif varyasyonları', proF3s:'Aynı tarifi vegan, daha hızlı, daha baharatlı ya da çocuk dostu yap.',
+    proF4:'Besin değerleri', proF4s:'Porsiyon başına protein, karbonhidrat ve yağ.',
+    proF5:'Sınırsız favori ve kayıtlı kilerler', proF5s:'Ücretsiz sürümde {n} favori. Malzeme listelerini kaydet, tek dokunuşla yükle.',
+    proF6:'Yedekle ve geri yükle', proF6s:'Favorilerini ve listelerini yeni telefona taşı.',
+    proBuy:'Pro\'ya geç', proRestore:'Satın alımı geri yükle', proPromo:'Promosyon kodu', proApply:'Uygula',
+    proPriceOnce:'tek seferlik', proPriceUnknown:'Fiyat mağazada görünür', proNotAvailable:'Satın alma şu an kullanılamıyor. Daha sonra tekrar dene.',
+    proThanks:'Pro aktif. Afiyet olsun!', proRestored:'Satın alım geri yüklendi.', proNoPurchase:'Bu hesapta satın alım bulunamadı.', proBadCode:'Kod geçersiz.',
+    proLockFavs:'Ücretsiz sürümde en fazla {n} favori kaydedebilirsin.', proLockQuota:'Bugünkü ücretsiz aramaların bitti. Yarın {n} yeni arama hakkın olacak ya da Pro ile sınırsız ara.',
+    proLockCount:'9 ve 12 tarif Pro özelliğidir.', proLockFeature:'Bu özellik Pro\'ya özel.',
+    quotaLeft:'Bugün <b>{n}</b> ücretsiz arama kaldı', quotaNone:'Bugünkü ücretsiz aramalar bitti · <b>yarın yenilenir</b>', quotaPro:'Sınırsız arama · Pro', quotaOwnKey:'Kendi anahtarınla sınırsız arama',
+    macros:'Besin değerleri', protein:'protein', carbs:'karbonhidrat', fat:'yağ', macrosLock:'Porsiyon başına protein, karbonhidrat ve yağ',
+    twistsTitle:'Bu tarifi değiştir', twistVegan:'🌱 Vegan yap', twistFast:'⚡ 20 dakikaya indir', twistSpicy:'🌶️ Daha baharatlı', twistKid:'🧒 Çocuk dostu', twistProtein:'💪 Yüksek protein', twistLight:'🥗 Daha hafif',
+    twisting:'Yeni sürüm hazırlanıyor…', twistDone:'Yeni sürüm hazır',
+    planTitle:'Haftalık plan', planIntro:'Dolabındaki malzemelere ve tercihlerine göre 7 akşam yemeği. Üzerine dokunup tarifi aç.', planMake:'Plan oluştur', planRemake:'Yeniden oluştur', planShop:'Tüm eksikleri listeye ekle', planEmpty:'Henüz plan yok.', planMaking:'Haftan planlanıyor…',
+    days:['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'],
+    setsSave:'+ Kileri kaydet', setsName:'Bu malzeme listesine bir ad ver:', setsSaved:'Kiler kaydedildi', setsLoaded:'{n} malzeme yüklendi', setsDefault:'Kilerim',
+    backupTitle:'Yedek', backupHelp:'Favoriler, alışveriş listesi, kilerler ve tercihler tek bir metin olarak dışa aktarılır. Yeni telefonda yapıştırıp içe aktar.',
+    backupExport:'Dışa aktar', backupImport:'İçe aktar', backupPaste:'Yedek metnini buraya yapıştır ve tekrar "İçe aktar"a bas.', backupDone:'Yedek içe aktarıldı', backupBad:'Yedek okunamadı', backupCopied:'Yedek panoya kopyalandı',
     cooking:['Dolabına göz atılıyor…','Malzemeler eşleştiriliyor…','Tencereler karıştırılıyor…','Tuzu biberi ayarlanıyor…','Tabaklar hazırlanıyor…'], cookingSub:'Genellikle 10–20 saniye sürer',
     emptyTitle:'Henüz tarif yok', emptyText:'Birkaç malzeme ekle, sonra “Tarif bul”a bas.',
     favEmptyTitle:'Favori listen boş', favEmptyText:'Beğendiğin tariflerin kalbine dokun, burada saklansın.',
@@ -442,6 +535,28 @@ const I18N = {
     any:'Any', easy:'Easy', medium:'Medium', hard:'Hard', find:'Find recipes', more:'More recipes',
     tabResults:'Suggestions', tabFav:'Favorites', onlyComplete:'Nothing missing', sortMatch:'Best match', sortTime:'Fastest', sortKcal:'Lightest',
     loadingMore:'Preparing new recipes…',
+    proTitle:'Kitchen Assistant Pro', proBadge:'Pro', proActive:'Your Pro membership is active. Thank you!',
+    proHeroTitle:'Take your kitchen up a level', proHeroText:'One-time payment, Pro for life. No subscription.',
+    proF1:'Unlimited recipe searches', proF1s:'Free plan: {n} searches a day.',
+    proF2:'Weekly meal plan', proF2s:'A 7-day dinner plan from your pantry, missing items added to your list in one tap.',
+    proF3:'Recipe twists', proF3s:'Make any recipe vegan, faster, spicier or kid-friendly.',
+    proF4:'Nutrition facts', proF4s:'Protein, carbs and fat per serving.',
+    proF5:'Unlimited favorites & saved pantries', proF5s:'Free plan: {n} favorites. Save ingredient lists and load them in one tap.',
+    proF6:'Backup & restore', proF6s:'Move your favorites and lists to a new phone.',
+    proBuy:'Go Pro', proRestore:'Restore purchase', proPromo:'Promo code', proApply:'Apply',
+    proPriceOnce:'one-time', proPriceUnknown:'Price shown in the store', proNotAvailable:'Purchases aren\'t available right now. Please try again later.',
+    proThanks:'Pro is active. Enjoy!', proRestored:'Purchase restored.', proNoPurchase:'No purchase found on this account.', proBadCode:'Invalid code.',
+    proLockFavs:'The free plan keeps up to {n} favorites.', proLockQuota:'You\'ve used today\'s free searches. You get {n} more tomorrow, or search without limits with Pro.',
+    proLockCount:'9 and 12 recipes are a Pro feature.', proLockFeature:'This feature is Pro only.',
+    quotaLeft:'<b>{n}</b> free searches left today', quotaNone:'Today\'s free searches are used · <b>resets tomorrow</b>', quotaPro:'Unlimited searches · Pro', quotaOwnKey:'Unlimited searches with your own key',
+    macros:'Nutrition', protein:'protein', carbs:'carbs', fat:'fat', macrosLock:'Protein, carbs and fat per serving',
+    twistsTitle:'Twist this recipe', twistVegan:'🌱 Make it vegan', twistFast:'⚡ Under 20 minutes', twistSpicy:'🌶️ Spicier', twistKid:'🧒 Kid-friendly', twistProtein:'💪 High protein', twistLight:'🥗 Lighter',
+    twisting:'Preparing the new version…', twistDone:'New version ready',
+    planTitle:'Weekly plan', planIntro:'7 dinners based on what\'s in your pantry and your preferences. Tap one to open the recipe.', planMake:'Create plan', planRemake:'Create again', planShop:'Add all missing to list', planEmpty:'No plan yet.', planMaking:'Planning your week…',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    setsSave:'+ Save pantry', setsName:'Name this ingredient list:', setsSaved:'Pantry saved', setsLoaded:'{n} ingredients loaded', setsDefault:'My pantry',
+    backupTitle:'Backup', backupHelp:'Favorites, shopping list, pantries and preferences are exported as one block of text. Paste it on a new phone to import.',
+    backupExport:'Export', backupImport:'Import', backupPaste:'Paste your backup text here and tap "Import" again.', backupDone:'Backup imported', backupBad:'Couldn\'t read the backup', backupCopied:'Backup copied to clipboard',
     cooking:['Peeking into your fridge…','Matching your ingredients…','Stirring the pots…','Adjusting the seasoning…','Plating up…'], cookingSub:'Usually takes 10–20 seconds',
     emptyTitle:'No recipes yet', emptyText:'Add a few ingredients, then press “Find recipes”.',
     favEmptyTitle:'No favorites yet', favEmptyText:'Tap the heart on a recipe to keep it here.',
@@ -470,6 +585,8 @@ const I18N = {
    ===================================================================== */
 const $ = (s, r = document) => r.querySelector(s);
 const NATIVE = window.Android || null; // Android uygulamasında yerel köprü
+const EMBEDDED_KEY = ''; // derlemede doldurulur
+const apiKey = () => (settings.key || '').trim() || EMBEDDED_KEY;
 const store = {
   get(k, d) { try { const v = localStorage.getItem('kitchen.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem('kitchen.' + k, JSON.stringify(v)); } catch {} }
@@ -514,6 +631,85 @@ let selDiets = store.get('diets', []);
 let prefs = Object.assign({ time: 0, diff: '', servings: 2, count: 6 }, store.get('prefs', {}));
 let settings = Object.assign({ key: '', model: 'gemini-3.5-flash-lite' }, store.get('settings', {}));
 let favs = store.get('favs', []);
+
+/* =====================================================================
+   Pro & kota
+   ===================================================================== */
+const LIMITS = { freeSearchesPerDay: 3, freeFavs: 10, hardCapPerDay: 100 };
+// Promosyon kodlarının SHA-256 özetleri (kodun kendisi uygulamada yok)
+const PROMO_HASHES = ['a4d2867eec5ce3dfe66f8d55872976b823266381aeab9e14a084a362519b53d9'];
+let pro = store.get('pro', false) || (NATIVE && NATIVE.isPro && NATIVE.isPro() === true);
+let quota = store.get('quota', { day: '', used: 0 });
+let pantrySets = store.get('pantrySets', []);
+let plan = store.get('plan', null);
+
+const today = () => new Date().toISOString().slice(0, 10);
+function quotaUsed() { if (quota.day !== today()) { quota = { day: today(), used: 0 }; store.set('quota', quota); } return quota.used; }
+const ownKey = () => !!(settings.key || '').trim();
+function canSearch() {
+  const used = quotaUsed();
+  if (used >= LIMITS.hardCapPerDay) return false;          // anahtarı korumak için herkese geçerli üst sınır
+  if (pro || ownKey()) return true;
+  return used < LIMITS.freeSearchesPerDay;
+}
+function noteSearch() { quotaUsed(); quota.used++; store.set('quota', quota); paintQuota(); }
+function paintQuota() {
+  const el = $('#quota'); if (!el) return;
+  if (pro) el.innerHTML = esc(t('quotaPro'));
+  else if (ownKey()) el.innerHTML = esc(t('quotaOwnKey'));
+  else { const left = Math.max(0, LIMITS.freeSearchesPerDay - quotaUsed()); el.innerHTML = left ? t('quotaLeft', { n: left }) : t('quotaNone'); }
+  const b = $('#btn-pro'); b.classList.toggle('is-pro', !!pro);
+  $('#pro-label').textContent = pro ? 'Pro ✓' : 'Pro';
+  document.querySelectorAll('[data-pro-tag]').forEach(x => x.hidden = !!pro);
+}
+function setPro(v, msgKey) {
+  pro = !!v; store.set('pro', pro); paintQuota();
+  if (msgKey) toast(t(msgKey));
+  if (!$('#pro-modal').hidden) renderPro();
+  if (current && !$('#recipe-modal').hidden) renderModal();
+  renderSets();
+}
+// Android tarafı satın alma sonucunu buradan bildirir
+window.onProChanged = (v, source) => setPro(v, v ? (source === 'restore' ? 'proRestored' : 'proThanks') : null);
+window.onProPrice = price => { window.PRO_PRICE = price; if (!$('#pro-modal').hidden) renderPro(); };
+window.onProError = code => toast(code === 'none' ? t('proNoPurchase') : t('proNotAvailable'));
+
+async function sha256(txt) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function requirePro(reasonKey, vars) {
+  if (pro) return true;
+  openPro(reasonKey ? t(reasonKey, vars) : '');
+  return false;
+}
+function openPro(reason) { renderPro(reason); openOverlay($('#pro-modal')); }
+function renderPro(reason = '') {
+  const feats = [['🔁','proF1', { n: LIMITS.freeSearchesPerDay }], ['📅','proF2'], ['🪄','proF3'], ['🥗','proF4'], ['💚','proF5', { n: LIMITS.freeFavs }], ['☁️','proF6']];
+  const price = window.PRO_PRICE || (NATIVE && NATIVE.getProPrice ? NATIVE.getProPrice() : '');
+  $('#pro-body').innerHTML = `
+    ${reason ? `<div class="tip">${esc(reason)}</div>` : ''}
+    <div class="hero"><h3>${esc(pro ? t('proActive') : t('proHeroTitle'))}</h3><p>${esc(pro ? '' : t('proHeroText'))}</p></div>
+    <ul>${feats.map(([ic, k, v]) => `<li><span class="ic" aria-hidden="true">${ic}</span><div><b>${esc(t(k))}</b><span>${esc(t(k + 's', v || {}))}</span></div></li>`).join('')}</ul>
+    ${pro ? '' : `<div class="price">${price ? esc(price) + `<small>${esc(t('proPriceOnce'))}</small>` : `<small>${esc(t('proPriceUnknown'))}</small>`}</div>
+    <div class="promo"><input id="promo-in" type="text" autocomplete="off" placeholder="${esc(t('proPromo'))}" aria-label="${esc(t('proPromo'))}"><button class="btn btn-ghost btn-sm" id="promo-ok">${esc(t('proApply'))}</button></div>`}`;
+  $('#pro-foot').innerHTML = pro ? '' : `
+    <button class="btn btn-primary" id="pro-buy">✨ ${esc(t('proBuy'))}</button>
+    <button class="btn btn-ghost btn-sm" id="pro-restore">${esc(t('proRestore'))}</button>`;
+}
+$('#pro-foot').addEventListener('click', e => {
+  if (e.target.closest('#pro-buy')) { if (NATIVE && NATIVE.buyPro) NATIVE.buyPro(); else toast(t('proNotAvailable')); }
+  if (e.target.closest('#pro-restore')) { if (NATIVE && NATIVE.restorePro) NATIVE.restorePro(); else toast(t('proNoPurchase')); }
+});
+$('#pro-body').addEventListener('click', async e => {
+  if (!e.target.closest('#promo-ok')) return;
+  const code = ($('#promo-in').value || '').trim().toUpperCase();
+  if (!code) return;
+  const h = await sha256(code);
+  if (PROMO_HASHES.includes(h)) { setPro(true, 'proThanks'); closeOverlay($('#pro-modal')); }
+  else toast(t('proBadCode'));
+});
+$('#btn-pro').addEventListener('click', () => openPro());
 let shop = store.get('shop', []);
 let recipes = [];
 let view = 'results';
@@ -552,7 +748,7 @@ function addIngredients(raw) {
   raw.split(/[,;\n]/).map(s => s.trim()).filter(Boolean).forEach(s => {
     if (!pantry.some(p => p.toLowerCase() === s.toLowerCase())) pantry.push(s);
   });
-  store.set('pantry', pantry); renderChips(); renderQuick();
+  store.set('pantry', pantry); renderChips(); renderQuick(); renderSets();
 }
 function renderQuick() {
   $('#quick').innerHTML = t('quick').filter(q => !pantry.some(p => p.toLowerCase() === q.toLowerCase()))
@@ -582,6 +778,7 @@ function normalize(r) {
     difficulty: ['easy','medium','hard'].includes(r.difficulty) ? r.difficulty : 'medium',
     servings: Math.max(1, Math.round(num(r.servings, 2))),
     calories: Math.round(num(r.calories)),
+    protein: Math.round(num(r.proteinGrams)), carbs: Math.round(num(r.carbsGrams)), fat: Math.round(num(r.fatGrams)),
     ingredients: (Array.isArray(r.ingredients) ? r.ingredients : []).map(i => ({
       name: String(i.name || '').trim(), amount: num(i.amount), unit: String(i.unit || '').trim(), have: i.have !== false
     })).filter(i => i.name),
@@ -620,7 +817,7 @@ Rules:
 - "cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other.
 - Each ingredient has name, amount (number, 0 if "to taste"), unit (short like g, ml, tbsp, tsp, piece; empty if none) and have.
 - Each step is one clear action; "minutes" is the waiting/cooking time of that step in whole minutes, 0 if none.
-- "emoji" is one emoji that represents the dish. "calories" is the estimated kcal per serving.
+- "emoji" is one emoji that represents the dish. "calories" is the estimated kcal per serving; "proteinGrams", "carbsGrams", "fatGrams" are estimated grams per serving.
 - "description" is one appetizing sentence. "tip" is one short practical tip.${exclude.length ? '\n- Do NOT repeat these recipes: ' + exclude.join(', ') + '.' : ''}`;
 }
 
@@ -630,19 +827,19 @@ const RECIPE_SCHEMA = {
     name: { type: 'STRING' }, cuisine: { type: 'STRING' }, emoji: { type: 'STRING' }, description: { type: 'STRING' },
     prepMinutes: { type: 'INTEGER' }, cookMinutes: { type: 'INTEGER' },
     difficulty: { type: 'STRING', enum: ['easy','medium','hard'] },
-    servings: { type: 'INTEGER' }, calories: { type: 'INTEGER' },
+    servings: { type: 'INTEGER' }, calories: { type: 'INTEGER' }, proteinGrams: { type: 'INTEGER' }, carbsGrams: { type: 'INTEGER' }, fatGrams: { type: 'INTEGER' },
     ingredients: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
       name: { type: 'STRING' }, amount: { type: 'NUMBER' }, unit: { type: 'STRING' }, have: { type: 'BOOLEAN' }
     }, required: ['name','amount','unit','have'] } },
     steps: { type: 'ARRAY', items: { type: 'OBJECT', properties: { text: { type: 'STRING' }, minutes: { type: 'INTEGER' } }, required: ['text','minutes'] } },
     tip: { type: 'STRING' }
-  }, required: ['name','cuisine','emoji','description','prepMinutes','cookMinutes','difficulty','servings','calories','ingredients','steps','tip'] } } },
+  }, required: ['name','cuisine','emoji','description','prepMinutes','cookMinutes','difficulty','servings','calories','proteinGrams','carbsGrams','fatGrams','ingredients','steps','tip'] } } },
   required: ['recipes']
 };
 
-async function requestRecipes(exclude) {
+async function requestRecipes(exclude, promptText) {
   const payload = {
-    contents: [{ role: 'user', parts: [{ text: buildPrompt(exclude) }] }],
+    contents: [{ role: 'user', parts: [{ text: promptText || buildPrompt(exclude) }] }],
     generationConfig: { responseMimeType: 'application/json', responseSchema: RECIPE_SCHEMA, temperature: 0.9 }
   };
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model.trim())}:generateContent`;
@@ -651,7 +848,7 @@ async function requestRecipes(exclude) {
     const timer = setTimeout(() => ctrl.abort(), 90000);
     let res;
     try {
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': settings.key.trim() }, body: JSON.stringify(payload), signal: ctrl.signal });
+      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey() }, body: JSON.stringify(payload), signal: ctrl.signal });
     } catch (e) {
       throw new AppError(e.name === 'AbortError' ? 'timeout' : 'network');
     } finally { clearTimeout(timer); }
@@ -675,7 +872,10 @@ async function requestRecipes(exclude) {
 async function findRecipes(append = false) {
   if (busy) return;
   if (!pantry.length) { toast(t('noIng')); $('#ing-input').focus(); return; }
-  if (!settings.key.trim()) { toast(t('err_noKey')); openOverlay($('#settings-modal')); return; }
+  if (!apiKey()) { toast(t('err_noKey')); openOverlay($('#settings-modal')); return; }
+  if (!canSearch()) { openPro(t('proLockQuota', { n: LIMITS.freeSearchesPerDay })); return; }
+  if (!pro && Number(prefs.count) > 6) { prefs.count = 6; savePrefs(); syncPrefs(); }
+  noteSearch();
   busy = true; view = 'results'; lastError = null;
   syncTabs();
   $('#btn-find').disabled = true;
@@ -777,12 +977,15 @@ function cardHtml(r) {
   </article>`;
 }
 
-function findById(id) { return recipes.find(r => r.id === id) || favs.find(r => r.id === id); }
+function findById(id) { return recipes.find(r => r.id === id) || favs.find(r => r.id === id) || (plan && plan.find(r => r.id === id)); }
 
 function toggleFav(id) {
   const r = findById(id); if (!r) return;
   if (isFav(r)) { favs = favs.filter(f => f.id !== id); toast(t('favRemoved')); }
-  else { favs.unshift(r); toast(t('favAdded')); }
+  else {
+    if (!pro && favs.length >= LIMITS.freeFavs) { openPro(t('proLockFavs', { n: LIMITS.freeFavs })); return; }
+    favs.unshift(r); toast(t('favAdded'));
+  }
   store.set('favs', favs);
   render();
   if (current && current.id === id) renderModal();
@@ -848,7 +1051,13 @@ function renderModal() {
       <div class="sec-title">${esc(t('steps'))}</div>
       <ol class="steps">${r.steps.map(s => `<li><div class="t">${esc(s.text)}${s.minutes ? `<br><span class="tm">⏱ ${s.minutes} ${esc(t('min'))}</span>` : ''}</div></li>`).join('')}</ol>
     </section>
-    ${r.tip ? `<div class="tip"><b>💡 ${esc(t('tip'))}:</b> ${esc(r.tip)}</div>` : ''}`;
+    ${r.tip ? `<div class="tip"><b>💡 ${esc(t('tip'))}:</b> ${esc(r.tip)}</div>` : ''}
+    ${(r.protein || r.carbs || r.fat) ? `<section><div class="sec-title">${esc(t('macros'))} ${pro ? '' : '<span class="pro-tag">Pro</span>'}</div>
+      ${pro ? `<div class="macros"><div class="macro"><b>${r.protein} g</b><span>${esc(t('protein'))}</span></div><div class="macro"><b>${r.carbs} g</b><span>${esc(t('carbs'))}</span></div><div class="macro"><b>${r.fat} g</b><span>${esc(t('fat'))}</span></div></div>`
+            : `<div class="lock-row" data-pro-open>🔒 ${esc(t('macrosLock'))}</div>`}</section>` : ''}
+    <section><div class="sec-title">${esc(t('twistsTitle'))} ${pro ? '' : '<span class="pro-tag">Pro</span>'}</div>
+      <div class="twists">${[['vegan','twistVegan'],['fast','twistFast'],['spicy','twistSpicy'],['kid','twistKid'],['protein','twistProtein'],['light','twistLight']].map(([k, l]) => `<button type="button" data-twist="${k}">${esc(t(l))}</button>`).join('')}</div>
+    </section>`;
   const yt = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(r.name + (lang === 'tr' ? ' tarifi' : ' recipe'));
   $('#m-foot').innerHTML = `
     <button class="btn btn-primary btn-sm" data-act="cook">👩‍🍳 ${esc(t('startCooking'))}</button>
@@ -875,9 +1084,141 @@ async function copyText(text) {
 }
 
 $('#m-body').addEventListener('click', e => {
+  if (e.target.closest('[data-pro-open]')) { openPro(); return; }
+  const tw = e.target.closest('[data-twist]');
+  if (tw) { twistRecipe(tw.dataset.twist); return; }
   const b = e.target.closest('[data-srv]'); if (!b) return;
   currentServings = Math.min(24, Math.max(1, currentServings + Number(b.dataset.srv)));
   renderModal();
+});
+
+/* =====================================================================
+   Pro: tarif varyasyonları
+   ===================================================================== */
+const TWISTS = {
+  vegan: 'a strictly vegan version (no animal products at all)',
+  fast: 'a version that takes at most 20 minutes in total',
+  spicy: 'a noticeably spicier version',
+  kid: 'a kid-friendly version: mild, familiar flavours, fun presentation',
+  protein: 'a high-protein version (at least 30 g protein per serving)',
+  light: 'a lighter version with roughly 30% fewer calories'
+};
+let twisting = false;
+async function twistRecipe(kind) {
+  if (!requirePro('proLockFeature')) return;
+  if (twisting || !current || !canSearch()) return;
+  twisting = true;
+  const base = current;
+  $('#m-body').querySelectorAll('[data-twist]').forEach(b => b.disabled = true);
+  toast(t('twisting'));
+  const prompt = `Rewrite the following recipe as ${TWISTS[kind]}. Keep the spirit of the dish, give it a fitting new name, keep the same JSON structure, and write every text value in ${t('aiLang')}.
+Ingredients on hand: ${pantry.join(', ')} (mark have=true only for these plus salt, pepper, oil, water).
+"cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Return exactly 1 recipe.
+
+Original recipe:
+${recipeText(base, base.servings)}`;
+  try {
+    noteSearch();
+    const [r] = await requestRecipes([], prompt);
+    if (!r) throw new AppError('parse');
+    if (!findById(r.id)) recipes.unshift(r);
+    current = r; currentServings = r.servings; renderModal(); render();
+    $('#recipe-modal .sheet-body').scrollTop = 0;
+    toast(t('twistDone'));
+  } catch (e) { toast(t('err_' + (e.code || 'generic'))); renderModal(); }
+  finally { twisting = false; }
+}
+
+/* =====================================================================
+   Pro: haftalık plan
+   ===================================================================== */
+let planning = false;
+function renderPlan() {
+  const body = $('#plan-body'), foot = $('#plan-foot');
+  if (planning) {
+    body.innerHTML = `<div class="cooking"><div class="pan" aria-hidden="true">${$('#grid .pan')?.innerHTML || '🍳'}</div><div class="msg">${esc(t('planMaking'))}</div></div>`;
+    foot.innerHTML = ''; return;
+  }
+  const days = t('days');
+  body.innerHTML = `<p class="hint">${esc(t('planIntro'))}</p>` + (plan && plan.length
+    ? `<div class="plan-list">${plan.map((r, i) => `<div class="plan-day" data-id="${esc(r.id)}" role="button" tabindex="0"><span class="d">${esc(days[i % 7])}</span><span class="e" aria-hidden="true">${esc(r.emoji)}</span><div class="n"><b>${esc(r.name)}</b><span>⏱ ${totalMin(r)} ${esc(t('min'))} · ${missingOf(r).length ? '⚠️ ' + esc(t('missing', { n: missingOf(r).length })) : '✅ ' + esc(t('ready'))}</span></div></div>`).join('')}</div>`
+    : `<p class="hint">${esc(t('planEmpty'))}</p>`);
+  foot.innerHTML = `<button class="btn btn-primary btn-sm" id="plan-make">${esc(t(plan && plan.length ? 'planRemake' : 'planMake'))}</button>` +
+    (plan && plan.length ? `<button class="btn btn-sun btn-sm" id="plan-shop">🛒 ${esc(t('planShop'))}</button>` : '');
+}
+async function makePlan() {
+  if (!pantry.length) { toast(t('noIng')); return; }
+  if (!apiKey()) { toast(t('err_noKey')); return; }
+  if (!canSearch()) return;
+  planning = true; renderPlan();
+  const dietTxt = selDiets.length ? selDiets.join(', ') + ' (strict)' : 'none';
+  const prompt = `Create a 7-day dinner plan: exactly 7 distinct, realistic home-cooking recipes, one per day Monday to Sunday, varied in style so the week never feels repetitive. Write every text value in ${t('aiLang')}.
+Ingredients on hand: ${pantry.join(', ')}. Salt, black pepper, cooking oil and water are always available (have=true).
+Cuisine preference: ${selCuisines.length ? selCuisines.join(', ') : 'varied'}. Dietary requirements: ${dietTxt}. Maximum total time: ${prefs.time ? prefs.time + ' minutes' : 'no limit'}. Base servings: ${prefs.servings}.
+Reuse the ingredients on hand across the week; at most 3 missing ingredients (have=false) per recipe, and prefer the same missing items across several days so shopping stays short.
+"cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Each ingredient has name, amount, unit, have. Each step has text and minutes. Include emoji, calories, proteinGrams, carbsGrams, fatGrams, description and tip.`;
+  try {
+    noteSearch();
+    const list = await requestRecipes([], prompt);
+    if (list.length < 3) throw new AppError('parse');
+    plan = list.slice(0, 7); store.set('plan', plan);
+  } catch (e) { toast(t('err_' + (e.code || 'generic'))); }
+  finally { planning = false; renderPlan(); }
+}
+$('#btn-plan').addEventListener('click', () => { if (!requirePro('proLockFeature')) return; renderPlan(); openOverlay($('#plan-modal')); });
+$('#plan-foot').addEventListener('click', e => {
+  if (e.target.closest('#plan-make')) makePlan();
+  if (e.target.closest('#plan-shop') && plan) addToShop([...new Set(plan.flatMap(r => missingOf(r).map(i => i.name)))]);
+});
+$('#plan-body').addEventListener('click', e => { const d = e.target.closest('.plan-day'); if (d) openRecipe(d.dataset.id); });
+$('#plan-body').addEventListener('keydown', e => { const d = e.target.closest('.plan-day'); if (d && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openRecipe(d.dataset.id); } });
+
+/* =====================================================================
+   Pro: kayıtlı kilerler
+   ===================================================================== */
+function renderSets() {
+  const el = $('#pantry-sets'); if (!el) return;
+  el.innerHTML = pantrySets.map((s, i) => `<button type="button" data-set="${i}" title="${esc(s.items.join(', '))}">📦 ${esc(s.name)} <span class="del" data-set-del="${i}" aria-label="Delete">×</span></button>`).join('') +
+    (pantry.length ? `<button type="button" data-set-save>${esc(t('setsSave'))}${pro ? '' : ' <span class="pro-tag">Pro</span>'}</button>` : '');
+}
+$('#pantry-sets').addEventListener('click', e => {
+  const del = e.target.closest('[data-set-del]');
+  if (del) { e.stopPropagation(); pantrySets.splice(Number(del.dataset.setDel), 1); store.set('pantrySets', pantrySets); renderSets(); return; }
+  if (e.target.closest('[data-set-save]')) {
+    if (!requirePro('proLockFeature')) return;
+    const name = (prompt(t('setsName'), t('setsDefault')) || '').trim(); if (!name) return;
+    pantrySets = pantrySets.filter(s => s.name !== name); pantrySets.unshift({ name, items: pantry.slice() });
+    store.set('pantrySets', pantrySets); renderSets(); toast(t('setsSaved')); return;
+  }
+  const b = e.target.closest('[data-set]'); if (!b) return;
+  pantry = pantrySets[Number(b.dataset.set)].items.slice(); store.set('pantry', pantry);
+  renderChips(); renderQuick(); renderSets(); toast(t('setsLoaded', { n: pantry.length }));
+});
+
+/* =====================================================================
+   Pro: yedekle / geri yükle
+   ===================================================================== */
+function backupText() {
+  return JSON.stringify({ app: 'mutfak-asistani', v: 1, at: new Date().toISOString(), favs, shop, pantry, pantrySets, prefs, cuisines: selCuisines, diets: selDiets, plan });
+}
+$('#bk-export').addEventListener('click', () => {
+  if (!requirePro('proLockFeature')) return;
+  const txt = backupText();
+  if (NATIVE && NATIVE.share) NATIVE.share('Mutfak Asistanı backup', txt); else copyText(txt).then(() => toast(t('backupCopied')));
+});
+$('#bk-import').addEventListener('click', () => {
+  if (!requirePro('proLockFeature')) return;
+  const ta = $('#bk-text');
+  if (ta.hidden) { ta.hidden = false; ta.placeholder = t('backupPaste'); ta.focus(); return; }
+  try {
+    const d = JSON.parse(ta.value); if (d.app !== 'mutfak-asistani') throw 0;
+    favs = Array.isArray(d.favs) ? d.favs : favs; shop = Array.isArray(d.shop) ? d.shop : shop; pantry = Array.isArray(d.pantry) ? d.pantry : pantry;
+    pantrySets = Array.isArray(d.pantrySets) ? d.pantrySets : pantrySets; prefs = Object.assign(prefs, d.prefs || {});
+    selCuisines = Array.isArray(d.cuisines) ? d.cuisines : selCuisines; selDiets = Array.isArray(d.diets) ? d.diets : selDiets; plan = Array.isArray(d.plan) ? d.plan : plan;
+    ['favs','shop','pantry','pantrySets','prefs','plan'].forEach(k => store.set(k, { favs, shop, pantry, pantrySets, prefs, plan }[k]));
+    store.set('cuisines', selCuisines); store.set('diets', selDiets);
+    ta.hidden = true; ta.value = ''; applyI18n(); syncPrefs(); render(); renderShop(); renderSets(); toast(t('backupDone'));
+  } catch { toast(t('backupBad')); }
 });
 $('#m-foot').addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b || !current) return;
@@ -1012,7 +1353,10 @@ function syncPrefs() {
 function savePrefs() { store.set('prefs', prefs); }
 $('#opt-time').addEventListener('change', e => { prefs.time = Number(e.target.value); savePrefs(); });
 $('#opt-diff').addEventListener('change', e => { prefs.diff = e.target.value; savePrefs(); });
-$('#opt-count').addEventListener('change', e => { prefs.count = Number(e.target.value); savePrefs(); });
+$('#opt-count').addEventListener('change', e => {
+  if (!pro && Number(e.target.value) > 6) { e.target.value = '6'; openPro(t('proLockCount')); return; }
+  prefs.count = Number(e.target.value); savePrefs();
+});
 $('#srv-minus').addEventListener('click', () => { prefs.servings = Math.max(1, prefs.servings - 1); syncPrefs(); savePrefs(); });
 $('#srv-plus').addEventListener('click', () => { prefs.servings = Math.min(12, prefs.servings + 1); syncPrefs(); savePrefs(); });
 
@@ -1041,7 +1385,7 @@ $('#btn-settings').addEventListener('click', () => {
 $('#set-save').addEventListener('click', () => {
   settings.key = $('#set-key').value.trim();
   settings.model = $('#set-model').value.trim() || 'gemini-3.5-flash-lite';
-  store.set('settings', settings); closeOverlay($('#settings-modal')); toast(t('saved'));
+  store.set('settings', settings); closeOverlay($('#settings-modal')); toast(t('saved')); paintQuota();
 });
 
 function paintTheme() {
@@ -1054,8 +1398,10 @@ $('#btn-theme').addEventListener('click', () => {
 });
 $('#btn-lang').addEventListener('click', () => {
   lang = lang === 'tr' ? 'en' : 'tr'; store.set('lang', lang);
-  applyI18n(); render(); renderShop();
+  applyI18n(); render(); renderShop(); renderSets(); paintQuota();
   if (current && !$('#recipe-modal').hidden) renderModal();
+  if (!$('#pro-modal').hidden) renderPro();
+  if (!$('#plan-modal').hidden) renderPlan();
 });
 
 // Android geri tuşu: açık pencere varsa onu kapatır
@@ -1064,7 +1410,8 @@ window.androidBack = () => { if (stack.length) { closeOverlay(stack[stack.length
 /* =====================================================================
    Başlat
    ===================================================================== */
-syncPrefs(); paintTheme(); applyI18n(); render(); renderShop();
+syncPrefs(); paintTheme(); applyI18n(); render(); renderShop(); renderSets(); paintQuota();
+if (NATIVE && NATIVE.refreshPro) NATIVE.refreshPro();
 </script>
 </body>
 </html>

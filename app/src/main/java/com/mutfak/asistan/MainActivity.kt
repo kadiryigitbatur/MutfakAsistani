@@ -43,6 +43,7 @@ import androidx.webkit.WebViewAssetLoader
 class MainActivity : ComponentActivity() {
 
     private lateinit var web: WebView
+    private lateinit var billing: BillingManager
     private var pageReady = false
     private val startedAt = SystemClock.uptimeMillis()
     private var intro: View? = null
@@ -64,6 +65,12 @@ class MainActivity : ComponentActivity() {
         // Tam ekran: WebView tüm ekranı kaplar. Kamera çentiği gibi alanlar sayfaya CSS
         // değişkeni olarak bildirilir; arka plan oraya kadar uzanır, yazılar çentiğe girmez.
         val root = FrameLayout(this).apply { setBackgroundColor(Color.parseColor("#EDF2EA")) }
+        billing = BillingManager(this,
+            onChanged = { v, src -> js("window.onProChanged && window.onProChanged($v, '$src')") },
+            onPrice = { p -> js("window.onProPrice && window.onProPrice(${jsStr(p)})") },
+            onError = { c -> js("window.onProError && window.onProError('$c')") })
+        billing.start()
+
         web = WebView(this)
         root.addView(web, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         intro = buildIntro()
@@ -183,7 +190,22 @@ class MainActivity : ComponentActivity() {
         web.saveState(outState)
     }
 
+    private fun js(code: String) = runOnUiThread { if (::web.isInitialized) web.evaluateJavascript(code, null) }
+    private fun jsStr(s: String) = "'" + s.replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ") + "'"
+
     inner class Bridge {
+        @JavascriptInterface fun isPro(): Boolean = billing.isPro
+        @JavascriptInterface fun getProPrice(): String = billing.price
+        @JavascriptInterface fun buyPro() = runOnUiThread { billing.buy(this@MainActivity) }
+        @JavascriptInterface fun restorePro() = runOnUiThread { billing.restore() }
+        @JavascriptInterface fun refreshPro() = runOnUiThread { billing.start() }
+
+        @JavascriptInterface
+        fun share(title: String, text: String) = runOnUiThread {
+            val i = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_SUBJECT, title); putExtra(Intent.EXTRA_TEXT, text) }
+            try { startActivity(Intent.createChooser(i, title)) } catch (_: ActivityNotFoundException) {}
+        }
+
         @JavascriptInterface
         fun copy(text: String) {
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

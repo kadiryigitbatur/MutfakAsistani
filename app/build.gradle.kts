@@ -16,7 +16,7 @@ android {
         targetSdk = 35
         // Her derlemede sürüm numarası artar, güncelleme eskisinin üzerine kurulur
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
-        versionName = "1.0"
+        versionName = "1.1"
     }
 
     signingConfigs {
@@ -48,4 +48,5 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.3")
     implementation("androidx.webkit:webkit:1.12.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
 }
