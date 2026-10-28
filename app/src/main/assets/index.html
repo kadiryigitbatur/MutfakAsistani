@@ -490,6 +490,18 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
   </div>
 </div>
 
+<!-- Küçük giriş penceresi (isim sor vb.) -->
+<div class="overlay" id="ask-modal" role="dialog" aria-modal="true" aria-labelledby="ask-title" hidden>
+  <div class="sheet" style="max-width:420px">
+    <div class="sheet-head"><h2 id="ask-title"></h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet-body">
+      <p class="hint" id="ask-hint" hidden></p>
+      <input id="ask-input" type="text" autocomplete="off" enterkeyhint="done">
+    </div>
+    <div class="sheet-foot"><button class="btn btn-primary btn-sm" id="ask-ok" data-i18n="ok"></button></div>
+  </div>
+</div>
+
 <!-- Kiler öğesi: son kullanma -->
 <div class="overlay" id="item-modal" role="dialog" aria-modal="true" aria-labelledby="it-title" hidden>
   <div class="sheet" style="max-width:440px">
@@ -587,7 +599,7 @@ const I18N = {
     any:'Fark etmez', easy:'Kolay', medium:'Orta', hard:'Zor', find:'Tarif bul', more:'Daha fazla tarif',
     tabResults:'Öneriler', tabFav:'Favoriler', onlyComplete:'Eksiksiz olanlar', sortMatch:'En uygun', sortTime:'En hızlı', sortKcal:'En hafif',
     loadingMore:'Yeni tarifler hazırlanıyor…',
-    scan:'Fotoğraftan ekle', leftovers:'Artan yemek', scanTitle:'Fotoğraftan malzeme', scanHelp:'Buzdolabının, tezgâhın ya da market fişinin fotoğrafını çek. Tanınan malzemeleri seçip kilere ekle.',
+    ok:'Tamam', scan:'Fotoğraftan ekle', leftovers:'Artan yemek', scanTitle:'Fotoğraftan malzeme', scanHelp:'Buzdolabının, tezgâhın ya da market fişinin fotoğrafını çek. Tanınan malzemeleri seçip kilere ekle.',
     scanning:'Fotoğraf inceleniyor…', scanNone:'Fotoğrafta malzeme bulunamadı. Daha yakından ve aydınlık çekmeyi dene.', scanAdd:'{n} malzemeyi ekle', scanAgain:'Başka fotoğraf', scanPick:'Fotoğraf seç / çek',
     leftTitle:'Artan yemek', leftAsk:'Ne arttı? (örn. pilav, haşlanmış tavuk)', leftHint:'Artanlar ♻️ ile işaretlenir; tarifler onları değerlendirmeye öncelik verir.',
     expiryLabel:'Son kullanma tarihi', d2:'2 gün', d5:'5 gün', d7:'1 hafta', d30:'1 ay', dNone:'Tarih yok', remove:'Kilerden çıkar',
@@ -652,7 +664,7 @@ const I18N = {
     any:'Any', easy:'Easy', medium:'Medium', hard:'Hard', find:'Find recipes', more:'More recipes',
     tabResults:'Suggestions', tabFav:'Favorites', onlyComplete:'Nothing missing', sortMatch:'Best match', sortTime:'Fastest', sortKcal:'Lightest',
     loadingMore:'Preparing new recipes…',
-    scan:'Add from photo', leftovers:'Leftovers', scanTitle:'Ingredients from a photo', scanHelp:'Snap your fridge, counter or a grocery receipt. Pick the ingredients it finds and add them to your pantry.',
+    ok:'OK', scan:'Add from photo', leftovers:'Leftovers', scanTitle:'Ingredients from a photo', scanHelp:'Snap your fridge, counter or a grocery receipt. Pick the ingredients it finds and add them to your pantry.',
     scanning:'Looking at the photo…', scanNone:'No ingredients found. Try a closer, brighter shot.', scanAdd:'Add {n} ingredients', scanAgain:'Another photo', scanPick:'Choose / take photo',
     leftTitle:'Leftovers', leftAsk:'What\'s left over? (e.g. rice, boiled chicken)', leftHint:'Leftovers are marked ♻️; recipes prioritise using them up.',
     expiryLabel:'Use-by date', d2:'2 days', d5:'5 days', d7:'1 week', d30:'1 month', dNone:'No date', remove:'Remove from pantry',
@@ -897,6 +909,26 @@ function renderSoon() {
   if (items.length) box.innerHTML = `<span><b>${esc(t('soonTitle'))}</b> ${esc(items.join(', '))}</span><button type="button" id="soon-find">${esc(t('soonFind'))}</button>`;
   syncReminder();
 }
+let askResolve = null;
+function ask(title, { value = '', placeholder = '', hint = '' } = {}) {
+  return new Promise(res => {
+    askResolve = res;
+    $('#ask-title').textContent = title;
+    const inp = $('#ask-input'); inp.value = value; inp.placeholder = placeholder;
+    const h = $('#ask-hint'); h.textContent = hint; h.hidden = !hint;
+    openOverlay($('#ask-modal'));
+    setTimeout(() => { inp.focus(); inp.select(); }, 50);
+  });
+}
+function askDone(ok) {
+  const r = askResolve; askResolve = null;
+  const v = ok ? $('#ask-input').value.trim() : '';
+  if (!$('#ask-modal').hidden) closeOverlay($('#ask-modal'));
+  if (r) r(v);
+}
+$('#ask-ok').addEventListener('click', () => askDone(true));
+$('#ask-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); askDone(true); } });
+$('#ask-modal').addEventListener('click', e => { if (e.target === e.currentTarget || e.target.closest('[data-close]')) askDone(false); });
 let itemIdx = -1;
 function openItem(i) {
   itemIdx = i; const name = pantry[i];
@@ -1186,6 +1218,7 @@ function closeOverlay(el) {
   const i = stack.indexOf(el); if (i > -1) stack.splice(i, 1);
   if (!stack.length) document.body.style.overflow = '';
   if (el.id === 'cook') stopCook();
+  if (el.id === 'ask-modal' && askResolve) { const r = askResolve; askResolve = null; r(''); }
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && stack.length) closeOverlay(stack[stack.length - 1]);
@@ -1497,12 +1530,12 @@ function renderSets() {
   el.innerHTML = pantrySets.map((s, i) => `<button type="button" data-set="${i}" title="${esc(s.items.join(', '))}">📦 ${esc(s.name)} <span class="del" data-set-del="${i}" aria-label="Delete">×</span></button>`).join('') +
     (pantry.length ? `<button type="button" data-set-save>${esc(t('setsSave'))}${pro ? '' : ' <span class="pro-tag">Pro</span>'}</button>` : '');
 }
-$('#pantry-sets').addEventListener('click', e => {
+$('#pantry-sets').addEventListener('click', async e => {
   const del = e.target.closest('[data-set-del]');
   if (del) { e.stopPropagation(); pantrySets.splice(Number(del.dataset.setDel), 1); store.set('pantrySets', pantrySets); renderSets(); return; }
   if (e.target.closest('[data-set-save]')) {
     if (!requirePro('proLockFeature')) return;
-    const name = (prompt(t('setsName'), t('setsDefault')) || '').trim(); if (!name) return;
+    const name = await ask(t('setsName'), { value: t('setsDefault') }); if (!name) return;
     pantrySets = pantrySets.filter(s => s.name !== name); pantrySets.unshift({ name, items: pantry.slice() });
     store.set('pantrySets', pantrySets); renderSets(); toast(t('setsSaved')); return;
   }
@@ -1716,10 +1749,10 @@ $('#chips').addEventListener('click', e => {
   const b = e.target.closest('[data-rm]'); if (!b) return;
   pantry.splice(Number(b.dataset.rm), 1); store.set('pantry', pantry); renderChips(); renderQuick(); renderSets();
 });
-$('#btn-left').addEventListener('click', () => {
-  const raw = (prompt(t('leftAsk')) || '').trim(); if (!raw) return;
+$('#btn-left').addEventListener('click', async () => {
+  const raw = await ask(t('leftTitle'), { placeholder: t('leftAsk'), hint: t('leftHint') }); if (!raw) return;
   raw.split(/[,;\n]/).map(x => x.trim()).filter(Boolean).forEach(x => { if (!leftovers.some(y => y.toLowerCase() === x.toLowerCase())) leftovers.push(x); });
-  store.set('leftovers', leftovers); renderChips(); toast(t('leftHint'));
+  store.set('leftovers', leftovers); renderChips();
 });
 $('#quick').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (b) addIngredients(b.dataset.q); });
 
