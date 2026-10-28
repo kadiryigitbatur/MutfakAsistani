@@ -134,6 +134,24 @@ button { cursor:pointer; }
 .spinner { width:18px; height:18px; border:3px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .8s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
+/* Tarifler hazırlanırken: sallanan tava */
+.cooking { grid-column:1 / -1; display:flex; flex-direction:column; align-items:center; gap:18px; padding:48px 16px 40px; text-align:center; }
+.pan { position:relative; width:150px; height:150px; animation:pan-shake 1.6s ease-in-out infinite; transform-origin:70% 60%; }
+.pan svg { width:100%; height:100%; display:block; overflow:visible; }
+.pan .egg { animation:egg-jump 1.6s ease-in-out infinite; transform-origin:46px 57px; }
+.pan .steam { opacity:0; animation:steam 2.4s ease-out infinite; transform-origin:50% 100%; }
+.pan .steam:nth-child(2) { animation-delay:.8s; }
+.pan .steam:nth-child(3) { animation-delay:1.6s; }
+.cooking .msg { font-family:var(--font-display); font-weight:700; font-size:1.15rem; color:var(--ink); min-height:1.6em; animation:pop .35s ease-out; }
+.cooking .sub { color:var(--muted); font-size:.92rem; }
+.cooking .dots { display:flex; gap:7px; }
+.cooking .dots i { width:9px; height:9px; border-radius:50%; background:var(--accent); opacity:.3; animation:dot 1.2s ease-in-out infinite; }
+.cooking .dots i:nth-child(2) { animation-delay:.2s; } .cooking .dots i:nth-child(3) { animation-delay:.4s; }
+@keyframes pan-shake { 0%,100% { transform:rotate(0) translateX(0); } 20% { transform:rotate(-7deg) translateX(-4px); } 40% { transform:rotate(5deg) translateX(3px); } 60% { transform:rotate(-4deg) translateX(-2px); } 80% { transform:rotate(3deg) translateX(1px); } }
+@keyframes egg-jump { 0%,100% { transform:translateY(0) rotate(0); } 30% { transform:translateY(-14px) rotate(-8deg); } 55% { transform:translateY(0) rotate(0); } 75% { transform:translateY(-6px) rotate(5deg); } }
+@keyframes steam { 0% { opacity:0; transform:translateY(0) scaleX(1); } 25% { opacity:.7; } 100% { opacity:0; transform:translateY(-36px) scaleX(1.4); } }
+@keyframes dot { 0%,80%,100% { opacity:.3; transform:scale(1); } 40% { opacity:1; transform:scale(1.25); } }
+
 /* ---------- Katmanlar ---------- */
 .overlay { position:fixed; inset:0; z-index:50; background:rgba(5,12,9,.66); display:flex; justify-content:center; align-items:center; padding:calc(16px + var(--sat,0px)) calc(16px + var(--sar,0px)) calc(16px + var(--sab,0px)) calc(16px + var(--sal,0px)); }
 .sheet { background:var(--surface); border-radius:22px; width:100%; max-width:720px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 30px 80px -20px rgba(0,0,0,.6); overflow:hidden; }
@@ -396,6 +414,7 @@ const I18N = {
     any:'Fark etmez', easy:'Kolay', medium:'Orta', hard:'Zor', find:'Tarif bul', more:'Daha fazla tarif',
     tabResults:'Öneriler', tabFav:'Favoriler', onlyComplete:'Eksiksiz olanlar', sortMatch:'En uygun', sortTime:'En hızlı', sortKcal:'En hafif',
     loadingMore:'Yeni tarifler hazırlanıyor…',
+    cooking:['Dolabına göz atılıyor…','Malzemeler eşleştiriliyor…','Tencereler karıştırılıyor…','Tuzu biberi ayarlanıyor…','Tabaklar hazırlanıyor…'], cookingSub:'Genellikle 10–20 saniye sürer',
     emptyTitle:'Henüz tarif yok', emptyText:'Birkaç malzeme ekle, sonra “Tarif bul”a bas.',
     favEmptyTitle:'Favori listen boş', favEmptyText:'Beğendiğin tariflerin kalbine dokun, burada saklansın.',
     noMatchTitle:'Tarif bulunamadı', noMatchText:'Bu kriterlerle sonuç çıkmadı. Filtreleri gevşetmeyi ya da malzeme eklemeyi dene.',
@@ -423,6 +442,7 @@ const I18N = {
     any:'Any', easy:'Easy', medium:'Medium', hard:'Hard', find:'Find recipes', more:'More recipes',
     tabResults:'Suggestions', tabFav:'Favorites', onlyComplete:'Nothing missing', sortMatch:'Best match', sortTime:'Fastest', sortKcal:'Lightest',
     loadingMore:'Preparing new recipes…',
+    cooking:['Peeking into your fridge…','Matching your ingredients…','Stirring the pots…','Adjusting the seasoning…','Plating up…'], cookingSub:'Usually takes 10–20 seconds',
     emptyTitle:'No recipes yet', emptyText:'Add a few ingredients, then press “Find recipes”.',
     favEmptyTitle:'No favorites yet', favEmptyText:'Tap the heart on a recipe to keep it here.',
     noMatchTitle:'No recipes found', noMatchText:'Nothing matched these criteria. Try loosening a filter or adding ingredients.',
@@ -498,6 +518,18 @@ let shop = store.get('shop', []);
 let recipes = [];
 let view = 'results';
 let busy = false;
+let cookTimer = null;
+function startCookingMsgs() {
+  stopCookingMsgs();
+  let i = 0;
+  cookTimer = setInterval(() => {
+    const el = $('#cook-msg'); if (!el) return stopCookingMsgs();
+    const msgs = t('cooking'); i = (i + 1) % msgs.length;
+    el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+    el.textContent = msgs[i];
+  }, 2600);
+}
+function stopCookingMsgs() { if (cookTimer) { clearInterval(cookTimer); cookTimer = null; } }
 let lastError = null;
 let current = null, currentServings = 2;
 
@@ -694,9 +726,23 @@ function render() {
   status.innerHTML = ''; grid.innerHTML = ''; more.hidden = true;
 
   if (busy && view === 'results' && !recipes.length) {
-    grid.innerHTML = Array.from({ length: Number(prefs.count) }, () => '<div class="skeleton"></div>').join('');
+    grid.innerHTML = `<div class="cooking" role="status" aria-live="polite">
+      <div class="pan" aria-hidden="true"><svg viewBox="14 10 80 84">
+        <g class="steam"><path d="M38 30 c-4 -6 4 -10 0 -16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".5"/></g>
+        <g class="steam"><path d="M48 26 c-4 -6 4 -10 0 -16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".5"/></g>
+        <g class="steam"><path d="M58 30 c-4 -6 4 -10 0 -16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".5"/></g>
+        <circle cx="46" cy="57" r="22" fill="#1F6B45"/><circle cx="46" cy="57" r="17" fill="#2E8A5C"/>
+        <path d="M64 64 L86 82 a3.5 3.5 0 0 1 -5 5 L59 69 Z" fill="#1F6B45"/>
+        <g class="egg"><path d="M34 52 c0 -7 6 -10 11 -9 c6 -2 11 2 11 8 c2 6 -2 11 -9 11 c-7 1 -13 -3 -13 -10 Z" fill="#FFFFFF"/><circle cx="46" cy="53" r="4.5" fill="#F2B01E"/></g>
+      </svg></div>
+      <div class="msg" id="cook-msg">${esc(t('cooking')[0])}</div>
+      <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="sub">${esc(t('cookingSub'))}</div>
+    </div>`;
+    startCookingMsgs();
     return;
   }
+  stopCookingMsgs();
   if (view === 'results' && lastError && !recipes.length) {
     if (lastError === 'empty') { status.innerHTML = stateBox('🥣', t('noMatchTitle'), t('noMatchText')); return; }
     const [code, st] = lastError.split(':');
