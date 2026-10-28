@@ -26,7 +26,14 @@ import android.print.PrintAttributes
 import android.print.PrintManager
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
+import android.Manifest
+import android.content.pm.PackageManager
+import android.util.Base64
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import java.io.File
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -45,6 +52,32 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var web: WebView
     private lateinit var billing: BillingManager
+    private lateinit var voice: VoiceHelper
+    private var fileCallback: ValueCallback<Array<Uri>>? = null
+    private var cameraUri: Uri? = null
+
+    // Dosya / kamera seçici (fotoğraftan malzeme)
+    private val pickImage = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { res ->
+        val cb = fileCallback ?: return@registerForActivityResult
+        val data = res.data?.data
+        val out = when {
+            res.resultCode != RESULT_OK -> null
+            data != null -> arrayOf(data)
+            cameraUri != null -> arrayOf(cameraUri!!)
+            else -> null
+        }
+        cb.onReceiveValue(out); fileCallback = null
+    }
+    private val askMic = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok ->
+        if (ok) voice.start(pendingVoiceLang) else js("window.onVoiceState && window.onVoiceState('unavailable')")
+    }
+    private var pendingVoiceLang = "tr"
+    private val askNotif = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok ->
+        if (ok) ReminderReceiver.schedule(this) else {
+            getSharedPreferences(ReminderReceiver.PREFS, MODE_PRIVATE).edit().putBoolean("on", false).apply()
+            js("window.onReminderDenied && window.onReminderDenied()")
+        }
+    }
     private var pageReady = false
     private val startedAt = SystemClock.uptimeMillis()
     private var intro: View? = null
@@ -71,6 +104,9 @@ class MainActivity : ComponentActivity() {
             onPrice = { p -> js("window.onProPrice && window.onProPrice(${jsStr(p)})") },
             onError = { c -> js("window.onProError && window.onProError('$c')") })
         billing.start()
+        voice = VoiceHelper(this,
+            onText = { txt -> js("window.onVoice && window.onVoice(${jsStr(txt)})") },
+            onState = { st -> js("window.onVoiceState && window.onVoiceState('$st')") })
 
         web = WebView(this)
         root.addView(web, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
@@ -100,7 +136,18 @@ class MainActivity : ComponentActivity() {
             allowContentAccess = false
         }
         web.addJavascriptInterface(Bridge(), "Android")
-        web.webChromeClient = WebChromeClient() // alert / confirm / prompt kutularını gösterir
+        web.webChromeClient = object : WebChromeClient() { // alert / confirm / prompt kutuları + dosya seçici
+            override fun onShowFileChooser(view: WebView, cb: ValueCallback<Array<Uri>>, params: FileChooserParams): Boolean {
+                fileCallback?.onReceiveValue(null); fileCallback = cb
+                val dir = File(cacheDir, "share").apply { mkdirs() }
+                val photo = File(dir, "camera_${System.currentTimeMillis()}.jpg")
+                cameraUri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", photo)
+                val camera = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE).putExtra(android.provider.MediaStore.EXTRA_OUTPUT, cameraUri)
+                val gallery = Intent(Intent.ACTION_GET_CONTENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type = "image/*" }
+                val chooser = Intent.createChooser(gallery, null).putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(camera))
+                return try { pickImage.launch(chooser); true } catch (_: ActivityNotFoundException) { fileCallback = null; false }
+            }
+        }
 
         web.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
@@ -187,6 +234,8 @@ class MainActivity : ComponentActivity() {
         if (hasFocus) hideSystemBars()
     }
 
+    override fun onDestroy() { if (::voice.isInitialized) voice.release(); super.onDestroy() }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         web.saveState(outState)
@@ -201,6 +250,37 @@ class MainActivity : ComponentActivity() {
         @JavascriptInterface fun buyPro() = runOnUiThread { billing.buy(this@MainActivity) }
         @JavascriptInterface fun restorePro() = runOnUiThread { billing.restore() }
         @JavascriptInterface fun refreshPro() = runOnUiThread { billing.start() }
+
+        @JavascriptInterface
+        fun shareImage(title: String, dataUrl: String) = runOnUiThread {
+            try {
+                val bytes = Base64.decode(dataUrl.substringAfter(","), Base64.DEFAULT)
+                val dir = File(cacheDir, "share").apply { mkdirs() }
+                val f = File(dir, "tarif.png"); f.writeBytes(bytes)
+                val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", f)
+                val i = Intent(Intent.ACTION_SEND).apply { type = "image/png"; putExtra(Intent.EXTRA_STREAM, uri); putExtra(Intent.EXTRA_SUBJECT, title); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+                startActivity(Intent.createChooser(i, title))
+            } catch (_: Exception) {}
+        }
+
+        @JavascriptInterface fun startVoice(lang: String) = runOnUiThread {
+            pendingVoiceLang = lang
+            if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) voice.start(lang)
+            else askMic.launch(Manifest.permission.RECORD_AUDIO)
+        }
+        @JavascriptInterface fun stopVoice() = runOnUiThread { voice.stop() }
+        @JavascriptInterface fun speak(text: String, lang: String) = runOnUiThread { voice.speak(text, lang) }
+
+        @JavascriptInterface
+        fun setReminder(on: Boolean, time: String, title: String, body: String) = runOnUiThread {
+            getSharedPreferences(ReminderReceiver.PREFS, MODE_PRIVATE).edit()
+                .putBoolean("on", on).putString("time", time).putString("title", title).putString("body", body).apply()
+            ReminderReceiver.ensureChannel(this@MainActivity)
+            if (on && Build.VERSION.SDK_INT >= 33 &&
+                ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                askNotif.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else ReminderReceiver.schedule(this@MainActivity)
+        }
 
         @JavascriptInterface
         fun share(title: String, text: String) = runOnUiThread {

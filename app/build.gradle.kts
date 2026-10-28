@@ -16,7 +16,7 @@ android {
         targetSdk = 35
         // Her derlemede sürüm numarası artar, güncelleme eskisinin üzerine kurulur
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
-        versionName = "1.1"
+        versionName = "1.2"
     }
 
     signingConfigs {

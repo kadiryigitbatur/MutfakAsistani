@@ -15,6 +15,16 @@ Elindeki malzemeleri yaz, yapay zekâ sana uyan tarifleri çıkarsın. WebView t
 | Haftalık yemek planı + eksikleri tek dokunuşla listeye | – | ✓ |
 | Kayıtlı kilerler | – | ✓ |
 | Yedekle / geri yükle | – | ✓ |
+| Aile profilleri (alerji / sevmedikleri) | – | ✓ |
+| Planda protein hedefi ve bütçe (tahmini maliyet) | – | ✓ |
+| Fotoğraftan malzeme / fiş okuma (arama hakkından düşer) | ✓ | ✓ |
+| Son kullanma tarihi, "yakında bozulacak" uyarısı | ✓ | ✓ |
+| Alışverişten kilere otomatik aktarım | ✓ | ✓ |
+| Günlük hatırlatma bildirimi (varsayılan kapalı) | ✓ | ✓ |
+| Sesli komut + adım okuma (pişirme modu) | ✓ | ✓ |
+| Artan yemek değerlendirme, "bu akşam" notu | ✓ | ✓ |
+| Tarif kartı paylaşımı (görsel) | ✓ | ✓ |
+| Mutfak günlüğü ve rozetler | ✓ | ✓ |
 
 Kurallar `index.html` içindeki `LIMITS` sabitinde: `freeSearchesPerDay`, `freeFavs`, `hardCapPerDay` (anahtarı korumak için herkese geçerli günlük üst sınır).
 Kendi Gemini anahtarını giren kullanıcıda günlük arama sınırı uygulanmaz (maliyet ona ait).

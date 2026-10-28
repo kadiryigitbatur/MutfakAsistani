@@ -150,6 +150,45 @@ button { cursor:pointer; }
 @keyframes pan-shake { 0%,100% { transform:rotate(0) translateX(0); } 20% { transform:rotate(-7deg) translateX(-4px); } 40% { transform:rotate(5deg) translateX(3px); } 60% { transform:rotate(-4deg) translateX(-2px); } 80% { transform:rotate(3deg) translateX(1px); } }
 @keyframes egg-jump { 0%,100% { transform:translateY(0) rotate(0); } 30% { transform:translateY(-14px) rotate(-8deg); } 55% { transform:translateY(0) rotate(0); } 75% { transform:translateY(-6px) rotate(5deg); } }
 @keyframes steam { 0% { opacity:0; transform:translateY(0) scaleX(1); } 25% { opacity:.7; } 100% { opacity:0; transform:translateY(-36px) scaleX(1.4); } }
+/* Kiler: son kullanma, artanlar, fotoğraf */
+.chip.soon { background:#FDEBC2; color:#6B4A00; }
+.chip.expired { background:#F8D7D7; color:#7A1F1F; }
+.chip.left { background:#E4E7F7; color:#2F3A7A; }
+.chip .nm { cursor:pointer; }
+.pantry-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.pantry-actions button { border:1.5px solid var(--line); background:var(--surface); color:var(--ink); border-radius:999px; padding:7px 12px; font-size:.85rem; font-weight:600; cursor:pointer; }
+.pantry-actions button:hover { border-color:var(--accent); color:var(--accent); }
+.soon-box { margin-top:12px; background:#FDEBC2; color:#6B4A00; border-radius:12px; padding:10px 12px; font-size:.88rem; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.soon-box button { margin-left:auto; border:0; background:#6B4A00; color:#fff; border-radius:999px; padding:6px 12px; font-weight:700; font-size:.82rem; cursor:pointer; }
+.quickdates { display:flex; gap:8px; flex-wrap:wrap; }
+.quickdates button { border:1.5px solid var(--line); background:var(--surface-2); border-radius:999px; padding:6px 12px; font-size:.85rem; cursor:pointer; color:var(--ink); }
+.scan-prev { width:100%; max-height:220px; object-fit:cover; border-radius:14px; }
+.scan-list { display:flex; flex-wrap:wrap; gap:8px; }
+.scan-list label { display:inline-flex; gap:6px; align-items:center; background:var(--accent-soft); color:var(--accent); padding:6px 12px; border-radius:999px; font-weight:600; font-size:.9rem; cursor:pointer; }
+.scan-list input { accent-color:var(--accent); }
+textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); padding:10px; color:var(--ink); font:inherit; resize:vertical; }
+/* Pişirme: ses */
+.cook-voice { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; color:var(--muted); font-size:.9rem; }
+.mic { border:2px solid var(--line); background:var(--surface); color:var(--ink); border-radius:999px; padding:10px 16px; font-weight:700; cursor:pointer; }
+.mic[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:var(--accent-ink); animation:micpulse 1.6s ease-in-out infinite; }
+@keyframes micpulse { 0%,100% { box-shadow:0 0 0 0 rgba(31,107,69,.45); } 50% { box-shadow:0 0 0 10px rgba(31,107,69,0); } }
+/* Günlük */
+.diary { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.diary .big-n { font-family:var(--font-display); font-size:1.6rem; font-weight:800; color:var(--accent); }
+.diary .badges { display:flex; gap:6px; flex-wrap:wrap; }
+.diary .bd { background:var(--surface-2); border-radius:999px; padding:4px 10px; font-size:.8rem; font-weight:700; }
+.diary .bd.on { background:var(--sun); color:var(--sun-ink); }
+.diary .lst { width:100%; display:flex; gap:8px; flex-wrap:wrap; }
+.diary .lst button { border:1.5px solid var(--line); background:var(--surface-2); border-radius:999px; padding:5px 10px; font-size:.82rem; cursor:pointer; color:var(--ink); }
+/* Aile */
+.fam { display:flex; flex-direction:column; gap:8px; }
+.fam .row { display:flex; gap:8px; align-items:center; }
+.fam .row input { flex:1; min-width:0; }
+.fam .row .rm { border:0; background:transparent; font-size:1.2rem; cursor:pointer; color:var(--muted); }
+.plan-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0 12px; }
+.plan-opts label { display:flex; flex-direction:column; gap:4px; font-size:.82rem; color:var(--muted); }
+.plan-opts input { height:40px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); padding:0 10px; color:var(--ink); font:inherit; }
+.plan-cost { color:var(--muted); font-size:.82rem; }
 /* Pro */
 .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--sun); color:var(--sun-ink); font-size:.68rem; font-weight:800; letter-spacing:.04em; padding:2px 7px; border-radius:999px; vertical-align:middle; text-transform:uppercase; }
 .icon-btn.is-pro { border-color:var(--sun); color:var(--sun-ink); background:#FFF4D6; }
@@ -304,6 +343,12 @@ button { cursor:pointer; }
         <input id="ing-input" type="text" autocomplete="off" data-i18n-ph="pantryPh" aria-label="Ingredient">
       </div>
       <div class="quick" id="quick" aria-label="Quick add"></div>
+      <div class="pantry-actions">
+        <button type="button" id="btn-scan">📷 <span data-i18n="scan"></span></button>
+        <button type="button" id="btn-left">♻️ <span data-i18n="leftovers"></span></button>
+        <input id="scan-file" type="file" accept="image/*" capture="environment" hidden>
+      </div>
+      <div class="soon-box" id="soon-box" hidden></div>
       <div class="pantry-sets" id="pantry-sets"></div>
     </section>
 
@@ -315,6 +360,11 @@ button { cursor:pointer; }
     <section>
       <h2 class="field-title" data-i18n="dietTitle"></h2>
       <div class="toggles" id="diets"></div>
+    </section>
+
+    <section>
+      <h2 class="field-title" data-i18n="noteTitle"></h2>
+      <textarea id="opt-note" class="note" data-i18n-ph="notePh"></textarea>
     </section>
 
     <section class="options">
@@ -413,6 +463,20 @@ button { cursor:pointer; }
         <input id="set-model" type="text" autocomplete="off" spellcheck="false">
       </div>
       <div class="form-row">
+        <label data-i18n="remindTitle"></label>
+        <p class="hint" data-i18n="remindHelp"></p>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+          <label class="check"><input type="checkbox" id="rem-on"><span data-i18n="remindOn"></span></label>
+          <input id="rem-time" type="time" value="17:00" style="height:38px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); padding:0 10px; color:var(--ink)">
+        </div>
+      </div>
+      <div class="form-row">
+        <label><span data-i18n="famTitle"></span> <span class="pro-tag" data-pro-tag>Pro</span></label>
+        <p class="hint" data-i18n="famHelp"></p>
+        <div class="fam" id="fam"></div>
+        <button class="btn btn-ghost btn-sm" id="fam-add" style="margin-top:8px" data-i18n="famAdd"></button>
+      </div>
+      <div class="form-row">
         <label data-i18n="backupTitle"></label>
         <p class="hint" data-i18n="backupHelp"></p>
         <div style="display:flex; gap:8px; flex-wrap:wrap">
@@ -423,6 +487,39 @@ button { cursor:pointer; }
       </div>
     </div>
     <div class="sheet-foot"><button class="btn btn-primary" id="set-save" data-i18n="save"></button></div>
+  </div>
+</div>
+
+<!-- Kiler öğesi: son kullanma -->
+<div class="overlay" id="item-modal" role="dialog" aria-modal="true" aria-labelledby="it-title" hidden>
+  <div class="sheet" style="max-width:440px">
+    <div class="sheet-head"><h2 id="it-title"></h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet-body">
+      <div class="form-row">
+        <label for="it-date" data-i18n="expiryLabel"></label>
+        <input id="it-date" type="date">
+        <div class="quickdates" style="margin-top:8px">
+          <button type="button" data-days="2" data-i18n="d2"></button>
+          <button type="button" data-days="5" data-i18n="d5"></button>
+          <button type="button" data-days="7" data-i18n="d7"></button>
+          <button type="button" data-days="30" data-i18n="d30"></button>
+          <button type="button" data-days="0" data-i18n="dNone"></button>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-sm" id="it-save" data-i18n="save"></button>
+      <button class="btn btn-ghost btn-sm" id="it-remove" data-i18n="remove"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Fotoğraftan malzeme -->
+<div class="overlay" id="scan-modal" role="dialog" aria-modal="true" aria-labelledby="sc-title" hidden>
+  <div class="sheet" style="max-width:520px">
+    <div class="sheet-head"><h2 id="sc-title">📷 <span data-i18n="scanTitle"></span></h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet-body" id="sc-body"></div>
+    <div class="sheet-foot" id="sc-foot"></div>
   </div>
 </div>
 
@@ -457,6 +554,11 @@ button { cursor:pointer; }
         <button class="btn btn-sun btn-sm" id="c-timer-btn"></button>
       </div>
     </div>
+    <div class="cook-voice" id="cook-voice" hidden>
+      <button type="button" class="mic" id="c-mic" aria-pressed="false">🎤 <span data-i18n="voiceOn"></span></button>
+      <button type="button" class="btn btn-ghost btn-sm" id="c-read">🔊 <span data-i18n="readStep"></span></button>
+      <span id="c-heard"></span>
+    </div>
     <div class="cook-nav">
       <button class="btn btn-ghost" id="c-prev" data-i18n="prev"></button>
       <button class="btn btn-primary" id="c-next"></button>
@@ -485,6 +587,21 @@ const I18N = {
     any:'Fark etmez', easy:'Kolay', medium:'Orta', hard:'Zor', find:'Tarif bul', more:'Daha fazla tarif',
     tabResults:'Öneriler', tabFav:'Favoriler', onlyComplete:'Eksiksiz olanlar', sortMatch:'En uygun', sortTime:'En hızlı', sortKcal:'En hafif',
     loadingMore:'Yeni tarifler hazırlanıyor…',
+    scan:'Fotoğraftan ekle', leftovers:'Artan yemek', scanTitle:'Fotoğraftan malzeme', scanHelp:'Buzdolabının, tezgâhın ya da market fişinin fotoğrafını çek. Tanınan malzemeleri seçip kilere ekle.',
+    scanning:'Fotoğraf inceleniyor…', scanNone:'Fotoğrafta malzeme bulunamadı. Daha yakından ve aydınlık çekmeyi dene.', scanAdd:'{n} malzemeyi ekle', scanAgain:'Başka fotoğraf', scanPick:'Fotoğraf seç / çek',
+    leftTitle:'Artan yemek', leftAsk:'Ne arttı? (örn. pilav, haşlanmış tavuk)', leftHint:'Artanlar ♻️ ile işaretlenir; tarifler onları değerlendirmeye öncelik verir.',
+    expiryLabel:'Son kullanma tarihi', d2:'2 gün', d5:'5 gün', d7:'1 hafta', d30:'1 ay', dNone:'Tarih yok', remove:'Kilerden çıkar',
+    soonTitle:'⏳ Yakında bozulacak:', soonFind:'Bunlarla tarif bul', expiredTag:'süresi geçti', soonTag:'{n} gün',
+    noteTitle:'Bu akşam için not', notePh:'misafir var, biri vejetaryen, çocuklar da yiyecek…',
+    shopToPantry:'{n} kilere eklendi',
+    voiceOn:'Sesli komut', voiceListening:'Dinliyorum…', readStep:'Adımı oku', voiceHelp:'"ileri", "geri", "sayaç", "durdur", "oku"', voiceNA:'Sesli komut bu cihazda kullanılamıyor.',
+    shareCard:'Kart paylaş', shareReady:'Kart hazırlandı',
+    diaryTitle:'Mutfak günlüğüm', diaryMonth:'bu ay {n} yemek pişirdin', diaryTotal:'toplam {n}', diaryEmpty:'Pişirme modunu bitirince yemek buraya işlenir.', cookedToast:'Afiyet olsun! Günlüğe işlendi 🍳',
+    badge1:'İlk yemek', badge5:'5 yemek', badge10:'10 yemek', badge25:'25 yemek', badgeCuis:'3 mutfak', badgeWeek:'Haftada 3',
+    remindTitle:'Günlük hatırlatma', remindHelp:'Seçtiğin saatte "Bugün ne pişirsem?" bildirimi gelir; yakında bozulacak malzemeler varsa onları da hatırlatır.', remindOn:'Bildirim gönder', remindNA:'Bildirim bu cihazda ayarlanamadı.', remindBody:'Dolabındakilerle bu akşam ne pişirsen?', remindSoon:'Yakında bozulacak: {list}',
+    famTitle:'Aile profilleri', famHelp:'Ev halkının alerjileri ve sevmedikleri; tarifler hepsini gözetir.', famAdd:'+ Kişi ekle', famName:'İsim', famNotes:'alerji / sevmediği (örn. fıstık alerjisi, mantar sevmez)',
+    planProtein:'Porsiyon başı protein hedefi (g)', planBudget:'Haftalık bütçe (₺)', planEst:'tahmini', planTotal:'Haftalık tahmini maliyet', planShare:'Planı paylaş',
+    proF7:'Aile profilleri, makro ve bütçe hedefleri', proF7s:'Alerjiler ve sevmedikler her tarifte gözetilir; plan protein hedefine ve bütçene göre kurulur.',
     proTitle:'Mutfak Asistanı Pro', proBadge:'Pro', proActive:'Pro üyeliğin aktif. Teşekkürler!',
     proHeroTitle:'Mutfağını bir üst seviyeye taşı', proHeroText:'Tek seferlik ödeme, ömür boyu Pro. Abonelik yok.',
     proF1:'Sınırsız tarif arama', proF1s:'Ücretsiz sürümde günde {n} arama.',
@@ -535,6 +652,21 @@ const I18N = {
     any:'Any', easy:'Easy', medium:'Medium', hard:'Hard', find:'Find recipes', more:'More recipes',
     tabResults:'Suggestions', tabFav:'Favorites', onlyComplete:'Nothing missing', sortMatch:'Best match', sortTime:'Fastest', sortKcal:'Lightest',
     loadingMore:'Preparing new recipes…',
+    scan:'Add from photo', leftovers:'Leftovers', scanTitle:'Ingredients from a photo', scanHelp:'Snap your fridge, counter or a grocery receipt. Pick the ingredients it finds and add them to your pantry.',
+    scanning:'Looking at the photo…', scanNone:'No ingredients found. Try a closer, brighter shot.', scanAdd:'Add {n} ingredients', scanAgain:'Another photo', scanPick:'Choose / take photo',
+    leftTitle:'Leftovers', leftAsk:'What\'s left over? (e.g. rice, boiled chicken)', leftHint:'Leftovers are marked ♻️; recipes prioritise using them up.',
+    expiryLabel:'Use-by date', d2:'2 days', d5:'5 days', d7:'1 week', d30:'1 month', dNone:'No date', remove:'Remove from pantry',
+    soonTitle:'⏳ Going off soon:', soonFind:'Find recipes with these', expiredTag:'expired', soonTag:'{n} d',
+    noteTitle:'Note for tonight', notePh:'guests coming, one vegetarian, kids eating too…',
+    shopToPantry:'{n} added to pantry',
+    voiceOn:'Voice control', voiceListening:'Listening…', readStep:'Read step', voiceHelp:'"next", "back", "timer", "stop", "read"', voiceNA:'Voice control isn\'t available on this device.',
+    shareCard:'Share card', shareReady:'Card ready',
+    diaryTitle:'My kitchen diary', diaryMonth:'{n} meals cooked this month', diaryTotal:'{n} total', diaryEmpty:'Finish cooking mode and the meal lands here.', cookedToast:'Enjoy! Logged in your diary 🍳',
+    badge1:'First meal', badge5:'5 meals', badge10:'10 meals', badge25:'25 meals', badgeCuis:'3 cuisines', badgeWeek:'3 in a week',
+    remindTitle:'Daily reminder', remindHelp:'A "what\'s for dinner?" nudge at the time you choose; it also mentions ingredients going off soon.', remindOn:'Send notification', remindNA:'Couldn\'t set up notifications on this device.', remindBody:'What could you cook tonight with what you have?', remindSoon:'Going off soon: {list}',
+    famTitle:'Family profiles', famHelp:'Allergies and dislikes of your household; every recipe respects them.', famAdd:'+ Add person', famName:'Name', famNotes:'allergies / dislikes (e.g. peanut allergy, hates mushrooms)',
+    planProtein:'Protein target per serving (g)', planBudget:'Weekly budget ($)', planEst:'est.', planTotal:'Estimated weekly cost', planShare:'Share plan',
+    proF7:'Family profiles, macro & budget targets', proF7s:'Allergies and dislikes respected in every recipe; the plan follows your protein target and budget.',
     proTitle:'Kitchen Assistant Pro', proBadge:'Pro', proActive:'Your Pro membership is active. Thank you!',
     proHeroTitle:'Take your kitchen up a level', proHeroText:'One-time payment, Pro for life. No subscription.',
     proF1:'Unlimited recipe searches', proF1s:'Free plan: {n} searches a day.',
@@ -641,6 +773,13 @@ const PROMO_HASHES = ['a4d2867eec5ce3dfe66f8d55872976b823266381aeab9e14a084a3625
 let pro = store.get('pro', false) || (NATIVE && NATIVE.isPro && NATIVE.isPro() === true);
 let quota = store.get('quota', { day: '', used: 0 });
 let pantrySets = store.get('pantrySets', []);
+let expiry = store.get('expiry', {});          // { "domates": "2026-11-02" }
+let leftovers = store.get('leftovers', []);
+let cooked = store.get('cooked', []);          // [{ id, name, emoji, cuisine, at, recipe }]
+let family = store.get('family', []);          // [{ name, notes }]
+let remind = store.get('remind', { on: false, time: '17:00' });
+let planOpts = store.get('planOpts', { protein: '', budget: '' });
+prefs.note = prefs.note || '';
 let plan = store.get('plan', null);
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -685,7 +824,7 @@ function requirePro(reasonKey, vars) {
 }
 function openPro(reason) { renderPro(reason); openOverlay($('#pro-modal')); }
 function renderPro(reason = '') {
-  const feats = [['🔁','proF1', { n: LIMITS.freeSearchesPerDay }], ['📅','proF2'], ['🪄','proF3'], ['🥗','proF4'], ['💚','proF5', { n: LIMITS.freeFavs }], ['☁️','proF6']];
+  const feats = [['🔁','proF1', { n: LIMITS.freeSearchesPerDay }], ['📅','proF2'], ['🪄','proF3'], ['🥗','proF4'], ['💚','proF5', { n: LIMITS.freeFavs }], ['👨‍👩‍👧','proF7'], ['☁️','proF6']];
   const price = window.PRO_PRICE || (NATIVE && NATIVE.getProPrice ? NATIVE.getProPrice() : '');
   $('#pro-body').innerHTML = `
     ${reason ? `<div class="tip">${esc(reason)}</div>` : ''}
@@ -740,10 +879,42 @@ function applyI18n() {
   renderQuick(); renderCuisines(); renderDiets(); renderChips();
 }
 
+const DAY = 86400000;
+function daysLeft(name) { const d = expiry[name.toLowerCase()]; if (!d) return null; const diff = (new Date(d + 'T23:59:59') - Date.now()) / DAY; return diff < 0 ? -1 : Math.ceil(diff); }
 function renderChips() {
-  $('#chips').innerHTML = pantry.map((p, i) =>
-    `<span class="chip">${esc(p)}<button type="button" data-rm="${i}" aria-label="Remove ${esc(p)}">&times;</button></span>`).join('');
+  $('#chips').innerHTML = pantry.map((p, i) => {
+    const dl = daysLeft(p), cls = dl === null ? '' : dl < 0 ? ' expired' : dl <= 2 ? ' soon' : '';
+    const tag = dl === null ? '' : dl < 0 ? ` <small>· ${esc(t('expiredTag'))}</small>` : dl <= 7 ? ` <small>· ${esc(t('soonTag', { n: dl }))}</small>` : '';
+    return `<span class="chip${cls}"><span class="nm" data-item="${i}" title="${esc(t('expiryLabel'))}">${esc(p)}${tag}</span><button type="button" data-rm="${i}" aria-label="Remove ${esc(p)}">&times;</button></span>`;
+  }).join('') + leftovers.map((p, i) => `<span class="chip left">♻️ ${esc(p)}<button type="button" data-rml="${i}" aria-label="Remove ${esc(p)}">&times;</button></span>`).join('');
+  renderSoon();
 }
+function soonItems() { return pantry.filter(p => { const d = daysLeft(p); return d !== null && d <= 2; }); }
+function renderSoon() {
+  const box = $('#soon-box'); if (!box) return;
+  const items = soonItems();
+  box.hidden = !items.length;
+  if (items.length) box.innerHTML = `<span><b>${esc(t('soonTitle'))}</b> ${esc(items.join(', '))}</span><button type="button" id="soon-find">${esc(t('soonFind'))}</button>`;
+  syncReminder();
+}
+let itemIdx = -1;
+function openItem(i) {
+  itemIdx = i; const name = pantry[i];
+  $('#it-title').textContent = name;
+  $('#it-date').value = expiry[name.toLowerCase()] || '';
+  openOverlay($('#item-modal'));
+}
+$('#item-modal').addEventListener('click', e => {
+  const q = e.target.closest('[data-days]');
+  if (q) { const n = Number(q.dataset.days); $('#it-date').value = n ? new Date(Date.now() + n * DAY).toISOString().slice(0, 10) : ''; return; }
+  if (e.target.closest('#it-save')) {
+    const name = pantry[itemIdx]; if (!name) return;
+    const v = $('#it-date').value; if (v) expiry[name.toLowerCase()] = v; else delete expiry[name.toLowerCase()];
+    store.set('expiry', expiry); renderChips(); closeOverlay($('#item-modal'));
+  }
+  if (e.target.closest('#it-remove')) { pantry.splice(itemIdx, 1); store.set('pantry', pantry); renderChips(); renderQuick(); renderSets(); closeOverlay($('#item-modal')); }
+});
+$('#soon-box').addEventListener('click', e => { if (e.target.closest('#soon-find')) { prefs._priority = soonItems(); findRecipes(false); } });
 function addIngredients(raw) {
   raw.split(/[,;\n]/).map(s => s.trim()).filter(Boolean).forEach(s => {
     if (!pantry.some(p => p.toLowerCase() === s.toLowerCase())) pantry.push(s);
@@ -778,7 +949,7 @@ function normalize(r) {
     difficulty: ['easy','medium','hard'].includes(r.difficulty) ? r.difficulty : 'medium',
     servings: Math.max(1, Math.round(num(r.servings, 2))),
     calories: Math.round(num(r.calories)),
-    protein: Math.round(num(r.proteinGrams)), carbs: Math.round(num(r.carbsGrams)), fat: Math.round(num(r.fatGrams)),
+    protein: Math.round(num(r.proteinGrams)), carbs: Math.round(num(r.carbsGrams)), fat: Math.round(num(r.fatGrams)), cost: Math.round(num(r.estimatedCost)),
     ingredients: (Array.isArray(r.ingredients) ? r.ingredients : []).map(i => ({
       name: String(i.name || '').trim(), amount: num(i.amount), unit: String(i.unit || '').trim(), have: i.have !== false
     })).filter(i => i.name),
@@ -798,6 +969,14 @@ const isFav = r => favs.some(f => f.id === r.id);
    ===================================================================== */
 class AppError extends Error { constructor(code, status) { super(code); this.code = code; this.status = status; } }
 
+function contextLines() {
+  let out = '';
+  if (leftovers.length) out += `\n- Leftover cooked dishes to use up (top priority, transform them creatively): ${leftovers.join(', ')} (mark as have=true)`;
+  if (prefs._priority && prefs._priority.length) out += `\n- These ingredients are about to spoil, use them in every recipe if sensible: ${prefs._priority.join(', ')}`;
+  if (prefs.note && prefs.note.trim()) out += `\n- Tonight's situation (adapt portions, style and menu to it): ${prefs.note.trim()}`;
+  if (pro && family.length) out += `\n- Household (STRICT: never violate an allergy, avoid dislikes): ${family.map(f => f.name + ': ' + f.notes).join('; ')}`;
+  return out;
+}
 function buildPrompt(exclude) {
   const cuisinesTxt = selCuisines.length ? selCuisines.join(', ') : 'any cuisine, be creative and varied';
   const dietTxt = selDiets.length ? selDiets.join(', ') + ' (strict: never include anything that violates these)' : 'none';
@@ -807,7 +986,7 @@ Cook's situation:
 - Cuisine: ${cuisinesTxt}
 - Ingredients on hand: ${pantry.join(', ')}
 - Salt, black pepper, cooking oil and water are always available: mark them have=true.
-- Dietary requirements: ${dietTxt}
+- Dietary requirements: ${dietTxt}${contextLines()}
 - Maximum total time (prep + cook): ${prefs.time ? prefs.time + ' minutes' : 'no limit'}
 - Difficulty: ${prefs.diff || 'any'}
 - Base servings: ${prefs.servings}
@@ -827,7 +1006,7 @@ const RECIPE_SCHEMA = {
     name: { type: 'STRING' }, cuisine: { type: 'STRING' }, emoji: { type: 'STRING' }, description: { type: 'STRING' },
     prepMinutes: { type: 'INTEGER' }, cookMinutes: { type: 'INTEGER' },
     difficulty: { type: 'STRING', enum: ['easy','medium','hard'] },
-    servings: { type: 'INTEGER' }, calories: { type: 'INTEGER' }, proteinGrams: { type: 'INTEGER' }, carbsGrams: { type: 'INTEGER' }, fatGrams: { type: 'INTEGER' },
+    servings: { type: 'INTEGER' }, calories: { type: 'INTEGER' }, proteinGrams: { type: 'INTEGER' }, carbsGrams: { type: 'INTEGER' }, fatGrams: { type: 'INTEGER' }, estimatedCost: { type: 'INTEGER' },
     ingredients: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
       name: { type: 'STRING' }, amount: { type: 'NUMBER' }, unit: { type: 'STRING' }, have: { type: 'BOOLEAN' }
     }, required: ['name','amount','unit','have'] } },
@@ -871,11 +1050,12 @@ async function requestRecipes(exclude, promptText) {
 
 async function findRecipes(append = false) {
   if (busy) return;
-  if (!pantry.length) { toast(t('noIng')); $('#ing-input').focus(); return; }
+  if (!pantry.length && !leftovers.length) { toast(t('noIng')); $('#ing-input').focus(); return; }
   if (!apiKey()) { toast(t('err_noKey')); openOverlay($('#settings-modal')); return; }
   if (!canSearch()) { openPro(t('proLockQuota', { n: LIMITS.freeSearchesPerDay })); return; }
   if (!pro && Number(prefs.count) > 6) { prefs.count = 6; savePrefs(); syncPrefs(); }
   noteSearch();
+  const clearPriority = () => { delete prefs._priority; };
   busy = true; view = 'results'; lastError = null;
   syncTabs();
   $('#btn-find').disabled = true;
@@ -891,7 +1071,7 @@ async function findRecipes(append = false) {
     if (append) toast(t('err_' + e.code) + (e.status ? ` (${e.status})` : ''));
     else lastError = e.code + (e.status ? ':' + e.status : '');
   } finally {
-    busy = false; $('#btn-find').disabled = false;
+    busy = false; $('#btn-find').disabled = false; clearPriority();
     moreBtn.disabled = false; moreBtn.innerHTML = `<span>${esc(t('more'))}</span>`;
     render();
   }
@@ -950,8 +1130,9 @@ function render() {
     return;
   }
   const source = view === 'fav' ? favs : recipes;
+  if (view === 'fav') status.innerHTML = diaryHtml();
   if (!source.length) {
-    status.innerHTML = view === 'fav' ? stateBox('💚', t('favEmptyTitle'), t('favEmptyText')) : stateBox('🥕', t('emptyTitle'), t('emptyText'));
+    status.innerHTML += view === 'fav' ? stateBox('💚', t('favEmptyTitle'), t('favEmptyText')) : stateBox('🥕', t('emptyTitle'), t('emptyText'));
     return;
   }
   const list = visible();
@@ -1063,6 +1244,7 @@ function renderModal() {
     <button class="btn btn-primary btn-sm" data-act="cook">👩‍🍳 ${esc(t('startCooking'))}</button>
     ${miss.length ? `<button class="btn btn-sun btn-sm" data-act="shop">🛒 ${esc(t('addMissing'))}</button>` : ''}
     <button class="btn btn-ghost btn-sm" data-act="fav" aria-pressed="${isFav(r)}">${isFav(r) ? '♥' : '♡'}</button>
+    <button class="btn btn-ghost btn-sm" data-act="card">🖼 ${esc(t('shareCard'))}</button>
     <button class="btn btn-ghost btn-sm" data-act="copy">${esc(t('copy'))}</button>
     <button class="btn btn-ghost btn-sm" data-act="print">${esc(t('print'))}</button>
     <a class="btn btn-ghost btn-sm" href="${yt}" target="_blank" rel="noopener">▶ ${esc(t('video'))}</a>`;
@@ -1090,6 +1272,124 @@ $('#m-body').addEventListener('click', e => {
   const b = e.target.closest('[data-srv]'); if (!b) return;
   currentServings = Math.min(24, Math.max(1, currentServings + Number(b.dataset.srv)));
   renderModal();
+});
+
+/* =====================================================================
+   Fotoğraftan malzeme (Gemini görüntü)
+   ===================================================================== */
+let scanFound = [];
+function renderScan(state, data) {
+  const body = $('#sc-body'), foot = $('#sc-foot');
+  if (state === 'idle') { body.innerHTML = `<p class="hint">${esc(t('scanHelp'))}</p>`; foot.innerHTML = `<button class="btn btn-primary btn-sm" id="sc-pick">📷 ${esc(t('scanPick'))}</button>`; }
+  if (state === 'busy') { body.innerHTML = `<img class="scan-prev" src="${data}" alt=""><div class="cooking" style="padding:24px 0 0"><div class="dots"><i></i><i></i><i></i></div><div class="msg">${esc(t('scanning'))}</div></div>`; foot.innerHTML = ''; }
+  if (state === 'done') {
+    body.innerHTML = `<img class="scan-prev" src="${data}" alt="">` + (scanFound.length
+      ? `<div class="scan-list">${scanFound.map((n, i) => `<label><input type="checkbox" data-sc="${i}" checked>${esc(n)}</label>`).join('')}</div>`
+      : `<p class="hint">${esc(t('scanNone'))}</p>`);
+    foot.innerHTML = (scanFound.length ? `<button class="btn btn-primary btn-sm" id="sc-add">${esc(t('scanAdd', { n: scanFound.length }))}</button>` : '') + `<button class="btn btn-ghost btn-sm" id="sc-pick">${esc(t('scanAgain'))}</button>`;
+  }
+}
+function shrinkImage(file) {
+  return new Promise((res, rej) => {
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const max = 1024, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', .85));
+    };
+    img.onerror = rej; img.src = url;
+  });
+}
+async function scanPhoto(file) {
+  if (!apiKey()) { toast(t('err_noKey')); return; }
+  if (!canSearch()) { openPro(t('proLockQuota', { n: LIMITS.freeSearchesPerDay })); return; }
+  const dataUrl = await shrinkImage(file);
+  renderScan('busy', dataUrl);
+  const payload = {
+    contents: [{ role: 'user', parts: [
+      { inlineData: { mimeType: 'image/jpeg', data: dataUrl.split(',')[1] } },
+      { text: `List every food ingredient visible in this photo. It may be a fridge, a pantry shelf, a kitchen counter, or a grocery receipt (then read the purchased food items). Use short generic ingredient names in ${t('aiLang')} (e.g. "domates", not brand names), singular, lowercase, no quantities. Skip non-food items, drinks like water, and anything you are unsure about.` }
+    ] }],
+    generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { ingredients: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['ingredients'] }, temperature: 0.2 }
+  };
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model.trim())}:generateContent`;
+  try {
+    noteSearch();
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey() }, body: JSON.stringify(payload) });
+    if (!res.ok) throw new AppError(res.status === 429 ? 'rate' : res.status === 403 || res.status === 401 ? 'badKey' : 'generic', res.status);
+    const data = await res.json();
+    const list = JSON.parse(data.candidates[0].content.parts[0].text).ingredients || [];
+    scanFound = [...new Set(list.map(x => String(x).trim().toLowerCase()).filter(x => x && x.length < 40))].slice(0, 40);
+    renderScan('done', dataUrl);
+  } catch (e) { toast(t('err_' + (e.code || 'network'))); renderScan('idle'); }
+}
+$('#btn-scan').addEventListener('click', () => { renderScan('idle'); openOverlay($('#scan-modal')); });
+$('#sc-foot').addEventListener('click', e => {
+  if (e.target.closest('#sc-pick')) { $('#scan-file').value = ''; $('#scan-file').click(); }
+  if (e.target.closest('#sc-add')) {
+    const chosen = [...$('#sc-body').querySelectorAll('[data-sc]:checked')].map(cb => scanFound[Number(cb.dataset.sc)]);
+    addIngredients(chosen.join(', ')); closeOverlay($('#scan-modal')); toast(t('addedN', { n: chosen.length }));
+  }
+});
+$('#scan-file').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (f) scanPhoto(f); });
+
+/* =====================================================================
+   Tarif kartı paylaşımı (görsel)
+   ===================================================================== */
+function wrapText(ctx, text, maxW) {
+  const words = text.split(' '), lines = []; let line = '';
+  for (const w of words) { const test = line ? line + ' ' + w : w; if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test; }
+  if (line) lines.push(line); return lines;
+}
+function shareCard(r) {
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = '#1F6B45'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#F2B01E'; x.beginPath(); x.roundRect(80, 80, 920, 300, 36); x.fill();
+  x.font = '150px "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(r.emoji, W / 2, 232);
+  x.textAlign = 'left'; x.textBaseline = 'alphabetic'; x.fillStyle = '#fff';
+  x.font = '800 68px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  let y = 480; wrapText(x, r.name, 920).slice(0, 2).forEach(l => { x.fillText(l, 80, y); y += 80; });
+  x.font = '500 34px Figtree, "Segoe UI", sans-serif'; x.fillStyle = '#DDEFE3';
+  wrapText(x, r.description, 920).slice(0, 2).forEach(l => { x.fillText(l, 80, y); y += 46; });
+  y += 20; x.fillStyle = '#F2B01E'; x.font = '700 32px Figtree, "Segoe UI", sans-serif';
+  x.fillText(`⏱ ${totalMin(r)} ${t('min')}   ·   ${t(r.difficulty)}   ·   ${t('servingsFor', { n: r.servings })}${r.calories ? '   ·   🔥 ' + r.calories + ' ' + t('kcal') : ''}`, 80, y); y += 60;
+  x.fillStyle = '#fff'; x.font = '800 36px "Bricolage Grotesque", "Segoe UI", sans-serif'; x.fillText(t('ingredients'), 80, y); y += 50;
+  x.font = '500 32px Figtree, "Segoe UI", sans-serif';
+  const ings = r.ingredients.slice(0, 12); const col = Math.ceil(ings.length / 2);
+  ings.forEach((i, k) => { const cx = 80 + (k >= col ? 470 : 0), cy = y + (k % col) * 44; x.fillStyle = i.have ? '#fff' : '#FDEBC2'; x.fillText('• ' + ingredientLine(i, 1).slice(0, 26), cx, cy); });
+  y += col * 44 + 30; if (r.ingredients.length > 12) { x.fillStyle = '#DDEFE3'; x.fillText('+' + (r.ingredients.length - 12), 80, y); }
+  // alt bant
+  x.fillStyle = '#F2B01E'; x.beginPath(); x.roundRect(80, H - 170, 920, 90, 999); x.fill();
+  x.fillStyle = '#3A2A00'; x.font = '800 36px "Bricolage Grotesque", "Segoe UI", sans-serif'; x.textAlign = 'center';
+  x.fillText('🍳 ' + t('appTitle') + '  ·  ' + t('tagline').split(/[,.]/)[0], W / 2, H - 112);
+  const png = c.toDataURL('image/png');
+  if (NATIVE && NATIVE.shareImage) NATIVE.shareImage(r.name, png);
+  else { const a = document.createElement('a'); a.href = png; a.download = slug(r.name) + '.png'; a.click(); }
+  toast(t('shareReady'));
+}
+
+/* =====================================================================
+   Mutfak günlüğü
+   ===================================================================== */
+function logCooked(r) {
+  cooked.unshift({ id: r.id, name: r.name, emoji: r.emoji, cuisine: r.cuisine, at: new Date().toISOString(), recipe: r });
+  cooked = cooked.slice(0, 200); store.set('cooked', cooked); toast(t('cookedToast'));
+}
+function diaryHtml() {
+  const now = new Date(), m = now.getMonth(), yr = now.getFullYear();
+  const month = cooked.filter(c => { const d = new Date(c.at); return d.getMonth() === m && d.getFullYear() === yr; }).length;
+  const week = cooked.filter(c => Date.now() - new Date(c.at) < 7 * DAY).length;
+  const cuis = new Set(cooked.map(c => c.cuisine)).size, n = cooked.length;
+  const badges = [['badge1', n >= 1], ['badge5', n >= 5], ['badge10', n >= 10], ['badge25', n >= 25], ['badgeCuis', cuis >= 3], ['badgeWeek', week >= 3]];
+  return `<div class="diary"><div><div class="big-n">🍳 ${month}</div><div class="hint">${esc(t('diaryMonth', { n: month }))} · ${esc(t('diaryTotal', { n }))}</div></div>
+    <div class="badges">${badges.map(([k, on]) => `<span class="bd ${on ? 'on' : ''}">${on ? '🏅' : '○'} ${esc(t(k))}</span>`).join('')}</div>
+    ${n ? `<div class="lst">${cooked.slice(0, 8).map(c => `<button type="button" data-cooked="${esc(c.id)}">${esc(c.emoji)} ${esc(c.name)}</button>`).join('')}</div>` : `<p class="hint" style="width:100%">${esc(t('diaryEmpty'))}</p>`}</div>`;
+}
+$('#status').addEventListener('click', e => {
+  const b = e.target.closest('[data-cooked]'); if (!b) return;
+  const c = cooked.find(x => x.id === b.dataset.cooked); if (!c) return;
+  if (!findById(c.id)) recipes.push(c.recipe); openRecipe(c.id);
 });
 
 /* =====================================================================
@@ -1140,12 +1440,23 @@ function renderPlan() {
     foot.innerHTML = ''; return;
   }
   const days = t('days');
-  body.innerHTML = `<p class="hint">${esc(t('planIntro'))}</p>` + (plan && plan.length
-    ? `<div class="plan-list">${plan.map((r, i) => `<div class="plan-day" data-id="${esc(r.id)}" role="button" tabindex="0"><span class="d">${esc(days[i % 7])}</span><span class="e" aria-hidden="true">${esc(r.emoji)}</span><div class="n"><b>${esc(r.name)}</b><span>⏱ ${totalMin(r)} ${esc(t('min'))} · ${missingOf(r).length ? '⚠️ ' + esc(t('missing', { n: missingOf(r).length })) : '✅ ' + esc(t('ready'))}</span></div></div>`).join('')}</div>`
+  const cur = lang === 'tr' ? '₺' : '$';
+  const total = plan && plan.length ? plan.reduce((a, r) => a + (r.cost || 0) * prefs.servings, 0) : 0;
+  body.innerHTML = `<p class="hint">${esc(t('planIntro'))}</p>
+    <div class="plan-opts">
+      <label>${esc(t('planProtein'))}<input id="po-protein" type="number" min="0" max="100" value="${esc(planOpts.protein)}"></label>
+      <label>${esc(t('planBudget'))}<input id="po-budget" type="number" min="0" value="${esc(planOpts.budget)}"></label>
+    </div>` + (plan && plan.length
+    ? `<div class="plan-list">${plan.map((r, i) => `<div class="plan-day" data-id="${esc(r.id)}" role="button" tabindex="0"><span class="d">${esc(days[i % 7])}</span><span class="e" aria-hidden="true">${esc(r.emoji)}</span><div class="n"><b>${esc(r.name)}</b><span>⏱ ${totalMin(r)} ${esc(t('min'))} · ${missingOf(r).length ? '⚠️ ' + esc(t('missing', { n: missingOf(r).length })) : '✅ ' + esc(t('ready'))}${r.cost ? ` · ~${cur}${r.cost * prefs.servings} <i class="plan-cost">(${esc(t('planEst'))})</i>` : ''}</span></div></div>`).join('')}</div>
+       ${total ? `<p class="plan-cost" style="margin-top:10px">${esc(t('planTotal'))}: <b>~${cur}${total}</b> (${esc(t('planEst'))})</p>` : ''}`
     : `<p class="hint">${esc(t('planEmpty'))}</p>`);
   foot.innerHTML = `<button class="btn btn-primary btn-sm" id="plan-make">${esc(t(plan && plan.length ? 'planRemake' : 'planMake'))}</button>` +
-    (plan && plan.length ? `<button class="btn btn-sun btn-sm" id="plan-shop">🛒 ${esc(t('planShop'))}</button>` : '');
+    (plan && plan.length ? `<button class="btn btn-sun btn-sm" id="plan-shop">🛒 ${esc(t('planShop'))}</button><button class="btn btn-ghost btn-sm" id="plan-share">${esc(t('planShare'))}</button>` : '');
 }
+$('#plan-body').addEventListener('change', e => {
+  if (e.target.id === 'po-protein') planOpts.protein = e.target.value; if (e.target.id === 'po-budget') planOpts.budget = e.target.value;
+  store.set('planOpts', planOpts);
+});
 async function makePlan() {
   if (!pantry.length) { toast(t('noIng')); return; }
   if (!apiKey()) { toast(t('err_noKey')); return; }
@@ -1155,7 +1466,8 @@ async function makePlan() {
   const prompt = `Create a 7-day dinner plan: exactly 7 distinct, realistic home-cooking recipes, one per day Monday to Sunday, varied in style so the week never feels repetitive. Write every text value in ${t('aiLang')}.
 Ingredients on hand: ${pantry.join(', ')}. Salt, black pepper, cooking oil and water are always available (have=true).
 Cuisine preference: ${selCuisines.length ? selCuisines.join(', ') : 'varied'}. Dietary requirements: ${dietTxt}. Maximum total time: ${prefs.time ? prefs.time + ' minutes' : 'no limit'}. Base servings: ${prefs.servings}.
-Reuse the ingredients on hand across the week; at most 3 missing ingredients (have=false) per recipe, and prefer the same missing items across several days so shopping stays short.
+Reuse the ingredients on hand across the week; at most 3 missing ingredients (have=false) per recipe, and prefer the same missing items across several days so shopping stays short.${contextLines()}${planOpts.protein ? `\nEvery recipe must provide at least ${planOpts.protein} g protein per serving.` : ''}${planOpts.budget ? `\nWeekly budget for all missing ingredients: about ${planOpts.budget} ${lang === 'tr' ? 'TRY' : 'USD'}; keep purchases cheap and simple.` : ''}
+Also give "estimatedCost": the estimated cost of ONE serving in ${lang === 'tr' ? 'Turkish lira (TRY)' : 'US dollars (USD)'} as a whole number, based on typical supermarket prices.
 "cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Each ingredient has name, amount, unit, have. Each step has text and minutes. Include emoji, calories, proteinGrams, carbsGrams, fatGrams, description and tip.`;
   try {
     noteSearch();
@@ -1169,6 +1481,10 @@ $('#btn-plan').addEventListener('click', () => { if (!requirePro('proLockFeature
 $('#plan-foot').addEventListener('click', e => {
   if (e.target.closest('#plan-make')) makePlan();
   if (e.target.closest('#plan-shop') && plan) addToShop([...new Set(plan.flatMap(r => missingOf(r).map(i => i.name)))]);
+  if (e.target.closest('#plan-share') && plan) {
+    const days = t('days'); const txt = `📅 ${t('planTitle')}\n` + plan.map((r, i) => `${days[i % 7]}: ${r.emoji} ${r.name} (${totalMin(r)} ${t('min')})`).join('\n') + `\n\n🛒 ${[...new Set(plan.flatMap(r => missingOf(r).map(i => i.name)))].join(', ')}`;
+    if (NATIVE && NATIVE.share) NATIVE.share(t('planTitle'), txt); else copyText(txt);
+  }
 });
 $('#plan-body').addEventListener('click', e => { const d = e.target.closest('.plan-day'); if (d) openRecipe(d.dataset.id); });
 $('#plan-body').addEventListener('keydown', e => { const d = e.target.closest('.plan-day'); if (d && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openRecipe(d.dataset.id); } });
@@ -1198,8 +1514,35 @@ $('#pantry-sets').addEventListener('click', e => {
 /* =====================================================================
    Pro: yedekle / geri yükle
    ===================================================================== */
+/* =====================================================================
+   Günlük hatırlatma (Android bildirimi)
+   ===================================================================== */
+function syncReminder() {
+  if (!NATIVE || !NATIVE.setReminder) return;
+  const soon = soonItems();
+  const body = soon.length ? t('remindSoon', { list: soon.join(', ') }) + ' · ' + t('remindBody') : t('remindBody');
+  NATIVE.setReminder(!!remind.on, remind.time || '17:00', t('appTitle'), body);
+}
+window.onReminderDenied = () => { remind.on = false; store.set('remind', remind); $('#rem-on').checked = false; toast(t('remindNA')); };
+$('#rem-on').addEventListener('change', e => { remind.on = e.target.checked; store.set('remind', remind); syncReminder(); });
+$('#rem-time').addEventListener('change', e => { remind.time = e.target.value || '17:00'; store.set('remind', remind); syncReminder(); });
+
+/* =====================================================================
+   Pro: aile profilleri
+   ===================================================================== */
+function renderFamily() {
+  $('#fam').innerHTML = family.map((f, i) => `<div class="row"><input type="text" data-fn="${i}" value="${esc(f.name)}" placeholder="${esc(t('famName'))}" style="flex:.5"><input type="text" data-fx="${i}" value="${esc(f.notes)}" placeholder="${esc(t('famNotes'))}"><button type="button" class="rm" data-fr="${i}" aria-label="Remove">&times;</button></div>`).join('');
+}
+$('#fam-add').addEventListener('click', () => { if (!requirePro('proLockFeature')) return; family.push({ name: '', notes: '' }); store.set('family', family); renderFamily(); $('#fam input[data-fn="' + (family.length - 1) + '"]').focus(); });
+$('#fam').addEventListener('input', e => {
+  const n = e.target.closest('[data-fn]'), x = e.target.closest('[data-fx]');
+  if (n) family[Number(n.dataset.fn)].name = n.value.slice(0, 40); if (x) family[Number(x.dataset.fx)].notes = x.value.slice(0, 160);
+  store.set('family', family);
+});
+$('#fam').addEventListener('click', e => { const r = e.target.closest('[data-fr]'); if (!r) return; family.splice(Number(r.dataset.fr), 1); store.set('family', family); renderFamily(); });
+
 function backupText() {
-  return JSON.stringify({ app: 'mutfak-asistani', v: 1, at: new Date().toISOString(), favs, shop, pantry, pantrySets, prefs, cuisines: selCuisines, diets: selDiets, plan });
+  return JSON.stringify({ app: 'mutfak-asistani', v: 2, at: new Date().toISOString(), favs, shop, pantry, pantrySets, prefs, cuisines: selCuisines, diets: selDiets, plan, expiry, leftovers, cooked, family, planOpts });
 }
 $('#bk-export').addEventListener('click', () => {
   if (!requirePro('proLockFeature')) return;
@@ -1215,6 +1558,8 @@ $('#bk-import').addEventListener('click', () => {
     favs = Array.isArray(d.favs) ? d.favs : favs; shop = Array.isArray(d.shop) ? d.shop : shop; pantry = Array.isArray(d.pantry) ? d.pantry : pantry;
     pantrySets = Array.isArray(d.pantrySets) ? d.pantrySets : pantrySets; prefs = Object.assign(prefs, d.prefs || {});
     selCuisines = Array.isArray(d.cuisines) ? d.cuisines : selCuisines; selDiets = Array.isArray(d.diets) ? d.diets : selDiets; plan = Array.isArray(d.plan) ? d.plan : plan;
+    expiry = d.expiry && typeof d.expiry === 'object' ? d.expiry : expiry; leftovers = Array.isArray(d.leftovers) ? d.leftovers : leftovers; cooked = Array.isArray(d.cooked) ? d.cooked : cooked; family = Array.isArray(d.family) ? d.family : family; planOpts = d.planOpts || planOpts;
+    store.set('expiry', expiry); store.set('leftovers', leftovers); store.set('cooked', cooked); store.set('family', family); store.set('planOpts', planOpts); renderFamily();
     ['favs','shop','pantry','pantrySets','prefs','plan'].forEach(k => store.set(k, { favs, shop, pantry, pantrySets, prefs, plan }[k]));
     store.set('cuisines', selCuisines); store.set('diets', selDiets);
     ta.hidden = true; ta.value = ''; applyI18n(); syncPrefs(); render(); renderShop(); renderSets(); toast(t('backupDone'));
@@ -1227,6 +1572,7 @@ $('#m-foot').addEventListener('click', e => {
   if (a === 'shop') addToShop(missingOf(current).map(i => i.name));
   if (a === 'fav') toggleFav(current.id);
   if (a === 'copy') copyText(recipeText(current, currentServings));
+  if (a === 'card') shareCard(current);
   if (a === 'print') { NATIVE ? NATIVE.print(current.name) : window.print(); }
 });
 
@@ -1252,7 +1598,8 @@ $('#s-body').addEventListener('click', e => {
 });
 $('#s-body').addEventListener('change', e => {
   const cb = e.target.closest('input[data-i]'); if (!cb) return;
-  shop[Number(cb.dataset.i)].done = cb.checked; store.set('shop', shop); renderShop();
+  const it = shop[Number(cb.dataset.i)]; it.done = cb.checked; store.set('shop', shop); renderShop();
+  if (cb.checked && !pantry.some(p => p.toLowerCase() === it.name.toLowerCase())) { pantry.push(it.name); store.set('pantry', pantry); renderChips(); renderQuick(); toast(t('shopToPantry', { n: it.name })); }
 });
 $('#shop-copy').addEventListener('click', () => copyText(shop.map(s => (s.done ? '☑ ' : '☐ ') + s.name).join('\n')));
 $('#shop-clear').addEventListener('click', () => { shop = []; store.set('shop', shop); renderShop(); });
@@ -1264,11 +1611,12 @@ let cookStep = 0, timerId = null, timerLeft = 0, wakeLock = null, audioCtx = nul
 
 async function startCook() {
   cookStep = 0; renderCook(); openOverlay($('#cook'));
+  $('#cook-voice').hidden = !(NATIVE && NATIVE.startVoice) && !('speechSynthesis' in window);
   if (NATIVE) NATIVE.keepScreenOn(true);
   else { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {} }
 }
 function stopCook() {
-  stopTimer();
+  stopTimer(); if (voiceOn) setVoice(false);
   if (NATIVE) NATIVE.keepScreenOn(false);
   try { wakeLock?.release(); } catch {} wakeLock = null;
 }
@@ -1283,6 +1631,7 @@ function renderCook() {
   stopTimer();
   const tm = $('#c-timer'); tm.hidden = !s.minutes;
   if (s.minutes) { timerLeft = s.minutes * 60; paintTimer(); $('#c-timer-btn').textContent = t('startTimer', { m: s.minutes }); }
+  if (voiceOn) speak(t('step', { i: cookStep + 1, n: r.steps.length }) + '. ' + s.text);
 }
 function paintTimer() {
   const m = String(Math.floor(timerLeft / 60)).padStart(2, '0'), s = String(timerLeft % 60).padStart(2, '0');
@@ -1312,8 +1661,37 @@ $('#c-timer-btn').addEventListener('click', () => {
 });
 $('#c-prev').addEventListener('click', () => { if (cookStep > 0) { cookStep--; renderCook(); } });
 $('#c-next').addEventListener('click', () => {
-  if (cookStep < current.steps.length - 1) { cookStep++; renderCook(); } else closeOverlay($('#cook'));
+  if (cookStep < current.steps.length - 1) { cookStep++; renderCook(); } else { logCooked(current); closeOverlay($('#cook')); }
 });
+
+/* =====================================================================
+   Pişirme: sesli komut + adım okuma (Android köprüsü)
+   ===================================================================== */
+let voiceOn = false;
+const VOICE_CMDS = {
+  next: /\b(ileri|sonraki|next|devam|continue)\b/i, prev: /\b(geri|önceki|back|previous)\b/i,
+  timer: /\b(sayaç|sayac|zamanlayıcı|timer|başlat|start)\b/i, stop: /\b(durdur|dur|stop|pause)\b/i,
+  read: /\b(oku|tekrar|read|repeat)\b/i, done: /\b(bitti|tamamla|finish|done)\b/i
+};
+function speak(text) { if (NATIVE && NATIVE.speak) NATIVE.speak(text, lang); else if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(text); u.lang = lang === 'tr' ? 'tr-TR' : 'en-US'; speechSynthesis.cancel(); speechSynthesis.speak(u); } }
+function setVoice(on) {
+  voiceOn = on; $('#c-mic').setAttribute('aria-pressed', on);
+  $('#c-heard').textContent = on ? t('voiceHelp') : '';
+  if (NATIVE && NATIVE.startVoice) { on ? NATIVE.startVoice(lang) : NATIVE.stopVoice(); }
+}
+window.onVoice = text => {
+  if (!voiceOn || $('#cook').hidden) return;
+  $('#c-heard').textContent = '“' + text + '”';
+  if (VOICE_CMDS.next.test(text)) $('#c-next').click();
+  else if (VOICE_CMDS.prev.test(text)) $('#c-prev').click();
+  else if (VOICE_CMDS.stop.test(text)) { if (timerId) $('#c-timer-btn').click(); }
+  else if (VOICE_CMDS.timer.test(text)) { if (!timerId && !$('#c-timer').hidden) $('#c-timer-btn').click(); }
+  else if (VOICE_CMDS.read.test(text)) speak(current.steps[cookStep].text);
+  else if (VOICE_CMDS.done.test(text)) { cookStep = current.steps.length - 1; $('#c-next').click(); }
+};
+window.onVoiceState = st => { if (st === 'unavailable') { setVoice(false); toast(t('voiceNA')); } if (st === 'listening' && voiceOn) $('#c-heard').textContent = t('voiceListening'); };
+$('#c-mic').addEventListener('click', () => setVoice(!voiceOn));
+$('#c-read').addEventListener('click', () => speak(current.steps[cookStep].text));
 
 /* =====================================================================
    Olaylar
@@ -1331,8 +1709,17 @@ input.addEventListener('paste', e => {
   if (/[,;\n]/.test(txt)) { e.preventDefault(); addIngredients(txt); }
 });
 $('#chips').addEventListener('click', e => {
+  const l = e.target.closest('[data-rml]');
+  if (l) { leftovers.splice(Number(l.dataset.rml), 1); store.set('leftovers', leftovers); renderChips(); return; }
+  const it = e.target.closest('[data-item]');
+  if (it) { openItem(Number(it.dataset.item)); return; }
   const b = e.target.closest('[data-rm]'); if (!b) return;
-  pantry.splice(Number(b.dataset.rm), 1); store.set('pantry', pantry); renderChips(); renderQuick();
+  pantry.splice(Number(b.dataset.rm), 1); store.set('pantry', pantry); renderChips(); renderQuick(); renderSets();
+});
+$('#btn-left').addEventListener('click', () => {
+  const raw = (prompt(t('leftAsk')) || '').trim(); if (!raw) return;
+  raw.split(/[,;\n]/).map(x => x.trim()).filter(Boolean).forEach(x => { if (!leftovers.some(y => y.toLowerCase() === x.toLowerCase())) leftovers.push(x); });
+  store.set('leftovers', leftovers); renderChips(); toast(t('leftHint'));
 });
 $('#quick').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (b) addIngredients(b.dataset.q); });
 
@@ -1348,10 +1735,11 @@ $('#diets').addEventListener('click', e => {
 
 function syncPrefs() {
   $('#opt-time').value = String(prefs.time); $('#opt-diff').value = prefs.diff;
-  $('#opt-count').value = String(prefs.count); $('#srv-out').textContent = prefs.servings;
+  $('#opt-count').value = String(prefs.count); $('#srv-out').textContent = prefs.servings; $('#opt-note').value = prefs.note || '';
 }
 function savePrefs() { store.set('prefs', prefs); }
 $('#opt-time').addEventListener('change', e => { prefs.time = Number(e.target.value); savePrefs(); });
+$('#opt-note').addEventListener('input', e => { prefs.note = e.target.value.slice(0, 300); savePrefs(); });
 $('#opt-diff').addEventListener('change', e => { prefs.diff = e.target.value; savePrefs(); });
 $('#opt-count').addEventListener('change', e => {
   if (!pro && Number(e.target.value) > 6) { e.target.value = '6'; openPro(t('proLockCount')); return; }
@@ -1380,7 +1768,9 @@ $('#grid').addEventListener('keydown', e => {
 
 $('#btn-shop').addEventListener('click', () => { renderShop(); openOverlay($('#shop-modal')); });
 $('#btn-settings').addEventListener('click', () => {
-  $('#set-key').value = settings.key; $('#set-model').value = settings.model; openOverlay($('#settings-modal'));
+  $('#set-key').value = settings.key; $('#set-model').value = settings.model;
+  $('#rem-on').checked = !!remind.on; $('#rem-time').value = remind.time || '17:00'; renderFamily();
+  openOverlay($('#settings-modal'));
 });
 $('#set-save').addEventListener('click', () => {
   settings.key = $('#set-key').value.trim();
@@ -1410,7 +1800,7 @@ window.androidBack = () => { if (stack.length) { closeOverlay(stack[stack.length
 /* =====================================================================
    Başlat
    ===================================================================== */
-syncPrefs(); paintTheme(); applyI18n(); render(); renderShop(); renderSets(); paintQuota();
+syncPrefs(); paintTheme(); applyI18n(); render(); renderShop(); renderSets(); paintQuota(); syncReminder();
 if (NATIVE && NATIVE.refreshPro) NATIVE.refreshPro();
 </script>
 </body>
