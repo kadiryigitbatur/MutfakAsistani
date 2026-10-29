@@ -415,7 +415,10 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
         <div class="city-row"><input id="city-input" type="text" autocomplete="off" data-i18n-ph="cityPh"><button type="button" id="btn-locate" title="GPS">📍</button></div>
         <p class="hint" data-i18n="cityHelp"></p>
       </section>
-      <button class="btn btn-primary" id="btn-crave"><span data-i18n="craveFind"></span></button>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <button class="btn btn-primary" id="btn-crave"><span data-i18n="craveFind"></span></button>
+        <button class="btn btn-sun" id="btn-rest"><span data-i18n="restFind"></span></button>
+      </div>
       <p class="quota" id="quota2"></p>
     </div>
     <div id="pantry-panel">
@@ -695,8 +698,8 @@ const I18N = {
     tabResults:'Öneriler', tabFav:'Favoriler', onlyComplete:'Eksiksiz olanlar', sortMatch:'En uygun', sortTime:'En hızlı', sortKcal:'En hafif',
     loadingMore:'Yeni tarifler hazırlanıyor…',
     modePantry:'Dolabımda ne var', modeCrave:'Canım ne istiyor',
-    craveTitle:'Ne yemek istiyorsun?', cravePh:'mantı, lazanya, sushi…', craveFind:'Tarifi ve restoranları bul', craveSugg:['mantı','karnıyarık','lahmacun','lazanya','ramen','burger','sushi','pizza','köfte','brownie'],
-    cityTitle:'Şehrin', cityPh:'İstanbul, Ankara…', cityHelp:'Restoranları bu şehirde arar. 📍 ile konumunu kullanabilirsin.', locating:'Konum alınıyor…', locateFail:'Konum alınamadı, şehri elle yaz.',
+    craveTitle:'Ne yemek istiyorsun?', cravePh:'mantı, lazanya, sushi…', craveEmptyTitle:'Canın ne çekiyor?', craveEmptyText:'Yemeğin adını yaz, "Tarifi bul" ile tarifini, "Restoranları bul" ile şehrindeki yerleri getir.', craveFind:'🍳 Tarifi bul', restFind:'🍽️ Restoranları bul', craveMore:'Hızlı ve hafif sürümleri de getir', restSearching:'Restoranlar aranıyor…', restAI:'Puanlar Google Haritalar verisinden, yapay zekâ aracılığıyla derlendi; güncelliğini haritada doğrula.', craveSugg:['mantı','karnıyarık','lahmacun','lazanya','ramen','burger','sushi','pizza','köfte','brownie'],
+    cityTitle:'Şehrin', cityPh:'İstanbul, Ankara…', cityHelp:'Restoranlar bu şehirde aranır. 📍 ile konumunu kullanabilirsin.', locating:'Konum alınıyor…', locateFail:'Konum alınamadı, şehri elle yaz.',
     craveNeed:'Önce ne yemek istediğini yaz.', craveLoading:['Tarif kitapları açılıyor…','Klasik sürüm hazırlanıyor…','Hızlı sürüm ekleniyor…','Restoranlar taranıyor…'],
     restTitle:'{dish} yiyebileceğin yerler · {city}', restNone:'Bu şehirde sonuç bulunamadı.', restMaps:'Haritada aç', restCall:'Ara', restSponsored:'Sponsorlu', restOpen:'Açık', restClosed:'Kapalı',
     restNoKey:'Restoran puanları için Google Haritalar\'da aç:', restMapsBtn:'🗺️ Google Haritalar\'da {dish} · {city}', restCity:'Restoranlar için şehrini yaz.', reviews:'değerlendirme',
@@ -780,7 +783,7 @@ const I18N = {
     tabResults:'Suggestions', tabFav:'Favorites', onlyComplete:'Nothing missing', sortMatch:'Best match', sortTime:'Fastest', sortKcal:'Lightest',
     loadingMore:'Preparing new recipes…',
     modePantry:'What\'s in my fridge', modeCrave:'What I\'m craving',
-    craveTitle:'What do you feel like eating?', cravePh:'lasagna, ramen, tacos…', craveFind:'Find recipe & restaurants', craveSugg:['lasagna','ramen','tacos','burger','sushi','pizza','pad thai','curry','meatballs','brownies'],
+    craveTitle:'What do you feel like eating?', cravePh:'lasagna, ramen, tacos…', craveEmptyTitle:'What are you craving?', craveEmptyText:'Type a dish, then "Find the recipe" for the recipe or "Find restaurants" for places in your city.', craveFind:'🍳 Find the recipe', restFind:'🍽️ Find restaurants', craveMore:'Also get the quick & light versions', restSearching:'Searching restaurants…', restAI:'Ratings compiled from Google Maps data via AI; verify on the map.', craveSugg:['lasagna','ramen','tacos','burger','sushi','pizza','pad thai','curry','meatballs','brownies'],
     cityTitle:'Your city', cityPh:'London, Berlin…', cityHelp:'Restaurants are searched in this city. Tap 📍 to use your location.', locating:'Getting location…', locateFail:'Couldn\'t get location, type your city.',
     craveNeed:'Type what you\'re craving first.', craveLoading:['Opening the cookbooks…','Preparing the classic version…','Adding a quick version…','Scanning restaurants…'],
     restTitle:'Where to eat {dish} · {city}', restNone:'No results in this city.', restMaps:'Open in Maps', restCall:'Call', restSponsored:'Sponsored', restOpen:'Open', restClosed:'Closed',
@@ -1319,14 +1322,15 @@ function render() {
   const source = view === 'fav' ? favs : recipes;
   if (view === 'fav') status.innerHTML = diaryHtml();
   if (!source.length) {
-    status.innerHTML += view === 'fav' ? stateBox('💚', t('favEmptyTitle'), t('favEmptyText')) : stateBox('🥕', t('emptyTitle'), t('emptyText'));
+    status.innerHTML += view === 'fav' ? stateBox('💚', t('favEmptyTitle'), t('favEmptyText')) : mode === 'crave' ? stateBox('😋', t('craveEmptyTitle'), t('craveEmptyText')) : stateBox('🥕', t('emptyTitle'), t('emptyText'));
     return;
   }
   const list = visible();
   if (!list.length) { status.innerHTML = stateBox('🔎', t('filteredTitle'), t('filteredText')); return; }
   if (view === 'results') status.innerHTML = scoreHtml();
   grid.innerHTML = list.map(cardHtml).join('') + (view === 'results' ? upsellCardHtml() : '');
-  more.hidden = view !== 'results' || mode !== 'pantry';
+  more.hidden = view !== 'results' || (mode === 'crave' && recipes.length >= 3);
+  if (view === 'results') $('#btn-more').innerHTML = `<span>${esc(mode === 'crave' ? t('craveMore') : t('more'))}</span>`;
   $('#restaurants').hidden = mode !== 'crave' || !$('#restaurants').innerHTML;
 }
 
@@ -1482,7 +1486,12 @@ function renderCraveSugg() {
 }
 $('#mode-pantry').addEventListener('click', () => setMode('pantry'));
 $('#mode-crave').addEventListener('click', () => setMode('crave'));
-$('#crave-sugg').addEventListener('click', e => { const b = e.target.closest('[data-dish]'); if (b) { $('#crave-input').value = b.dataset.dish; findCrave(); } });
+$('#crave-sugg').addEventListener('click', e => { const b = e.target.closest('[data-dish]'); if (b) { $('#crave-input').value = b.dataset.dish; $('#crave-input').focus(); } });
+$('#btn-rest').addEventListener('click', () => {
+  const dish = $('#crave-input').value.trim(); if (!dish) { toast(t('craveNeed')); $('#crave-input').focus(); return; }
+  city = $('#city-input').value.trim(); store.set('city', city); lastDish = dish;
+  loadRestaurants(dish, city); setTimeout(() => $('#restaurants').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+});
 $('#crave-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); findCrave(); } });
 $('#btn-crave').addEventListener('click', findCrave);
 $('#city-input').addEventListener('change', e => { city = e.target.value.trim(); store.set('city', city); });
@@ -1519,16 +1528,26 @@ async function findCrave() {
   lastDish = dish; noteSearch();
   busy = true; view = 'results'; lastError = null; recipes = []; render();
   $('#btn-crave').disabled = true;
-  const prompt = `The cook is craving "${dish}". Create 3 recipes for exactly this dish, in ${t('aiLang')}: (1) the classic, authentic version, (2) a quick weeknight version (max 30 minutes), (3) a lighter or healthier version. Keep the dish recognizable in all three.
+  const prompt = `The cook is craving "${dish}". Create exactly 1 recipe: the classic, authentic version of this dish, in ${t('aiLang')}. Keep steps concise (max 8 steps, one sentence each).
 Ingredients the cook has on hand: ${pantry.length ? pantry.join(', ') : 'unknown, assume a basic pantry'}; mark have=true for those plus salt, pepper, oil, water; everything else have=false.${contextLines()}
 Base servings: ${prefs.servings}. "cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Each ingredient has name, amount, unit, have. Each step has text and minutes. Include emoji, calories, proteinGrams, carbsGrams, fatGrams, estimatedCost (one serving, ${lang === 'tr' ? 'TRY' : 'USD'}), description and tip.`;
-  const restP = loadRestaurants(dish, city);
   try {
     const list = await requestRecipes([], prompt);
     recipes = list; if (!recipes.length) lastError = 'empty';
   } catch (e) { lastError = e.code + (e.status ? ':' + e.status : ''); }
   finally { busy = false; $('#btn-crave').disabled = false; render(); }
-  await restP;
+}
+async function craveMore() {
+  if (busy || !lastDish || !recipes.length) return;
+  if (!canSearch()) { openPro(t('proLockQuota', { n: LIMITS.freeSearchesPerDay })); return; }
+  noteSearch(); busy = true;
+  const moreBtn = $('#btn-more'); moreBtn.disabled = true; moreBtn.innerHTML = `<span class="spinner"></span> ${esc(t('loadingMore'))}`;
+  const prompt = `For the dish "${lastDish}", create exactly 2 recipes in ${t('aiLang')}: (1) a quick weeknight version (max 30 minutes total), (2) a lighter or healthier version. Keep the dish recognizable; give each a fitting name; steps concise (max 8, one sentence each).
+Ingredients the cook has on hand: ${pantry.length ? pantry.join(', ') : 'unknown, assume a basic pantry'}; mark have=true for those plus salt, pepper, oil, water; others have=false.${contextLines()}
+Base servings: ${prefs.servings}. "cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Each ingredient has name, amount, unit, have. Each step has text and minutes. Include emoji, calories, proteinGrams, carbsGrams, fatGrams, estimatedCost (one serving, ${lang === 'tr' ? 'TRY' : 'USD'}), description and tip.`;
+  try { const list = await requestRecipes([], prompt); const seen = new Set(recipes.map(r => r.id)); recipes.push(...list.filter(r => !seen.has(r.id))); }
+  catch (e) { toast(t('err_' + (e.code || 'generic'))); }
+  finally { busy = false; moreBtn.disabled = false; moreBtn.innerHTML = `<span>${esc(t('more'))}</span>`; render(); }
 }
 
 /* =====================================================================
@@ -1561,6 +1580,28 @@ async function placesSearch(dish, cityName) {
   const data = await res.json();
   return (data.places || []).map(p => ({ name: p.displayName?.text || '', rating: p.rating || 0, count: p.userRatingCount || 0, address: p.formattedAddress || '', maps: p.googleMapsUri || '', price: p.priceLevel || '', open: p.currentOpeningHours ? p.currentOpeningHours.openNow : null, phone: p.nationalPhoneNumber || '' }));
 }
+// Places anahtarı yoksa: Gemini + Google Haritalar temellendirmesi (desteklenmiyorsa sessizce vazgeçer)
+async function mapsGrounded(dish, cityName) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model.trim())}:generateContent`;
+  const body = {
+    contents: [{ role: 'user', parts: [{ text: `Find up to 8 well-rated restaurants that serve "${dish}" in ${cityName}. Use Google Maps data. Reply ONLY with a JSON array, no prose, each item: {"name":"","rating":4.5,"count":120,"address":"","open":true|false|null,"phone":""}. Use the real Google rating and review count; if unknown use 0. Names and addresses in ${t('aiLang')}.` }] }],
+    tools: [{ googleMaps: {} }],
+    generationConfig: { temperature: 0.1 }
+  };
+  if (geo && norm(cityName) === norm(city)) body.toolConfig = { retrievalConfig: { latLng: { latitude: geo.lat, longitude: geo.lng } } };
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey() }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error('maps grounding ' + res.status);
+  const data = await res.json();
+  const cand = data.candidates && data.candidates[0]; if (!cand) throw new Error('no candidate');
+  const text = (cand.content.parts || []).map(p => p.text || '').join('');
+  const m = text.match(/\[[\s\S]*\]/); if (!m) throw new Error('no json');
+  const arr = JSON.parse(m[0]);
+  const chunks = ((cand.groundingMetadata || {}).groundingChunks || []).map(c => c.maps || {}).filter(x => x.uri);
+  return arr.filter(r => r && r.name).slice(0, 8).map(r => {
+    const ch = chunks.find(c => norm(c.title || '') === norm(r.name)) || chunks.find(c => norm(c.title || '').includes(norm(r.name).split(' ')[0]));
+    return { name: String(r.name), rating: Number(r.rating) || 0, count: Number(r.count) || 0, address: String(r.address || ''), open: typeof r.open === 'boolean' ? r.open : null, phone: String(r.phone || ''), maps: ch ? ch.uri : '' , ai: true };
+  });
+}
 function stars(r) { const f = Math.round(r); return '★'.repeat(f) + '☆'.repeat(Math.max(0, 5 - f)); }
 function restCard(r) {
   const maps = r.maps || `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + (r.address || city))}`;
@@ -1575,16 +1616,17 @@ function restCard(r) {
 async function loadRestaurants(dish, cityName) {
   const box = $('#restaurants'); box.hidden = false;
   if (!cityName) { box.innerHTML = `<div class="rest-head"><h2>🍽️ ${esc(dish)}</h2></div><p class="hint">${esc(t('restCity'))}</p>`; return; }
-  box.innerHTML = `<div class="rest-head"><h2>${esc(t('restTitle', { dish, city: cityName }))}</h2></div><div class="cooking" style="padding:16px 0"><div class="dots"><i></i><i></i><i></i></div></div>`;
+  box.innerHTML = `<div class="rest-head"><h2>${esc(t('restTitle', { dish, city: cityName }))}</h2></div><div class="cooking" style="padding:16px 0"><div class="dots"><i></i><i></i><i></i></div><div class="sub">${esc(t('restSearching'))}</div></div>`;
   const sp = matchSponsors(await loadSponsors(), dish, cityName);
-  let list = null;
+  let list = null, viaAI = false;
   try { list = await placesSearch(dish, cityName); } catch (e) { console.warn(e); list = null; }
+  if (list === null && apiKey()) { try { list = await mapsGrounded(dish, cityName); viaAI = list && list.length ? true : false; if (!list.length) list = null; } catch (e) { console.warn(e); list = null; } }
   const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(dish + ' ' + (lang === 'tr' ? 'restoran ' : 'restaurant ') + cityName)}`;
   let html = `<div class="rest-head"><h2>${esc(t('restTitle', { dish, city: cityName }))}</h2></div>`;
   const cards = sp.map(restCard).join('') + (list ? list.filter(r => !sp.some(x => norm(x.name) === norm(r.name))).map(restCard).join('') : '');
   if (list === null) html += `${cards ? `<div class="rest-list">${cards}</div>` : ''}<p class="hint" style="margin-top:12px">${esc(t('restNoKey'))}</p><a class="btn btn-ghost btn-sm" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMapsBtn', { dish, city: cityName }))}</a>`;
   else if (!cards) html += `<p class="hint">${esc(t('restNone'))}</p><a class="btn btn-ghost btn-sm" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMapsBtn', { dish, city: cityName }))}</a>`;
-  else html += `<div class="rest-list">${cards}</div>`;
+  else html += `<div class="rest-list">${cards}</div>` + (viaAI ? `<p class="hint" style="margin-top:10px">${esc(t('restAI'))} · <a href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMaps'))}</a></p>` : '');
   box.innerHTML = html;
 }
 
@@ -2270,7 +2312,7 @@ $('#srv-minus').addEventListener('click', () => { prefs.servings = Math.max(1, p
 $('#srv-plus').addEventListener('click', () => { prefs.servings = Math.min(12, prefs.servings + 1); syncPrefs(); savePrefs(); });
 
 $('#btn-find').addEventListener('click', () => findRecipes(false));
-$('#btn-more').addEventListener('click', () => findRecipes(true));
+$('#btn-more').addEventListener('click', () => mode === 'crave' ? craveMore() : findRecipes(true));
 $('#status').addEventListener('click', e => { if (e.target.closest('#btn-retry')) findRecipes(false); });
 
 $('#tab-results').addEventListener('click', () => { view = 'results'; render(); });
