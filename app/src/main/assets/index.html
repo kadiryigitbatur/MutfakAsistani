@@ -47,14 +47,18 @@ button { cursor:pointer; }
 .brand-mark { width:44px; height:44px; border-radius:14px; background:var(--sun); color:var(--sun-ink); display:grid; place-items:center; font-size:24px; flex:none; }
 .brand h1 { font-size:clamp(1.35rem, 3vw, 1.9rem); font-weight:800; }
 .brand p { margin:2px 0 0; color:var(--muted); font-size:.92rem; }
-.tools { display:flex; gap:8px; align-items:center; }
+.tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
 .icon-btn { position:relative; height:42px; min-width:42px; padding:0 12px; border-radius:12px; border:1px solid var(--line); background:var(--surface); display:inline-flex; align-items:center; justify-content:center; gap:6px; font-weight:600; font-size:.9rem; }
 .icon-btn:hover { background:var(--surface-2); }
 .icon-btn .count { background:var(--accent); color:var(--accent-ink); border-radius:999px; font-size:.72rem; min-width:20px; height:20px; padding:0 6px; display:grid; place-items:center; }
 
 /* ---------- Ana yerleşim ---------- */
 .layout { max-width:1280px; margin:0 auto; padding:12px 20px 60px; display:grid; grid-template-columns:minmax(0,380px) minmax(0,1fr); gap:24px; align-items:start; }
-@media (max-width: 960px) { .layout { grid-template-columns:1fr; } }
+@media (max-width: 960px) { .layout { grid-template-columns:minmax(0,1fr); } }
+html, body { max-width:100%; overflow-x:hidden; }
+.panel, .sheet, .layout > section { min-width:0; }
+.sheet-body, .card-body, .rest, .diary { overflow-wrap:anywhere; }
+.crave-input, textarea.note, .city-row input { min-width:0; max-width:100%; }
 #pantry-panel, #crave-panel { display:flex; flex-direction:column; gap:22px; }
 .panel { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:20px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:22px; }
 @media (min-width: 961px) { .panel { position:sticky; top:16px; max-height:calc(100vh - 32px); overflow-y:auto; } }
@@ -186,7 +190,8 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
 .fam .row { display:flex; gap:8px; align-items:center; }
 .fam .row input { flex:1; min-width:0; }
 .fam .row .rm { border:0; background:transparent; font-size:1.2rem; cursor:pointer; color:var(--muted); }
-.plan-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0 12px; }
+.plan-opts { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; margin:6px 0 12px; }
+.plan-opts input { min-width:0; width:100%; }
 .plan-opts label { display:flex; flex-direction:column; gap:4px; font-size:.82rem; color:var(--muted); }
 .plan-opts input { height:40px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); padding:0 10px; color:var(--ink); font:inherit; }
 .plan-cost { color:var(--muted); font-size:.82rem; }
@@ -289,7 +294,7 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
 
 /* ---------- Katmanlar ---------- */
 .overlay { position:fixed; inset:0; z-index:50; background:rgba(5,12,9,.66); display:flex; justify-content:center; align-items:center; padding:calc(16px + var(--sat,0px)) calc(16px + var(--sar,0px)) calc(16px + var(--sab,0px)) calc(16px + var(--sal,0px)); }
-.sheet { background:var(--surface); border-radius:22px; width:100%; max-width:720px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 30px 80px -20px rgba(0,0,0,.6); overflow:hidden; }
+.sheet { background:var(--surface); border-radius:22px; width:100%; max-width:min(720px, 100%); max-height:92vh; display:flex; flex-direction:column; box-shadow:0 30px 80px -20px rgba(0,0,0,.6); overflow:hidden; }
 .sheet-head { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--line); }
 .sheet-head h2 { font-size:1.35rem; font-weight:800; flex:1; min-width:0; }
 .sheet-body { padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:20px; }
