@@ -72,6 +72,12 @@ class MainActivity : ComponentActivity() {
         if (ok) voice.start(pendingVoiceLang) else js("window.onVoiceState && window.onVoiceState('unavailable')")
     }
     private var pendingVoiceLang = "tr"
+    private var pendingRecipeId: String? = null
+    private var geoCallback: android.webkit.GeolocationPermissions.Callback? = null
+    private var geoOrigin: String? = null
+    private val askLocation = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok ->
+        geoCallback?.invoke(geoOrigin, ok, false); geoCallback = null
+    }
     private val askNotif = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok ->
         if (ok) ReminderReceiver.schedule(this) else {
             getSharedPreferences(ReminderReceiver.PREFS, MODE_PRIVATE).edit().putBoolean("on", false).apply()
@@ -130,13 +136,18 @@ class MainActivity : ComponentActivity() {
 
         web.settings.apply {
             javaScriptEnabled = true
+            setGeolocationEnabled(true)
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
             allowFileAccess = false
             allowContentAccess = false
         }
         web.addJavascriptInterface(Bridge(), "Android")
-        web.webChromeClient = object : WebChromeClient() { // alert / confirm / prompt kutuları + dosya seçici
+        web.webChromeClient = object : WebChromeClient() { // alert / confirm / prompt kutuları + dosya seçici + konum
+            override fun onGeolocationPermissionsShowPrompt(origin: String, callback: android.webkit.GeolocationPermissions.Callback) {
+                if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) callback.invoke(origin, true, false)
+                else { geoCallback = callback; geoOrigin = origin; askLocation.launch(Manifest.permission.ACCESS_COARSE_LOCATION) }
+            }
             override fun onShowFileChooser(view: WebView, cb: ValueCallback<Array<Uri>>, params: WebChromeClient.FileChooserParams): Boolean {
                 fileCallback?.onReceiveValue(null); fileCallback = cb
                 val dir = File(cacheDir, "share").apply { mkdirs() }
@@ -174,6 +185,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        pendingRecipeId = intent?.getStringExtra("recipeId")?.takeIf { it.isNotBlank() }
         if (savedInstanceState != null) web.restoreState(savedInstanceState)
         else web.loadUrl("https://$APP_HOST/assets/index.html")
 
@@ -234,6 +246,12 @@ class MainActivity : ComponentActivity() {
         if (hasFocus) hideSystemBars()
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val id = intent.getStringExtra("recipeId")?.takeIf { it.isNotBlank() } ?: return
+        js("window.openFromNative && window.openFromNative(${jsStr(id)})")
+    }
+
     override fun onDestroy() { if (::voice.isInitialized) voice.release(); super.onDestroy() }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -271,10 +289,18 @@ class MainActivity : ComponentActivity() {
         @JavascriptInterface fun stopVoice() = runOnUiThread { voice.stop() }
         @JavascriptInterface fun speak(text: String, lang: String) = runOnUiThread { voice.speak(text, lang) }
 
+        @JavascriptInterface fun pendingRecipe(): String { val id = pendingRecipeId ?: ""; pendingRecipeId = null; return id }
+
         @JavascriptInterface
-        fun setReminder(on: Boolean, time: String, title: String, body: String) = runOnUiThread {
+        fun setWidget(text: String, recipeId: String) = runOnUiThread {
+            getSharedPreferences(DinnerWidget.PREFS, MODE_PRIVATE).edit().putString("text", text).putString("recipeId", recipeId).apply()
+            DinnerWidget.refreshAll(this@MainActivity)
+        }
+
+        @JavascriptInterface
+        fun setReminder(on: Boolean, time: String, title: String, body: String, recipeId: String) = runOnUiThread {
             getSharedPreferences(ReminderReceiver.PREFS, MODE_PRIVATE).edit()
-                .putBoolean("on", on).putString("time", time).putString("title", title).putString("body", body).apply()
+                .putBoolean("on", on).putString("time", time).putString("title", title).putString("body", body).putString("recipeId", recipeId).apply()
             ReminderReceiver.ensureChannel(this@MainActivity)
             if (on && Build.VERSION.SDK_INT >= 33 &&
                 ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {

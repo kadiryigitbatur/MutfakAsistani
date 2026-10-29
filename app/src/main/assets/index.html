@@ -189,6 +189,61 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
 .plan-opts label { display:flex; flex-direction:column; gap:4px; font-size:.82rem; color:var(--muted); }
 .plan-opts input { height:40px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); padding:0 10px; color:var(--ink); font:inherit; }
 .plan-cost { color:var(--muted); font-size:.82rem; }
+/* Mod seçici */
+.modes { max-width:1280px; margin:0 auto; padding:4px 20px 0; }
+.seg { display:inline-flex; background:var(--surface); border:1.5px solid var(--line); border-radius:999px; padding:4px; gap:4px; }
+.seg button { border:0; background:transparent; color:var(--muted); font-weight:700; font-size:.95rem; padding:10px 18px; border-radius:999px; cursor:pointer; display:inline-flex; gap:8px; align-items:center; }
+.seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); }
+/* Canım ne istiyor */
+.crave-input { width:100%; height:52px; border:2px solid var(--line); border-radius:14px; background:var(--surface-2); padding:0 14px; font:inherit; font-size:1.05rem; color:var(--ink); }
+.crave-input:focus { border-color:var(--accent); outline:0; }
+.crave-sugg { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.crave-sugg button { border:1.5px dashed var(--line); background:transparent; color:var(--muted); border-radius:999px; padding:6px 12px; font-size:.85rem; cursor:pointer; }
+.city-row { display:flex; gap:8px; }
+.city-row input { flex:1; min-width:0; height:44px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface-2); padding:0 12px; color:var(--ink); font:inherit; }
+.city-row button { border:1.5px solid var(--line); background:var(--surface); border-radius:10px; padding:0 12px; cursor:pointer; color:var(--ink); }
+.rest-head { display:flex; align-items:center; gap:10px; margin:26px 0 12px; }
+.rest-head h2 { font-family:var(--font-display); font-size:1.2rem; margin:0; flex:1; }
+.rest-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px; }
+.rest { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; display:flex; flex-direction:column; gap:6px; position:relative; }
+.rest.sponsored { border-color:var(--sun); box-shadow:0 0 0 3px #FDEBC2; }
+.rest .sp { position:absolute; top:10px; right:12px; background:var(--sun); color:var(--sun-ink); font-size:.68rem; font-weight:800; padding:2px 8px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; }
+.rest h3 { font-size:1.02rem; margin:0; padding-right:70px; }
+.rest .rate { display:flex; align-items:center; gap:8px; font-weight:700; }
+.rest .stars { color:#E0A100; letter-spacing:1px; }
+.rest .addr { color:var(--muted); font-size:.85rem; }
+.rest .act { display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
+.rest .act a { font-size:.85rem; font-weight:700; color:var(--accent); text-decoration:none; border:1.5px solid var(--line); border-radius:999px; padding:6px 12px; }
+.open-now { color:var(--accent); font-size:.8rem; font-weight:700; }
+.closed-now { color:#A33; font-size:.8rem; font-weight:700; }
+/* Skor ve kartlar */
+.score-card { background:linear-gradient(135deg, var(--accent), #2E8A5C); color:#fff; border-radius:var(--radius); padding:16px 18px; display:flex; gap:16px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+.score-card .n { font-family:var(--font-display); font-size:2.2rem; font-weight:800; line-height:1; }
+.score-card .tx { flex:1; min-width:180px; }
+.score-card .tx b { display:block; font-size:1.05rem; }
+.score-card .tx span { opacity:.9; font-size:.88rem; }
+.score-card button { border:0; background:#fff; color:var(--accent); font-weight:800; border-radius:999px; padding:10px 16px; cursor:pointer; }
+.upsell-card { border:2px dashed var(--sun); background:#FFF8E6; color:#3A2A00; border-radius:var(--radius); padding:18px; display:flex; flex-direction:column; gap:10px; justify-content:center; cursor:pointer; }
+:root[data-theme="dark"] .upsell-card { background:#2A2200; color:#FFE6A3; }
+.upsell-card b { font-family:var(--font-display); font-size:1.15rem; }
+.upsell-card .x { position:static; align-self:flex-end; }
+.save-box { display:flex; gap:14px; align-items:center; background:var(--surface-2); border-radius:14px; padding:12px 14px; width:100%; }
+.save-box .amt { font-family:var(--font-display); font-weight:800; font-size:1.5rem; color:var(--accent); }
+.save-box small { color:var(--muted); }
+.nutri { display:flex; gap:10px; flex-wrap:wrap; width:100%; }
+.nutri .box { background:var(--surface-2); border-radius:12px; padding:8px 12px; font-size:.85rem; }
+.nutri .box b { display:block; font-family:var(--font-display); font-size:1.1rem; }
+.task-box { width:100%; display:flex; gap:10px; align-items:center; background:#E4E7F7; color:#2F3A7A; border-radius:12px; padding:10px 12px; font-size:.88rem; }
+.task-box.done { background:var(--accent-soft); color:var(--accent); }
+.dislike[aria-pressed="true"] { background:#F8D7D7; color:#7A1F1F; }
+.guest-course { display:flex; gap:14px; align-items:center; background:var(--surface-2); border-radius:14px; padding:12px 14px; cursor:pointer; border:1.5px solid transparent; }
+.guest-course:hover { border-color:var(--accent); }
+.guest-course .c { flex:none; font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); width:84px; }
+.guest-course .e { font-size:1.5rem; }
+.guest-course .n { flex:1; min-width:0; } .guest-course .n b { display:block; } .guest-course .n span { color:var(--muted); font-size:.85rem; }
+.timeline { margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+.timeline div { display:flex; gap:10px; font-size:.9rem; } .timeline b { flex:none; min-width:84px; color:var(--accent); font-family:var(--font-display); }
+#print-area { display:none; }
 /* Pro */
 .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--sun); color:var(--sun-ink); font-size:.68rem; font-weight:800; letter-spacing:.04em; padding:2px 7px; border-radius:999px; vertical-align:middle; text-transform:uppercase; }
 .icon-btn.is-pro { border-color:var(--sun); color:var(--sun-ink); background:#FFF4D6; }
@@ -306,7 +361,12 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
   *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
 }
 @media print {
-  body > *:not(#recipe-modal) { display:none !important; }
+  body > *:not(#recipe-modal):not(#print-area) { display:none !important; }
+  body.print-plan #recipe-modal { display:none !important; }
+  body.print-plan #print-area { display:block !important; font-family:Georgia, serif; color:#000; padding:20px; }
+  #print-area h1 { font-size:22pt; margin:0 0 6pt; } #print-area h2 { font-size:14pt; margin:14pt 0 6pt; border-bottom:1px solid #000; }
+  #print-area table { width:100%; border-collapse:collapse; font-size:11pt; } #print-area td { padding:4pt 6pt; border-bottom:1px solid #ccc; vertical-align:top; }
+  #print-area ul { columns:2; font-size:11pt; }
   #recipe-modal { position:static; background:#fff; padding:0; display:block; }
   #recipe-modal .sheet { max-height:none; box-shadow:none; color:#000; }
   .sheet-foot, .x, .scaler button, .fav-btn { display:none !important; }
@@ -328,14 +388,37 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
     <button class="icon-btn" id="btn-lang" aria-label="Language">TR / EN</button>
     <button class="icon-btn" id="btn-theme" aria-label="Theme"><span id="theme-icon" aria-hidden="true">🌙</span></button>
     <button class="icon-btn" id="btn-plan" aria-label="Weekly plan"><span aria-hidden="true">📅</span></button>
+    <button class="icon-btn" id="btn-guest" aria-label="Guest menu"><span aria-hidden="true">🍽️</span></button>
     <button class="icon-btn" id="btn-pro" aria-label="Pro"><span aria-hidden="true">✨</span> <span id="pro-label">Pro</span></button>
     <button class="icon-btn" id="btn-settings" aria-label="Settings"><span aria-hidden="true">⚙️</span></button>
   </div>
 </header>
 
+<div class="modes">
+  <div class="seg" role="tablist" aria-label="Mode">
+    <button type="button" id="mode-pantry" role="tab" aria-pressed="true">🥕 <span data-i18n="modePantry"></span></button>
+    <button type="button" id="mode-crave" role="tab" aria-pressed="false">😋 <span data-i18n="modeCrave"></span></button>
+  </div>
+</div>
+
 <main class="layout">
   <!-- Sol panel: tercihler -->
   <aside class="panel" aria-label="Preferences">
+    <div id="crave-panel" hidden>
+      <section>
+        <h2 class="field-title" data-i18n="craveTitle"></h2>
+        <input id="crave-input" class="crave-input" type="text" autocomplete="off" data-i18n-ph="cravePh" enterkeyhint="search">
+        <div class="crave-sugg" id="crave-sugg"></div>
+      </section>
+      <section>
+        <h2 class="field-title" data-i18n="cityTitle"></h2>
+        <div class="city-row"><input id="city-input" type="text" autocomplete="off" data-i18n-ph="cityPh"><button type="button" id="btn-locate" title="GPS">📍</button></div>
+        <p class="hint" data-i18n="cityHelp"></p>
+      </section>
+      <button class="btn btn-primary" id="btn-crave"><span data-i18n="craveFind"></span></button>
+      <p class="quota" id="quota2"></p>
+    </div>
+    <div id="pantry-panel">
     <section>
       <h2 class="field-title" data-i18n="pantryTitle"></h2>
       <div class="chipbox" id="chipbox">
@@ -401,6 +484,7 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
 
     <button class="btn btn-primary" id="btn-find"><span data-i18n="find"></span></button>
     <p class="quota" id="quota"></p>
+    </div>
   </aside>
 
   <!-- Sağ: sonuçlar -->
@@ -420,8 +504,10 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
     <div id="status"></div>
     <div class="grid" id="grid"></div>
     <div class="more" id="more" hidden><button class="btn btn-ghost" id="btn-more"><span data-i18n="more"></span></button></div>
+    <div id="restaurants" hidden></div>
   </section>
 </main>
+<div id="print-area" aria-hidden="true"></div>
 
 <!-- Tarif penceresi -->
 <div class="overlay" id="recipe-modal" role="dialog" aria-modal="true" aria-labelledby="m-title" hidden>
@@ -535,6 +621,15 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
   </div>
 </div>
 
+<!-- Misafir menüsü -->
+<div class="overlay" id="guest-modal" role="dialog" aria-modal="true" aria-labelledby="g-title" hidden>
+  <div class="sheet" style="max-width:600px">
+    <div class="sheet-head"><h2 id="g-title">🍽️ <span data-i18n="guestTitle"></span></h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet-body" id="g-body"></div>
+    <div class="sheet-foot" id="g-foot"></div>
+  </div>
+</div>
+
 <!-- Pro -->
 <div class="overlay" id="pro-modal" role="dialog" aria-modal="true" aria-labelledby="pro-title" hidden>
   <div class="sheet" style="max-width:520px">
@@ -599,6 +694,26 @@ const I18N = {
     any:'Fark etmez', easy:'Kolay', medium:'Orta', hard:'Zor', find:'Tarif bul', more:'Daha fazla tarif',
     tabResults:'Öneriler', tabFav:'Favoriler', onlyComplete:'Eksiksiz olanlar', sortMatch:'En uygun', sortTime:'En hızlı', sortKcal:'En hafif',
     loadingMore:'Yeni tarifler hazırlanıyor…',
+    modePantry:'Dolabımda ne var', modeCrave:'Canım ne istiyor',
+    craveTitle:'Ne yemek istiyorsun?', cravePh:'mantı, lazanya, sushi…', craveFind:'Tarifi ve restoranları bul', craveSugg:['mantı','karnıyarık','lahmacun','lazanya','ramen','burger','sushi','pizza','köfte','brownie'],
+    cityTitle:'Şehrin', cityPh:'İstanbul, Ankara…', cityHelp:'Restoranları bu şehirde arar. 📍 ile konumunu kullanabilirsin.', locating:'Konum alınıyor…', locateFail:'Konum alınamadı, şehri elle yaz.',
+    craveNeed:'Önce ne yemek istediğini yaz.', craveLoading:['Tarif kitapları açılıyor…','Klasik sürüm hazırlanıyor…','Hızlı sürüm ekleniyor…','Restoranlar taranıyor…'],
+    restTitle:'{dish} yiyebileceğin yerler · {city}', restNone:'Bu şehirde sonuç bulunamadı.', restMaps:'Haritada aç', restCall:'Ara', restSponsored:'Sponsorlu', restOpen:'Açık', restClosed:'Kapalı',
+    restNoKey:'Restoran puanları için Google Haritalar\'da aç:', restMapsBtn:'🗺️ Google Haritalar\'da {dish} · {city}', restCity:'Restoranlar için şehrini yaz.', reviews:'değerlendirme',
+    scoreTitle:'Dolap skoru', scoreText:'Dolabınla {n} farklı yemek yapılabilir, en hızlısı {m} dk.', scoreShare:'Skoru paylaş', scoreCardSub:'Senin dolabından kaç yemek çıkar?',
+    challenge:'Arkadaşına sor', challengeText:'Dolabımda {list} var. Sen olsan ne yapardın? 🤔 Ben Mutfak Asistanı ile "{dish}" yaptım. Sen de dene:',
+    upsellTitle:'Bu tariflerden daha fazlası var', upsellText:'Pro ile sınırsız arama, 12 sonuç, haftalık plan ve misafir menüsü.', upsellCook:'Afiyet olsun! 🍳', upsellCookText:'Pro ile haftanın planını da çıkarayım mı? Dolabına göre 7 akşam yemeği, eksikler tek dokunuşla listede.', later:'Belki sonra', seePro:'Pro\'yu gör',
+    photoTitle:'Yemeğinin fotoğrafını ekle', photoShare:'📸 Pişirdim kartı', photoPick:'Fotoğraf çek / seç', cookedShare:'Bunu ben pişirdim 👩‍🍳',
+    savingsTitle:'Tasarruf', savingsText:'Bu ay {n} kez sipariş yerine pişirdin', savingsEst:'tahmini, sipariş başına ~{d} kabul edildi', savingsPro:'Bir haftalık tasarruf = yıllık Pro',
+    nutriToday:'Bugün', nutriWeek:'Son 7 gün (günlük ort.)', kcalShort:'kcal', protShort:'g protein',
+    weekendTask:'Hafta sonu görevi: yeni bir mutfaktan tarif pişir', weekendDone:'Hafta sonu görevi tamamlandı 🏅', badgeExplorer:'Gezgin',
+    monthCard:'Aylık özet kartı', monthTitle:'{month} özetim', monthMeals:'{n} yemek', monthCuis:'{n} mutfak', monthTop:'En çok: {c}', monthSave:'~{s} tasarruf',
+    dislike:'Beğenmedim', disliked:'Not alındı, benzerlerini önermeyeceğim', memoryOn:'Şef hafızası açık: beğendiklerin ve pişirdiklerin önerilere yansıyor.',
+    guestTitle:'Misafir menüsü', guestIntro:'Kaç kişi, kimler var, ne kadar vaktin var? Başlangıç, ana yemek, tatlı ve dakika dakika hazırlık planı.', guestPeople:'Kişi sayısı', guestTime:'Toplam vaktin (dk)', guestNote:'Kimler var? (örn. 1 vejetaryen, 2 çocuk, baharat sevmezler)', guestMake:'Menüyü hazırla', guestMaking:'Menü kuruluyor…', guestTimeline:'Hazırlık planı', guestShop:'Eksikleri listeye ekle', courseStarter:'Başlangıç', courseMain:'Ana yemek', courseDessert:'Tatlı',
+    planPrint:'Yazdır', printShop:'Alışveriş listesi',
+    remindSmart:'Dolabındaki {a} ile {m} dakikada {r}?',
+    widgetHint:'Ana ekrana "Bugün ne pişirsem?" widget\'ını ekleyebilirsin.',
+    proF8:'Misafir menüsü ve şef hafızası', proF8s:'Üç çeşit menü ve dakika dakika plan; beğendiklerini hatırlayan öneriler.',
     ok:'Tamam', scan:'Fotoğraftan ekle', leftovers:'Artan yemek', scanTitle:'Fotoğraftan malzeme', scanHelp:'Buzdolabının, tezgâhın ya da market fişinin fotoğrafını çek. Tanınan malzemeleri seçip kilere ekle.',
     scanning:'Fotoğraf inceleniyor…', scanNone:'Fotoğrafta malzeme bulunamadı. Daha yakından ve aydınlık çekmeyi dene.', scanAdd:'{n} malzemeyi ekle', scanAgain:'Başka fotoğraf', scanPick:'Fotoğraf seç / çek',
     leftTitle:'Artan yemek', leftAsk:'Ne arttı? (örn. pilav, haşlanmış tavuk)', leftHint:'Artanlar ♻️ ile işaretlenir; tarifler onları değerlendirmeye öncelik verir.',
@@ -664,6 +779,26 @@ const I18N = {
     any:'Any', easy:'Easy', medium:'Medium', hard:'Hard', find:'Find recipes', more:'More recipes',
     tabResults:'Suggestions', tabFav:'Favorites', onlyComplete:'Nothing missing', sortMatch:'Best match', sortTime:'Fastest', sortKcal:'Lightest',
     loadingMore:'Preparing new recipes…',
+    modePantry:'What\'s in my fridge', modeCrave:'What I\'m craving',
+    craveTitle:'What do you feel like eating?', cravePh:'lasagna, ramen, tacos…', craveFind:'Find recipe & restaurants', craveSugg:['lasagna','ramen','tacos','burger','sushi','pizza','pad thai','curry','meatballs','brownies'],
+    cityTitle:'Your city', cityPh:'London, Berlin…', cityHelp:'Restaurants are searched in this city. Tap 📍 to use your location.', locating:'Getting location…', locateFail:'Couldn\'t get location, type your city.',
+    craveNeed:'Type what you\'re craving first.', craveLoading:['Opening the cookbooks…','Preparing the classic version…','Adding a quick version…','Scanning restaurants…'],
+    restTitle:'Where to eat {dish} · {city}', restNone:'No results in this city.', restMaps:'Open in Maps', restCall:'Call', restSponsored:'Sponsored', restOpen:'Open', restClosed:'Closed',
+    restNoKey:'For restaurant ratings, open in Google Maps:', restMapsBtn:'🗺️ {dish} in {city} on Google Maps', restCity:'Type your city for restaurants.', reviews:'reviews',
+    scoreTitle:'Fridge score', scoreText:'Your fridge can make {n} different meals, the fastest in {m} min.', scoreShare:'Share score', scoreCardSub:'How many meals are hiding in your fridge?',
+    challenge:'Ask a friend', challengeText:'I\'ve got {list} in my fridge. What would you make? 🤔 I made "{dish}" with Kitchen Assistant. Try it:',
+    upsellTitle:'There\'s more where these came from', upsellText:'Pro: unlimited searches, 12 results, weekly plan and guest menu.', upsellCook:'Enjoy your meal! 🍳', upsellCookText:'Want me to plan your week too? Pro builds 7 dinners from your pantry, missing items in one tap.', later:'Maybe later', seePro:'See Pro',
+    photoTitle:'Add a photo of your dish', photoShare:'📸 "I cooked this" card', photoPick:'Take / choose photo', cookedShare:'I cooked this 👩‍🍳',
+    savingsTitle:'Savings', savingsText:'You cooked instead of ordering {n} times this month', savingsEst:'estimate, assuming ~{d} per order', savingsPro:'One week of savings = a year of Pro',
+    nutriToday:'Today', nutriWeek:'Last 7 days (daily avg.)', kcalShort:'kcal', protShort:'g protein',
+    weekendTask:'Weekend challenge: cook from a cuisine you haven\'t tried', weekendDone:'Weekend challenge done 🏅', badgeExplorer:'Explorer',
+    monthCard:'Monthly recap card', monthTitle:'My {month}', monthMeals:'{n} meals', monthCuis:'{n} cuisines', monthTop:'Top: {c}', monthSave:'~{s} saved',
+    dislike:'Not for me', disliked:'Noted, I\'ll avoid similar recipes', memoryOn:'Chef memory on: your likes and cooking history shape suggestions.',
+    guestTitle:'Guest menu', guestIntro:'How many people, who\'s coming, how much time? Starter, main, dessert and a minute-by-minute prep plan.', guestPeople:'People', guestTime:'Time available (min)', guestNote:'Who\'s coming? (e.g. 1 vegetarian, 2 kids, no spicy food)', guestMake:'Build the menu', guestMaking:'Building your menu…', guestTimeline:'Prep plan', guestShop:'Add missing to list', courseStarter:'Starter', courseMain:'Main', courseDessert:'Dessert',
+    planPrint:'Print', printShop:'Shopping list',
+    remindSmart:'{r} in {m} minutes with the {a} in your fridge?',
+    widgetHint:'You can add the "What\'s for dinner?" widget to your home screen.',
+    proF8:'Guest menu & chef memory', proF8s:'A three-course menu with a minute-by-minute plan; suggestions that remember what you liked.',
     ok:'OK', scan:'Add from photo', leftovers:'Leftovers', scanTitle:'Ingredients from a photo', scanHelp:'Snap your fridge, counter or a grocery receipt. Pick the ingredients it finds and add them to your pantry.',
     scanning:'Looking at the photo…', scanNone:'No ingredients found. Try a closer, brighter shot.', scanAdd:'Add {n} ingredients', scanAgain:'Another photo', scanPick:'Choose / take photo',
     leftTitle:'Leftovers', leftAsk:'What\'s left over? (e.g. rice, boiled chicken)', leftHint:'Leftovers are marked ♻️; recipes prioritise using them up.',
@@ -791,6 +926,17 @@ let cooked = store.get('cooked', []);          // [{ id, name, emoji, cuisine, a
 let family = store.get('family', []);          // [{ name, notes }]
 let remind = store.get('remind', { on: false, time: '17:00' });
 let planOpts = store.get('planOpts', { protein: '', budget: '' });
+let mode = store.get('mode', 'pantry');          // 'pantry' | 'crave'
+let city = store.get('city', '');
+let geo = store.get('geo', null);                 // { lat, lng }
+let dislikes = store.get('dislikes', []);         // tarif adları
+let guest = store.get('guest', null);
+let upsellSeen = store.get('upsellSeen', { list: 0, cook: false, scoreHint: false });
+let lastDish = '';
+const PLACES_KEY = ''; // derlemede doldurulur (isteğe bağlı)
+const SPONSORS_URL = 'https://raw.githubusercontent.com/kadiryigitbatur/MutfakAsistani/main/sponsors.json';
+const STORE_URL = 'https://play.google.com/store/apps/details?id=com.mutfak.asistan';
+const ORDER_COST = { tr: 350, en: 18 };           // tasarruf hesabı için tahmini sipariş tutarı
 prefs.note = prefs.note || '';
 let plan = store.get('plan', null);
 
@@ -809,6 +955,7 @@ function paintQuota() {
   if (pro) el.innerHTML = esc(t('quotaPro'));
   else if (ownKey()) el.innerHTML = esc(t('quotaOwnKey'));
   else { const left = Math.max(0, LIMITS.freeSearchesPerDay - quotaUsed()); el.innerHTML = left ? t('quotaLeft', { n: left }) : t('quotaNone'); }
+  const el2 = $('#quota2'); if (el2) el2.innerHTML = el.innerHTML;
   const b = $('#btn-pro'); b.classList.toggle('is-pro', !!pro);
   $('#pro-label').textContent = pro ? 'Pro ✓' : 'Pro';
   document.querySelectorAll('[data-pro-tag]').forEach(x => x.hidden = !!pro);
@@ -836,7 +983,7 @@ function requirePro(reasonKey, vars) {
 }
 function openPro(reason) { renderPro(reason); openOverlay($('#pro-modal')); }
 function renderPro(reason = '') {
-  const feats = [['🔁','proF1', { n: LIMITS.freeSearchesPerDay }], ['📅','proF2'], ['🪄','proF3'], ['🥗','proF4'], ['💚','proF5', { n: LIMITS.freeFavs }], ['👨‍👩‍👧','proF7'], ['☁️','proF6']];
+  const feats = [['🔁','proF1', { n: LIMITS.freeSearchesPerDay }], ['📅','proF2'], ['🪄','proF3'], ['🥗','proF4'], ['💚','proF5', { n: LIMITS.freeFavs }], ['👨‍👩‍👧','proF7'], ['🍽️','proF8'], ['☁️','proF6']];
   const price = window.PRO_PRICE || (NATIVE && NATIVE.getProPrice ? NATIVE.getProPrice() : '');
   $('#pro-body').innerHTML = `
     ${reason ? `<div class="tip">${esc(reason)}</div>` : ''}
@@ -986,7 +1133,9 @@ function normalize(r) {
       name: String(i.name || '').trim(), amount: num(i.amount), unit: String(i.unit || '').trim(), have: i.have !== false
     })).filter(i => i.name),
     steps: (Array.isArray(r.steps) ? r.steps : []).map(s => typeof s === 'string' ? { text: s, minutes: 0 } : ({ text: String(s.text || '').trim(), minutes: Math.round(num(s.minutes)) })).filter(s => s.text),
-    tip: String(r.tip || '')
+    tip: String(r.tip || ''),
+    course: ['starter','main','dessert'].includes(r.course) ? r.course : '',
+    schedule: String(r.schedule || '')
   };
   out.id = slug(out.name) + '-' + out.cuisine;
   return out;
@@ -1007,6 +1156,12 @@ function contextLines() {
   if (prefs._priority && prefs._priority.length) out += `\n- These ingredients are about to spoil, use them in every recipe if sensible: ${prefs._priority.join(', ')}`;
   if (prefs.note && prefs.note.trim()) out += `\n- Tonight's situation (adapt portions, style and menu to it): ${prefs.note.trim()}`;
   if (pro && family.length) out += `\n- Household (STRICT: never violate an allergy, avoid dislikes): ${family.map(f => f.name + ': ' + f.notes).join('; ')}`;
+  if (pro) {
+    const liked = favs.slice(0, 8).map(r => r.name), recent = cooked.slice(0, 6).map(c => c.name);
+    if (liked.length) out += `\n- The cook has liked these before (match their taste, don't copy them): ${liked.join(', ')}`;
+    if (recent.length) out += `\n- Cooked recently (avoid repeating): ${recent.join(', ')}`;
+  }
+  if (dislikes.length) out += `\n- The cook did NOT like these; avoid them and anything very similar: ${dislikes.slice(0, 10).join(', ')}`;
   return out;
 }
 function buildPrompt(exclude) {
@@ -1029,7 +1184,7 @@ Rules:
 - Each ingredient has name, amount (number, 0 if "to taste"), unit (short like g, ml, tbsp, tsp, piece; empty if none) and have.
 - Each step is one clear action; "minutes" is the waiting/cooking time of that step in whole minutes, 0 if none.
 - "emoji" is one emoji that represents the dish. "calories" is the estimated kcal per serving; "proteinGrams", "carbsGrams", "fatGrams" are estimated grams per serving.
-- "description" is one appetizing sentence. "tip" is one short practical tip.${exclude.length ? '\n- Do NOT repeat these recipes: ' + exclude.join(', ') + '.' : ''}`;
+- "description" is one appetizing sentence. "tip" is one short practical tip. "estimatedCost" is the estimated cost of ONE serving in ${lang === 'tr' ? 'Turkish lira' : 'US dollars'} as a whole number.${exclude.length ? '\n- Do NOT repeat these recipes: ' + exclude.join(', ') + '.' : ''}`;
 }
 
 const RECIPE_SCHEMA = {
@@ -1038,7 +1193,7 @@ const RECIPE_SCHEMA = {
     name: { type: 'STRING' }, cuisine: { type: 'STRING' }, emoji: { type: 'STRING' }, description: { type: 'STRING' },
     prepMinutes: { type: 'INTEGER' }, cookMinutes: { type: 'INTEGER' },
     difficulty: { type: 'STRING', enum: ['easy','medium','hard'] },
-    servings: { type: 'INTEGER' }, calories: { type: 'INTEGER' }, proteinGrams: { type: 'INTEGER' }, carbsGrams: { type: 'INTEGER' }, fatGrams: { type: 'INTEGER' }, estimatedCost: { type: 'INTEGER' },
+    servings: { type: 'INTEGER' }, calories: { type: 'INTEGER' }, proteinGrams: { type: 'INTEGER' }, carbsGrams: { type: 'INTEGER' }, fatGrams: { type: 'INTEGER' }, estimatedCost: { type: 'INTEGER' }, course: { type: 'STRING' }, schedule: { type: 'STRING' },
     ingredients: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
       name: { type: 'STRING' }, amount: { type: 'NUMBER' }, unit: { type: 'STRING' }, have: { type: 'BOOLEAN' }
     }, required: ['name','amount','unit','have'] } },
@@ -1105,7 +1260,7 @@ async function findRecipes(append = false) {
   } finally {
     busy = false; $('#btn-find').disabled = false; clearPriority();
     moreBtn.disabled = false; moreBtn.innerHTML = `<span>${esc(t('more'))}</span>`;
-    render();
+    render(); syncReminder();
   }
 }
 
@@ -1169,8 +1324,10 @@ function render() {
   }
   const list = visible();
   if (!list.length) { status.innerHTML = stateBox('🔎', t('filteredTitle'), t('filteredText')); return; }
-  grid.innerHTML = list.map(cardHtml).join('');
-  more.hidden = view !== 'results';
+  if (view === 'results') status.innerHTML = scoreHtml();
+  grid.innerHTML = list.map(cardHtml).join('') + (view === 'results' ? upsellCardHtml() : '');
+  more.hidden = view !== 'results' || mode !== 'pantry';
+  $('#restaurants').hidden = mode !== 'crave' || !$('#restaurants').innerHTML;
 }
 
 function cardHtml(r) {
@@ -1190,7 +1347,7 @@ function cardHtml(r) {
   </article>`;
 }
 
-function findById(id) { return recipes.find(r => r.id === id) || favs.find(r => r.id === id) || (plan && plan.find(r => r.id === id)); }
+function findById(id) { return recipes.find(r => r.id === id) || favs.find(r => r.id === id) || (plan && plan.find(r => r.id === id)) || (guest && guest.menu && guest.menu.find(r => r.id === id)); }
 
 function toggleFav(id) {
   const r = findById(id); if (!r) return;
@@ -1278,6 +1435,9 @@ function renderModal() {
     ${miss.length ? `<button class="btn btn-sun btn-sm" data-act="shop">🛒 ${esc(t('addMissing'))}</button>` : ''}
     <button class="btn btn-ghost btn-sm" data-act="fav" aria-pressed="${isFav(r)}">${isFav(r) ? '♥' : '♡'}</button>
     <button class="btn btn-ghost btn-sm" data-act="card">🖼 ${esc(t('shareCard'))}</button>
+    ${mode === 'pantry' && pantry.length ? `<button class="btn btn-ghost btn-sm" data-act="challenge">🤔 ${esc(t('challenge'))}</button>` : ''}
+    ${cooked.some(c => c.id === r.id) ? `<button class="btn btn-ghost btn-sm" data-act="photo">${esc(t('photoShare'))}</button>` : ''}
+    <button class="btn btn-ghost btn-sm dislike" data-act="dislike" aria-pressed="${dislikes.includes(r.name)}">👎 ${esc(t('dislike'))}</button>
     <button class="btn btn-ghost btn-sm" data-act="copy">${esc(t('copy'))}</button>
     <button class="btn btn-ghost btn-sm" data-act="print">${esc(t('print'))}</button>
     <a class="btn btn-ghost btn-sm" href="${yt}" target="_blank" rel="noopener">▶ ${esc(t('video'))}</a>`;
@@ -1306,6 +1466,304 @@ $('#m-body').addEventListener('click', e => {
   currentServings = Math.min(24, Math.max(1, currentServings + Number(b.dataset.srv)));
   renderModal();
 });
+
+/* =====================================================================
+   Mod: Dolabımda ne var / Canım ne istiyor
+   ===================================================================== */
+function setMode(m) {
+  mode = m; store.set('mode', m);
+  $('#mode-pantry').setAttribute('aria-pressed', m === 'pantry'); $('#mode-crave').setAttribute('aria-pressed', m === 'crave');
+  $('#pantry-panel').hidden = m !== 'pantry'; $('#crave-panel').hidden = m !== 'crave';
+  $('#restaurants').hidden = m !== 'crave' || !$('#restaurants').innerHTML;
+  renderCraveSugg(); paintQuota(); render();
+}
+function renderCraveSugg() {
+  $('#crave-sugg').innerHTML = t('craveSugg').map(d => `<button type="button" data-dish="${esc(d)}">${esc(d)}</button>`).join('');
+}
+$('#mode-pantry').addEventListener('click', () => setMode('pantry'));
+$('#mode-crave').addEventListener('click', () => setMode('crave'));
+$('#crave-sugg').addEventListener('click', e => { const b = e.target.closest('[data-dish]'); if (b) { $('#crave-input').value = b.dataset.dish; findCrave(); } });
+$('#crave-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); findCrave(); } });
+$('#btn-crave').addEventListener('click', findCrave);
+$('#city-input').addEventListener('change', e => { city = e.target.value.trim(); store.set('city', city); });
+$('#btn-locate').addEventListener('click', () => {
+  if (!navigator.geolocation) { toast(t('locateFail')); return; }
+  toast(t('locating'));
+  navigator.geolocation.getCurrentPosition(async pos => {
+    geo = { lat: pos.coords.latitude, lng: pos.coords.longitude }; store.set('geo', geo);
+    const name = await reverseCity(geo); if (name) { city = name; store.set('city', city); $('#city-input').value = city; }
+    toast('📍 ' + (city || 'OK'));
+  }, () => toast(t('locateFail')), { timeout: 10000, maximumAge: 600000 });
+});
+async function reverseCity(g) {
+  // Şehir adını Gemini'den iste (ek servis gerekmez); kısa ve ucuz bir istek
+  try {
+    const r = await geminiJson(`Which city (and country) is at latitude ${g.lat}, longitude ${g.lng}? Answer with the city name only, in ${t('aiLang')}.`, { type: 'OBJECT', properties: { city: { type: 'STRING' } }, required: ['city'] });
+    return (r.city || '').trim();
+  } catch { return ''; }
+}
+async function geminiJson(prompt, schema) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.model.trim())}:generateContent`;
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey() }, body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: schema, temperature: 0.2 } }) });
+  if (!res.ok) throw new AppError(res.status === 429 ? 'rate' : 'generic', res.status);
+  const data = await res.json(); return JSON.parse(data.candidates[0].content.parts[0].text);
+}
+
+async function findCrave() {
+  const dish = $('#crave-input').value.trim();
+  if (!dish) { toast(t('craveNeed')); $('#crave-input').focus(); return; }
+  if (busy) return;
+  if (!apiKey()) { toast(t('err_noKey')); openOverlay($('#settings-modal')); return; }
+  if (!canSearch()) { openPro(t('proLockQuota', { n: LIMITS.freeSearchesPerDay })); return; }
+  city = $('#city-input').value.trim(); store.set('city', city);
+  lastDish = dish; noteSearch();
+  busy = true; view = 'results'; lastError = null; recipes = []; render();
+  $('#btn-crave').disabled = true;
+  const prompt = `The cook is craving "${dish}". Create 3 recipes for exactly this dish, in ${t('aiLang')}: (1) the classic, authentic version, (2) a quick weeknight version (max 30 minutes), (3) a lighter or healthier version. Keep the dish recognizable in all three.
+Ingredients the cook has on hand: ${pantry.length ? pantry.join(', ') : 'unknown, assume a basic pantry'}; mark have=true for those plus salt, pepper, oil, water; everything else have=false.${contextLines()}
+Base servings: ${prefs.servings}. "cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Each ingredient has name, amount, unit, have. Each step has text and minutes. Include emoji, calories, proteinGrams, carbsGrams, fatGrams, estimatedCost (one serving, ${lang === 'tr' ? 'TRY' : 'USD'}), description and tip.`;
+  const restP = loadRestaurants(dish, city);
+  try {
+    const list = await requestRecipes([], prompt);
+    recipes = list; if (!recipes.length) lastError = 'empty';
+  } catch (e) { lastError = e.code + (e.status ? ':' + e.status : ''); }
+  finally { busy = false; $('#btn-crave').disabled = false; render(); }
+  await restP;
+}
+
+/* =====================================================================
+   Restoranlar: Google Places (anahtar varsa) + sponsorlar + Haritalar bağlantısı
+   ===================================================================== */
+let sponsors = null;
+async function loadSponsors() {
+  if (sponsors) return sponsors;
+  try { const r = await fetch(SPONSORS_URL, { cache: 'no-store' }); sponsors = r.ok ? await r.json() : {}; } catch { sponsors = {}; }
+  return sponsors;
+}
+function norm(x) { return String(x || '').toLocaleLowerCase('tr').replace(/ı/g, 'i').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim(); }
+function matchSponsors(sp, dish, cityName) {
+  const out = [];
+  for (const entry of (sp.sponsors || [])) {
+    if (entry.enabled === false) continue;
+    const cityOk = !entry.city || norm(entry.city) === norm(cityName);
+    const dishOk = !entry.dishes || entry.dishes.some(d => norm(dish).includes(norm(d)) || norm(d).includes(norm(dish)));
+    if (cityOk && dishOk) out.push(Object.assign({ sponsored: true }, entry));
+  }
+  return out.sort((a, b) => (a.rank || 99) - (b.rank || 99)).slice(0, 2);
+}
+async function placesSearch(dish, cityName) {
+  if (!PLACES_KEY) return null;
+  const body = { textQuery: `${dish} restoran ${cityName}`, languageCode: lang === 'tr' ? 'tr' : 'en', maxResultCount: 10 };
+  if (geo && norm(cityName) === norm(city)) body.locationBias = { circle: { center: { latitude: geo.lat, longitude: geo.lng }, radius: 15000 } };
+  const res = await fetch('https://places.googleapis.com/v1/places:searchText', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': PLACES_KEY,
+    'X-Goog-FieldMask': 'places.displayName,places.rating,places.userRatingCount,places.formattedAddress,places.googleMapsUri,places.priceLevel,places.currentOpeningHours.openNow,places.nationalPhoneNumber' }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error('places ' + res.status);
+  const data = await res.json();
+  return (data.places || []).map(p => ({ name: p.displayName?.text || '', rating: p.rating || 0, count: p.userRatingCount || 0, address: p.formattedAddress || '', maps: p.googleMapsUri || '', price: p.priceLevel || '', open: p.currentOpeningHours ? p.currentOpeningHours.openNow : null, phone: p.nationalPhoneNumber || '' }));
+}
+function stars(r) { const f = Math.round(r); return '★'.repeat(f) + '☆'.repeat(Math.max(0, 5 - f)); }
+function restCard(r) {
+  const maps = r.maps || `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + (r.address || city))}`;
+  return `<div class="rest ${r.sponsored ? 'sponsored' : ''}">${r.sponsored ? `<span class="sp">${esc(t('restSponsored'))}</span>` : ''}
+    <h3>${esc(r.name)}</h3>
+    ${r.rating ? `<div class="rate"><span class="stars" aria-hidden="true">${stars(r.rating)}</span>${Number(r.rating).toFixed(1)} <small style="color:var(--muted);font-weight:500">(${r.count} ${esc(t('reviews'))})</small></div>` : ''}
+    ${r.address ? `<div class="addr">${esc(r.address)}</div>` : ''}${r.note ? `<div class="addr">${esc(r.note)}</div>` : ''}
+    ${r.open === true ? `<span class="open-now">● ${esc(t('restOpen'))}</span>` : r.open === false ? `<span class="closed-now">● ${esc(t('restClosed'))}</span>` : ''}
+    <div class="act"><a href="${esc(maps)}" target="_blank" rel="noopener">🗺️ ${esc(t('restMaps'))}</a>${r.phone ? `<a href="tel:${esc(r.phone)}">📞 ${esc(t('restCall'))}</a>` : ''}</div>
+  </div>`;
+}
+async function loadRestaurants(dish, cityName) {
+  const box = $('#restaurants'); box.hidden = false;
+  if (!cityName) { box.innerHTML = `<div class="rest-head"><h2>🍽️ ${esc(dish)}</h2></div><p class="hint">${esc(t('restCity'))}</p>`; return; }
+  box.innerHTML = `<div class="rest-head"><h2>${esc(t('restTitle', { dish, city: cityName }))}</h2></div><div class="cooking" style="padding:16px 0"><div class="dots"><i></i><i></i><i></i></div></div>`;
+  const sp = matchSponsors(await loadSponsors(), dish, cityName);
+  let list = null;
+  try { list = await placesSearch(dish, cityName); } catch (e) { console.warn(e); list = null; }
+  const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(dish + ' ' + (lang === 'tr' ? 'restoran ' : 'restaurant ') + cityName)}`;
+  let html = `<div class="rest-head"><h2>${esc(t('restTitle', { dish, city: cityName }))}</h2></div>`;
+  const cards = sp.map(restCard).join('') + (list ? list.filter(r => !sp.some(x => norm(x.name) === norm(r.name))).map(restCard).join('') : '');
+  if (list === null) html += `${cards ? `<div class="rest-list">${cards}</div>` : ''}<p class="hint" style="margin-top:12px">${esc(t('restNoKey'))}</p><a class="btn btn-ghost btn-sm" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMapsBtn', { dish, city: cityName }))}</a>`;
+  else if (!cards) html += `<p class="hint">${esc(t('restNone'))}</p><a class="btn btn-ghost btn-sm" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMapsBtn', { dish, city: cityName }))}</a>`;
+  else html += `<div class="rest-list">${cards}</div>`;
+  box.innerHTML = html;
+}
+
+/* =====================================================================
+   Dolap skoru, meydan okuma, satın alma kartları
+   ===================================================================== */
+function scoreHtml() {
+  if (mode !== 'pantry' || !recipes.length) return '';
+  const fastest = Math.min(...recipes.map(totalMin));
+  return `<div class="score-card"><div class="n">${recipes.length}</div><div class="tx"><b>${esc(t('scoreTitle'))}</b><span>${esc(t('scoreText', { n: recipes.length, m: fastest }))}</span></div><button type="button" id="score-share">${esc(t('scoreShare'))}</button></div>`;
+}
+function shareScore() {
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = '#F2B01E'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#1F6B45'; x.beginPath(); x.roundRect(80, 120, 920, 760, 48); x.fill();
+  x.textAlign = 'center'; x.fillStyle = '#DDEFE3'; x.font = '700 40px Figtree, "Segoe UI", sans-serif'; x.fillText(t('scoreTitle').toUpperCase(), W / 2, 230);
+  x.fillStyle = '#F2B01E'; x.font = '800 360px "Bricolage Grotesque", "Segoe UI", sans-serif'; x.fillText(String(recipes.length), W / 2, 560);
+  x.fillStyle = '#fff'; x.font = '800 54px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  wrapText(x, t('scoreText', { n: recipes.length, m: Math.min(...recipes.map(totalMin)) }), 820).forEach((l, i) => x.fillText(l, W / 2, 680 + i * 66));
+  x.fillStyle = '#3A2A00'; x.font = '600 38px Figtree, "Segoe UI", sans-serif'; x.textAlign = 'left';
+  const ings = pantry.slice(0, 10).join(' · '); wrapText(x, ings, 920).slice(0, 3).forEach((l, i) => x.fillText(l, 80, 980 + i * 52));
+  x.font = '800 44px "Bricolage Grotesque", "Segoe UI", sans-serif'; x.textAlign = 'center'; x.fillText(t('scoreCardSub'), W / 2, 1190);
+  x.font = '700 34px Figtree, "Segoe UI", sans-serif'; x.fillText('🍳 ' + t('appTitle'), W / 2, 1260);
+  const png = c.toDataURL('image/png');
+  if (NATIVE && NATIVE.shareImage) NATIVE.shareImage(t('scoreTitle'), png); else { const a = document.createElement('a'); a.href = png; a.download = 'score.png'; a.click(); }
+}
+function shareChallenge(r) {
+  const txt = t('challengeText', { list: pantry.slice(0, 5).join(', '), dish: r.name }) + ' ' + STORE_URL;
+  if (NATIVE && NATIVE.share) NATIVE.share(t('challenge'), txt); else copyText(txt);
+}
+function upsellCardHtml() {
+  if (pro || mode !== 'pantry' || !recipes.length) return '';
+  if ((upsellSeen.list || 0) >= 3) return '';           // en fazla 3 kez görünür
+  return `<div class="upsell-card" data-upsell role="button" tabindex="0"><b>✨ ${esc(t('upsellTitle'))}</b><span>${esc(t('upsellText'))}</span><span class="pro-tag" style="align-self:flex-start">${esc(t('seePro'))} →</span></div>`;
+}
+$('#grid').addEventListener('click', e => {
+  const u = e.target.closest('[data-upsell]'); if (u) { upsellSeen.list = (upsellSeen.list || 0) + 1; store.set('upsellSeen', upsellSeen); openPro(); }
+});
+$('#status').addEventListener('click', e => {
+  if (e.target.closest('#score-share')) shareScore();
+  if (e.target.closest('#month-share')) shareMonth();
+});
+function offerPlanAfterCook() {
+  if (pro || upsellSeen.cook) return;
+  upsellSeen.cook = true; store.set('upsellSeen', upsellSeen);
+  setTimeout(() => openPro(t('upsellCook') + ' ' + t('upsellCookText')), 900);
+}
+
+/* =====================================================================
+   "Pişirdim" fotoğraf kartı
+   ===================================================================== */
+let cookedPhotoFor = null;
+function cookedPhoto(r) {
+  cookedPhotoFor = r;
+  const inp = $('#scan-file'); inp.dataset.purpose = 'cooked'; inp.value = ''; inp.click();
+}
+async function shareCookedCard(r, dataUrl) {
+  const img = new Image(); await new Promise(res => { img.onload = res; img.src = dataUrl; });
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = '#1F6B45'; x.fillRect(0, 0, W, H);
+  // fotoğraf: kare, orta kırpma
+  const s = Math.min(img.width, img.height), sx = (img.width - s) / 2, sy = (img.height - s) / 2;
+  x.save(); x.beginPath(); x.roundRect(80, 80, 920, 920, 40); x.clip(); x.drawImage(img, sx, sy, s, s, 80, 80, 920, 920); x.restore();
+  x.fillStyle = '#F2B01E'; x.font = '700 34px Figtree, "Segoe UI", sans-serif'; x.textAlign = 'left'; x.fillText(t('cookedShare'), 80, 1070);
+  x.fillStyle = '#fff'; x.font = '800 60px "Bricolage Grotesque", "Segoe UI", sans-serif';
+  wrapText(x, r.emoji + ' ' + r.name, 920).slice(0, 2).forEach((l, i) => x.fillText(l, 80, 1150 + i * 70));
+  x.fillStyle = '#DDEFE3'; x.font = '600 32px Figtree, "Segoe UI", sans-serif'; x.fillText(`⏱ ${totalMin(r)} ${t('min')} · 🍳 ${t('appTitle')}`, 80, 1290);
+  const png = c.toDataURL('image/jpeg', .9);
+  if (NATIVE && NATIVE.shareImage) NATIVE.shareImage(r.name, png); else { const a = document.createElement('a'); a.href = png; a.download = 'cooked.jpg'; a.click(); }
+}
+
+/* =====================================================================
+   Tasarruf, besin günlüğü, hafta sonu görevi, aylık kart
+   ===================================================================== */
+const cur = () => lang === 'tr' ? '₺' : '$';
+function mealSaving(c) {
+  const r = c.recipe || {}; const order = ORDER_COST[lang] * Math.max(1, Math.round((r.servings || 2) / 2));
+  const costMeal = r.cost ? r.cost * (r.servings || prefs.servings || 2) : order * 0.35;
+  return Math.max(0, order - costMeal);
+}
+function monthCooked() { const now = new Date(); return cooked.filter(c => { const d = new Date(c.at); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }); }
+function savingsHtml() {
+  const mc = monthCooked(); if (!mc.length) return '';
+  const total = Math.round(mc.reduce((a, c) => a + mealSaving(c), 0));
+  return `<div class="save-box"><div><div class="amt">~${cur()}${total}</div><small>${esc(t('savingsTitle'))}</small></div><div><div>${esc(t('savingsText', { n: mc.length }))}</div><small>${esc(t('savingsEst', { d: cur() + ORDER_COST[lang] }))}${pro ? '' : ' · <b>' + esc(t('savingsPro')) + '</b>'}</small></div></div>`;
+}
+function nutriHtml() {
+  if (!pro) return '';
+  const today = new Date().toDateString();
+  const td = cooked.filter(c => new Date(c.at).toDateString() === today);
+  const wk = cooked.filter(c => Date.now() - new Date(c.at) < 7 * DAY);
+  const sum = (arr, k) => arr.reduce((a, c) => a + ((c.recipe || {})[k] || 0), 0);
+  if (!td.length && !wk.length) return '';
+  return `<div class="nutri"><div class="box"><b>${sum(td, 'calories')} ${esc(t('kcalShort'))}</b>${esc(t('nutriToday'))} · ${sum(td, 'protein')} ${esc(t('protShort'))}</div><div class="box"><b>${Math.round(sum(wk, 'calories') / 7)} ${esc(t('kcalShort'))}</b>${esc(t('nutriWeek'))} · ${Math.round(sum(wk, 'protein') / 7)} ${esc(t('protShort'))}</div></div>`;
+}
+function weekendState() {
+  const now = new Date(), day = now.getDay(); // 0 Paz, 5 Cum, 6 Cmt
+  if (![5, 6, 0].includes(day)) return null;
+  const start = new Date(now); start.setDate(now.getDate() - (day === 0 ? 2 : day - 5)); start.setHours(0, 0, 0, 0);
+  const before = new Set(cooked.filter(c => new Date(c.at) < start).map(c => c.cuisine));
+  const done = cooked.some(c => new Date(c.at) >= start && !before.has(c.cuisine));
+  return { done };
+}
+function monthName() { return new Date().toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US', { month: 'long' }); }
+function shareMonth() {
+  const mc = monthCooked(); const cuis = {}; mc.forEach(c => cuis[c.cuisine] = (cuis[c.cuisine] || 0) + 1);
+  const top = Object.entries(cuis).sort((a, b) => b[1] - a[1])[0];
+  const total = Math.round(mc.reduce((a, c) => a + mealSaving(c), 0));
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = '#0D1612'; x.fillRect(0, 0, W, H);
+  x.textAlign = 'left'; x.fillStyle = '#5FCB8D'; x.font = '700 40px Figtree, "Segoe UI", sans-serif'; x.fillText(t('monthTitle', { month: monthName() }).toUpperCase(), 80, 180);
+  x.fillStyle = '#fff'; x.font = '800 200px "Bricolage Grotesque", "Segoe UI", sans-serif'; x.fillText(String(mc.length), 80, 400);
+  x.font = '800 64px "Bricolage Grotesque", "Segoe UI", sans-serif'; x.fillText(t('monthMeals', { n: mc.length }).replace(/^\d+\s*/, ''), 80, 480);
+  const rows = [t('monthCuis', { n: Object.keys(cuis).length }), top ? t('monthTop', { c: t('cuisine')[top[0]] || top[0] }) : '', total ? t('monthSave', { s: cur() + total }) : ''].filter(Boolean);
+  x.font = '600 46px Figtree, "Segoe UI", sans-serif'; x.fillStyle = '#9BB0A4'; rows.forEach((r, i) => x.fillText('• ' + r, 80, 600 + i * 70));
+  const emo = mc.slice(0, 12).map(c => c.emoji).join(' '); x.font = '80px "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif'; x.fillStyle = '#fff';
+  wrapText(x, emo, 920).slice(0, 2).forEach((l, i) => x.fillText(l, 80, 900 + i * 110));
+  x.fillStyle = '#F2B01E'; x.font = '800 40px "Bricolage Grotesque", "Segoe UI", sans-serif'; x.fillText('🍳 ' + t('appTitle'), 80, 1260);
+  const png = c.toDataURL('image/png');
+  if (NATIVE && NATIVE.shareImage) NATIVE.shareImage(t('monthCard'), png); else { const a = document.createElement('a'); a.href = png; a.download = 'month.png'; a.click(); }
+}
+
+/* =====================================================================
+   Pro: misafir menüsü
+   ===================================================================== */
+let guestBusy = false;
+function renderGuest() {
+  const body = $('#g-body'), foot = $('#g-foot');
+  if (guestBusy) { body.innerHTML = `<div class="cooking"><div class="dots"><i></i><i></i><i></i></div><div class="msg">${esc(t('guestMaking'))}</div></div>`; foot.innerHTML = ''; return; }
+  const g = guest || {};
+  body.innerHTML = `<p class="hint">${esc(t('guestIntro'))}</p>
+    <div class="plan-opts"><label>${esc(t('guestPeople'))}<input id="g-people" type="number" min="2" max="30" value="${g.people || 6}"></label><label>${esc(t('guestTime'))}<input id="g-time" type="number" min="30" max="600" step="15" value="${g.time || 120}"></label></div>
+    <textarea id="g-note" class="note" placeholder="${esc(t('guestNote'))}">${esc(g.note || '')}</textarea>` +
+    (g.menu && g.menu.length ? `<div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">${g.menu.map(r => `<div class="guest-course" data-id="${esc(r.id)}" role="button" tabindex="0"><span class="c">${esc(t('course' + (r.course === 'starter' ? 'Starter' : r.course === 'dessert' ? 'Dessert' : 'Main')))}</span><span class="e">${esc(r.emoji)}</span><div class="n"><b>${esc(r.name)}</b><span>⏱ ${totalMin(r)} ${esc(t('min'))} · ${missingOf(r).length ? '⚠️ ' + esc(t('missing', { n: missingOf(r).length })) : '✅ ' + esc(t('ready'))}</span></div></div>`).join('')}</div>
+    <div class="sec-title" style="margin-top:16px">${esc(t('guestTimeline'))}</div><div class="timeline">${g.menu.filter(r => r.schedule).map(r => `<div><b>${esc(r.schedule.split(/[:：]/)[0].trim())}</b><span>${esc(r.emoji)} ${esc(r.schedule.includes(':') ? r.schedule.slice(r.schedule.indexOf(':') + 1).trim() : r.schedule)}</span></div>`).join('')}</div>` : '');
+  foot.innerHTML = `<button class="btn btn-primary btn-sm" id="g-make">${esc(t('guestMake'))}</button>` + (g.menu && g.menu.length ? `<button class="btn btn-sun btn-sm" id="g-shop">🛒 ${esc(t('guestShop'))}</button>` : '');
+}
+async function makeGuest() {
+  const people = Number($('#g-people').value) || 6, time = Number($('#g-time').value) || 120, note = $('#g-note').value.trim();
+  if (!apiKey()) { toast(t('err_noKey')); return; }
+  if (!canSearch()) return;
+  guest = { people, time, note, menu: (guest && guest.menu) || [] }; store.set('guest', guest);
+  guestBusy = true; renderGuest();
+  const prompt = `Plan a dinner for ${people} guests to be served in ${time} minutes from now. Create exactly 3 recipes in ${t('aiLang')}: one with course="starter", one with course="main", one with course="dessert"; they must work together as a menu and be realistic for one home cook in that time (dessert and starter can be made ahead).
+Guests: ${note || 'no special notes'}.${contextLines()}
+Ingredients on hand: ${pantry.length ? pantry.join(', ') : 'unknown, assume a basic pantry'} (have=true for those plus salt, pepper, oil, water; others have=false).
+Servings for every recipe: ${people}. Cuisine preference: ${selCuisines.length ? selCuisines.join(', ') : 'any'}. Dietary requirements: ${selDiets.length ? selDiets.join(', ') + ' (strict)' : 'none'}.
+For each recipe set "schedule" to when the cook should start it, counted back from serving time, in this exact form: "T-90 min: start the dessert and chill" (begin with T-<minutes> min:). "cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Each ingredient has name, amount, unit, have. Each step has text and minutes. Include emoji, calories, proteinGrams, carbsGrams, fatGrams, estimatedCost, description, tip.`;
+  try {
+    noteSearch();
+    const list = await requestRecipes([], prompt);
+    if (list.length < 2) throw new AppError('parse');
+    const order = { starter: 0, main: 1, dessert: 2 };
+    guest.menu = list.slice(0, 3).sort((a, b) => (order[a.course] ?? 1) - (order[b.course] ?? 1)); store.set('guest', guest);
+  } catch (e) { toast(t('err_' + (e.code || 'generic'))); }
+  finally { guestBusy = false; renderGuest(); }
+}
+$('#btn-guest').addEventListener('click', () => { if (!requirePro('proLockFeature')) return; renderGuest(); openOverlay($('#guest-modal')); });
+$('#g-foot').addEventListener('click', e => {
+  if (e.target.closest('#g-make')) makeGuest();
+  if (e.target.closest('#g-shop') && guest && guest.menu) addToShop([...new Set(guest.menu.flatMap(r => missingOf(r).map(i => i.name)))]);
+});
+$('#g-body').addEventListener('click', e => { const d = e.target.closest('.guest-course'); if (d) openRecipe(d.dataset.id); });
+
+/* =====================================================================
+   Haftalık planı yazdır (plan + tek sayfa alışveriş listesi)
+   ===================================================================== */
+function printPlan() {
+  if (!plan || !plan.length) return;
+  const days = t('days'); const miss = [...new Set(plan.flatMap(r => missingOf(r).map(i => ingredientLine(i, prefs.servings / r.servings))))];
+  $('#print-area').innerHTML = `<h1>📅 ${esc(t('planTitle'))} · ${esc(t('appTitle'))}</h1>
+    <table>${plan.map((r, i) => `<tr><td><b>${esc(days[i % 7])}</b></td><td>${esc(r.emoji)} <b>${esc(r.name)}</b><br><small>${esc(r.description)}</small></td><td>${totalMin(r)} ${esc(t('min'))}</td></tr>`).join('')}</table>
+    <h2>🛒 ${esc(t('printShop'))}</h2><ul>${miss.map(m => `<li>☐ ${esc(m)}</li>`).join('')}</ul>`;
+  document.body.classList.add('print-plan');
+  const done = () => { document.body.classList.remove('print-plan'); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  if (NATIVE && NATIVE.print) NATIVE.print(t('planTitle')); else window.print();
+  setTimeout(done, 60000);
+}
 
 /* =====================================================================
    Fotoğraftan malzeme (Gemini görüntü)
@@ -1365,7 +1823,11 @@ $('#sc-foot').addEventListener('click', e => {
     addIngredients(chosen.join(', ')); closeOverlay($('#scan-modal')); toast(t('addedN', { n: chosen.length }));
   }
 });
-$('#scan-file').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (f) scanPhoto(f); });
+$('#scan-file').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  if (e.target.dataset.purpose === 'cooked') { delete e.target.dataset.purpose; const r = cookedPhotoFor; cookedPhotoFor = null; if (r) shareCookedCard(r, await shrinkImage(f)); return; }
+  scanPhoto(f);
+});
 
 /* =====================================================================
    Tarif kartı paylaşımı (görsel)
@@ -1407,16 +1869,22 @@ function shareCard(r) {
    ===================================================================== */
 function logCooked(r) {
   cooked.unshift({ id: r.id, name: r.name, emoji: r.emoji, cuisine: r.cuisine, at: new Date().toISOString(), recipe: r });
-  cooked = cooked.slice(0, 200); store.set('cooked', cooked); toast(t('cookedToast'));
+  cooked = cooked.slice(0, 200); store.set('cooked', cooked); toast(t('cookedToast')); syncReminder();
 }
 function diaryHtml() {
   const now = new Date(), m = now.getMonth(), yr = now.getFullYear();
   const month = cooked.filter(c => { const d = new Date(c.at); return d.getMonth() === m && d.getFullYear() === yr; }).length;
   const week = cooked.filter(c => Date.now() - new Date(c.at) < 7 * DAY).length;
   const cuis = new Set(cooked.map(c => c.cuisine)).size, n = cooked.length;
-  const badges = [['badge1', n >= 1], ['badge5', n >= 5], ['badge10', n >= 10], ['badge25', n >= 25], ['badgeCuis', cuis >= 3], ['badgeWeek', week >= 3]];
+  const explorer = store.get('explorer', false) || (weekendState() && weekendState().done);
+  if (explorer) store.set('explorer', true);
+  const badges = [['badge1', n >= 1], ['badge5', n >= 5], ['badge10', n >= 10], ['badge25', n >= 25], ['badgeCuis', cuis >= 3], ['badgeWeek', week >= 3], ['badgeExplorer', !!explorer]];
+  const ws = weekendState();
   return `<div class="diary"><div><div class="big-n">🍳 ${month}</div><div class="hint">${esc(t('diaryMonth', { n: month }))} · ${esc(t('diaryTotal', { n }))}</div></div>
+    ${month ? `<button type="button" class="btn btn-ghost btn-sm" id="month-share" style="margin-left:auto">🖼 ${esc(t('monthCard'))}</button>` : ''}
     <div class="badges">${badges.map(([k, on]) => `<span class="bd ${on ? 'on' : ''}">${on ? '🏅' : '○'} ${esc(t(k))}</span>`).join('')}</div>
+    ${ws ? `<div class="task-box ${ws.done ? 'done' : ''}">${ws.done ? '🏅 ' + esc(t('weekendDone')) : '🎯 ' + esc(t('weekendTask'))}</div>` : ''}
+    ${savingsHtml()}${nutriHtml()}
     ${n ? `<div class="lst">${cooked.slice(0, 8).map(c => `<button type="button" data-cooked="${esc(c.id)}">${esc(c.emoji)} ${esc(c.name)}</button>`).join('')}</div>` : `<p class="hint" style="width:100%">${esc(t('diaryEmpty'))}</p>`}</div>`;
 }
 $('#status').addEventListener('click', e => {
@@ -1484,7 +1952,7 @@ function renderPlan() {
        ${total ? `<p class="plan-cost" style="margin-top:10px">${esc(t('planTotal'))}: <b>~${cur}${total}</b> (${esc(t('planEst'))})</p>` : ''}`
     : `<p class="hint">${esc(t('planEmpty'))}</p>`);
   foot.innerHTML = `<button class="btn btn-primary btn-sm" id="plan-make">${esc(t(plan && plan.length ? 'planRemake' : 'planMake'))}</button>` +
-    (plan && plan.length ? `<button class="btn btn-sun btn-sm" id="plan-shop">🛒 ${esc(t('planShop'))}</button><button class="btn btn-ghost btn-sm" id="plan-share">${esc(t('planShare'))}</button>` : '');
+    (plan && plan.length ? `<button class="btn btn-sun btn-sm" id="plan-shop">🛒 ${esc(t('planShop'))}</button><button class="btn btn-ghost btn-sm" id="plan-share">${esc(t('planShare'))}</button><button class="btn btn-ghost btn-sm" id="plan-print">🖨 ${esc(t('planPrint'))}</button>` : '');
 }
 $('#plan-body').addEventListener('change', e => {
   if (e.target.id === 'po-protein') planOpts.protein = e.target.value; if (e.target.id === 'po-budget') planOpts.budget = e.target.value;
@@ -1514,6 +1982,7 @@ $('#btn-plan').addEventListener('click', () => { if (!requirePro('proLockFeature
 $('#plan-foot').addEventListener('click', e => {
   if (e.target.closest('#plan-make')) makePlan();
   if (e.target.closest('#plan-shop') && plan) addToShop([...new Set(plan.flatMap(r => missingOf(r).map(i => i.name)))]);
+  if (e.target.closest('#plan-print') && plan) printPlan();
   if (e.target.closest('#plan-share') && plan) {
     const days = t('days'); const txt = `📅 ${t('planTitle')}\n` + plan.map((r, i) => `${days[i % 7]}: ${r.emoji} ${r.name} (${totalMin(r)} ${t('min')})`).join('\n') + `\n\n🛒 ${[...new Set(plan.flatMap(r => missingOf(r).map(i => i.name)))].join(', ')}`;
     if (NATIVE && NATIVE.share) NATIVE.share(t('planTitle'), txt); else copyText(txt);
@@ -1550,12 +2019,27 @@ $('#pantry-sets').addEventListener('click', async e => {
 /* =====================================================================
    Günlük hatırlatma (Android bildirimi)
    ===================================================================== */
-function syncReminder() {
-  if (!NATIVE || !NATIVE.setReminder) return;
-  const soon = soonItems();
-  const body = soon.length ? t('remindSoon', { list: soon.join(', ') }) + ' · ' + t('remindBody') : t('remindBody');
-  NATIVE.setReminder(!!remind.on, remind.time || '17:00', t('appTitle'), body);
+function bestSuggestion() {
+  const pool = [...recipes, ...favs, ...((plan || []))].filter(r => r && r.ingredients && !cooked.slice(0, 5).some(c => c.id === r.id));
+  const ready = pool.filter(r => missingOf(r).length === 0).sort((a, b) => totalMin(a) - totalMin(b));
+  const r = ready[0] || pool[0]; if (!r) return null;
+  const have = r.ingredients.filter(i => i.have).slice(0, 2).map(i => i.name).join(' ' + (lang === 'tr' ? 've' : 'and') + ' ');
+  return { id: r.id, text: t('remindSmart', { a: have, m: totalMin(r), r: r.name }), recipe: r };
 }
+function syncReminder() {
+  const soon = soonItems(), sug = bestSuggestion();
+  if (sug) store.set('suggestion', sug.recipe);
+  let body = sug ? sug.text : t('remindBody');
+  if (soon.length) body = t('remindSoon', { list: soon.join(', ') }) + ' · ' + body;
+  if (NATIVE && NATIVE.setReminder) NATIVE.setReminder(!!remind.on, remind.time || '17:00', t('appTitle'), body, sug ? sug.id : '');
+  if (NATIVE && NATIVE.setWidget) NATIVE.setWidget(sug ? sug.text : t('remindBody'), sug ? sug.id : '');
+}
+// Bildirimden / widget'tan gelen tarif kimliği
+window.openFromNative = id => {
+  if (!id) return;
+  if (!findById(id)) { const s = store.get('suggestion', null); if (s && s.id === id) recipes.unshift(s); }
+  if (findById(id)) openRecipe(id);
+};
 window.onReminderDenied = () => { remind.on = false; store.set('remind', remind); $('#rem-on').checked = false; toast(t('remindNA')); };
 $('#rem-on').addEventListener('change', e => { remind.on = e.target.checked; store.set('remind', remind); syncReminder(); });
 $('#rem-time').addEventListener('change', e => { remind.time = e.target.value || '17:00'; store.set('remind', remind); syncReminder(); });
@@ -1575,7 +2059,7 @@ $('#fam').addEventListener('input', e => {
 $('#fam').addEventListener('click', e => { const r = e.target.closest('[data-fr]'); if (!r) return; family.splice(Number(r.dataset.fr), 1); store.set('family', family); renderFamily(); });
 
 function backupText() {
-  return JSON.stringify({ app: 'mutfak-asistani', v: 2, at: new Date().toISOString(), favs, shop, pantry, pantrySets, prefs, cuisines: selCuisines, diets: selDiets, plan, expiry, leftovers, cooked, family, planOpts });
+  return JSON.stringify({ app: 'mutfak-asistani', v: 2, at: new Date().toISOString(), favs, shop, pantry, pantrySets, prefs, cuisines: selCuisines, diets: selDiets, plan, expiry, leftovers, cooked, family, planOpts, dislikes, city, guest });
 }
 $('#bk-export').addEventListener('click', () => {
   if (!requirePro('proLockFeature')) return;
@@ -1593,6 +2077,7 @@ $('#bk-import').addEventListener('click', () => {
     selCuisines = Array.isArray(d.cuisines) ? d.cuisines : selCuisines; selDiets = Array.isArray(d.diets) ? d.diets : selDiets; plan = Array.isArray(d.plan) ? d.plan : plan;
     expiry = d.expiry && typeof d.expiry === 'object' ? d.expiry : expiry; leftovers = Array.isArray(d.leftovers) ? d.leftovers : leftovers; cooked = Array.isArray(d.cooked) ? d.cooked : cooked; family = Array.isArray(d.family) ? d.family : family; planOpts = d.planOpts || planOpts;
     store.set('expiry', expiry); store.set('leftovers', leftovers); store.set('cooked', cooked); store.set('family', family); store.set('planOpts', planOpts); renderFamily();
+    dislikes = Array.isArray(d.dislikes) ? d.dislikes : dislikes; city = d.city || city; guest = d.guest || guest; store.set('dislikes', dislikes); store.set('city', city); store.set('guest', guest);
     ['favs','shop','pantry','pantrySets','prefs','plan'].forEach(k => store.set(k, { favs, shop, pantry, pantrySets, prefs, plan }[k]));
     store.set('cuisines', selCuisines); store.set('diets', selDiets);
     ta.hidden = true; ta.value = ''; applyI18n(); syncPrefs(); render(); renderShop(); renderSets(); toast(t('backupDone'));
@@ -1606,6 +2091,9 @@ $('#m-foot').addEventListener('click', e => {
   if (a === 'fav') toggleFav(current.id);
   if (a === 'copy') copyText(recipeText(current, currentServings));
   if (a === 'card') shareCard(current);
+  if (a === 'challenge') shareChallenge(current);
+  if (a === 'photo') cookedPhoto(current);
+  if (a === 'dislike') { if (dislikes.includes(current.name)) dislikes = dislikes.filter(d => d !== current.name); else { dislikes.unshift(current.name); dislikes = dislikes.slice(0, 30); toast(t('disliked')); } store.set('dislikes', dislikes); renderModal(); }
   if (a === 'print') { NATIVE ? NATIVE.print(current.name) : window.print(); }
 });
 
@@ -1694,7 +2182,7 @@ $('#c-timer-btn').addEventListener('click', () => {
 });
 $('#c-prev').addEventListener('click', () => { if (cookStep > 0) { cookStep--; renderCook(); } });
 $('#c-next').addEventListener('click', () => {
-  if (cookStep < current.steps.length - 1) { cookStep++; renderCook(); } else { logCooked(current); closeOverlay($('#cook')); }
+  if (cookStep < current.steps.length - 1) { cookStep++; renderCook(); } else { logCooked(current); closeOverlay($('#cook')); renderModal(); offerPlanAfterCook(); }
 });
 
 /* =====================================================================
@@ -1821,8 +2309,9 @@ $('#btn-theme').addEventListener('click', () => {
 });
 $('#btn-lang').addEventListener('click', () => {
   lang = lang === 'tr' ? 'en' : 'tr'; store.set('lang', lang);
-  applyI18n(); render(); renderShop(); renderSets(); paintQuota();
+  applyI18n(); render(); renderShop(); renderSets(); paintQuota(); renderCraveSugg();
   if (current && !$('#recipe-modal').hidden) renderModal();
+  if (!$('#guest-modal').hidden) renderGuest();
   if (!$('#pro-modal').hidden) renderPro();
   if (!$('#plan-modal').hidden) renderPlan();
 });
@@ -1834,6 +2323,8 @@ window.androidBack = () => { if (stack.length) { closeOverlay(stack[stack.length
    Başlat
    ===================================================================== */
 syncPrefs(); paintTheme(); applyI18n(); render(); renderShop(); renderSets(); paintQuota(); syncReminder();
+$('#city-input').value = city; setMode(mode);
+if (NATIVE && NATIVE.pendingRecipe) { const pid = NATIVE.pendingRecipe(); if (pid) setTimeout(() => window.openFromNative(pid), 300); }
 if (NATIVE && NATIVE.refreshPro) NATIVE.refreshPro();
 </script>
 </body>

@@ -1,0 +1,18 @@
+{
+  "_comment": "Sponsorlu restoranlar. Uygulama bu dosyayı her aramada internetten okur; değişiklik için yeniden derleme gerekmez. city: şehir adı (boş = her şehir), dishes: eşleşecek yemek adları (boş = her yemek), rank: sıralama (1 en üstte).",
+  "sponsors": [
+    {
+      "name": "Örnek Mantı Evi",
+      "city": "Ankara",
+      "dishes": ["mantı", "manti"],
+      "address": "Kızılay, Çankaya",
+      "rating": 4.7,
+      "count": 1240,
+      "phone": "+90 312 000 00 00",
+      "maps": "https://maps.google.com/?q=Ornek+Manti+Evi+Ankara",
+      "note": "Örnek kayıt — gerçek bir işletme değildir. Silip kendi anlaşmalarınızı ekleyin.",
+      "rank": 1,
+      "enabled": false
+    }
+  ]
+}

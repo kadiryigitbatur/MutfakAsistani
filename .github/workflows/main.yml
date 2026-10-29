@@ -19,7 +19,10 @@ jobs:
       - name: API anahtarını uygulamaya göm
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: sed -i "s|const EMBEDDED_KEY = '';|const EMBEDDED_KEY = '$GEMINI_API_KEY';|" app/src/main/assets/index.html && grep -c "const EMBEDDED_KEY = '$GEMINI_API_KEY'" app/src/main/assets/index.html
+          PLACES_API_KEY: ${{ secrets.PLACES_API_KEY }}
+        run: |
+          sed -i "s|const EMBEDDED_KEY = '';|const EMBEDDED_KEY = '$GEMINI_API_KEY';|" app/src/main/assets/index.html && grep -c "const EMBEDDED_KEY = '$GEMINI_API_KEY'" app/src/main/assets/index.html
+          if [ -n "$PLACES_API_KEY" ]; then sed -i "s|const PLACES_KEY = '';|const PLACES_KEY = '$PLACES_API_KEY';|" app/src/main/assets/index.html; echo "Places anahtari eklendi"; else echo "Places anahtari yok: restoranlar Haritalar baglantisiyla"; fi
       - name: Derle
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
