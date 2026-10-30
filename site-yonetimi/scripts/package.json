@@ -1,0 +1,17 @@
+{
+  "name": "site-yonetimi-scripts",
+  "version": "1.0.0",
+  "description": "Site Yönetimi – tek seferlik yönetim betikleri (claim atama, demo veri)",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "set-claims": "node set-claims.js",
+    "seed-demo": "node seed-demo.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.0"
+  }
+}

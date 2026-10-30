@@ -1,0 +1,481 @@
+rules_version = '2';
+
+// =====================================================================
+//  Site Yönetimi – Firestore Güvenlik Kuralları
+// ---------------------------------------------------------------------
+//  Çok kiracılı (multi-tenant) yapı:
+//    sites/{siteId}                -> site (apartman / toplu konut) belgesi
+//    sites/{siteId}/{koleksiyon}/… -> siteye ait tüm veriler
+//    users/{uid}                   -> kullanıcı profili (siteId, role, unitId…)
+//
+//  Yetki, Firebase Auth "custom claims" üzerinden taşınır:
+//    siteId : kullanıcının bağlı olduğu site
+//    role   : superadmin | admin | staff | security | resident
+//    unitId : (sakinler için) bağımsız bölüm / daire kimliği
+//
+//  Claim'ler yalnızca sunucu tarafında (Cloud Function `setUserRole`
+//  veya scripts/set-claims.js) atanır; istemci kendi rolünü değiştiremez.
+//
+//  Genel ilke: Varsayılan olarak HER ŞEY YASAK (default deny).
+//  Aşağıda açıkça izin verilmeyen hiçbir işlem yapılamaz.
+// =====================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -----------------------------------------------------------------
+    //  Yardımcı fonksiyonlar
+    // -----------------------------------------------------------------
+
+    // Oturum açmış mı?
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Claim okuyucular (claim yoksa boş string döner, hata fırlatmaz)
+    function myRole() {
+      return isSignedIn() ? request.auth.token.get('role', '') : '';
+    }
+
+    function mySite() {
+      return isSignedIn() ? request.auth.token.get('siteId', '') : '';
+    }
+
+    function myUnit() {
+      return isSignedIn() ? request.auth.token.get('unitId', '') : '';
+    }
+
+    // Rol kontrolü: verilen listedeki rollerden birine sahip mi?
+    function hasRole(roles) {
+      return isSignedIn() && myRole() in roles;
+    }
+
+    // Süper yönetici: tüm sitelerde tam yetki (SaaS sahibi)
+    function isSuperadmin() {
+      return hasRole(['superadmin']);
+    }
+
+    // Yönetici (site yöneticisi) veya süper yönetici
+    function isAdmin() {
+      return hasRole(['superadmin', 'admin']);
+    }
+
+    // Personel benzeri roller: yönetici, personel, güvenlik
+    function isStaffLike() {
+      return hasRole(['superadmin', 'admin', 'staff', 'security']);
+    }
+
+    // Kullanıcı bu siteye mi bağlı? (süper yönetici her siteye bağlı sayılır)
+    function sameSite(siteId) {
+      return isSignedIn() && (isSuperadmin() || mySite() == siteId);
+    }
+
+    // Site bazlı kısayollar
+    function isSiteAdmin(siteId) {
+      return sameSite(siteId) && isAdmin();
+    }
+
+    function isSiteStaff(siteId) {
+      return sameSite(siteId) && isStaffLike();
+    }
+
+    // Sitenin herhangi bir üyesi (personel benzeri roller + sakin)
+    function isSiteMember(siteId) {
+      return sameSite(siteId) && (isStaffLike() || myRole() == 'resident');
+    }
+
+    // Belge, kullanıcının kendi dairesine mi ait?
+    function ownsUnit(data) {
+      return myUnit() != '' && data.unitId == myUnit();
+    }
+
+    // Belgeyi bu kullanıcı mı oluşturdu?
+    function ownsDoc(data) {
+      return isSignedIn() && data.createdBy == request.auth.uid;
+    }
+
+    // Yeni oluşturulan belge, oluşturan kullanıcıyı ve dairesini doğru işaretliyor mu?
+    function createdByMe() {
+      return isSignedIn() && request.resource.data.createdBy == request.auth.uid;
+    }
+
+    function forMyUnit() {
+      return myUnit() != '' && request.resource.data.unitId == myUnit();
+    }
+
+    // Güncellemede belirtilen alanlara dokunulmadı mı?
+    function untouched(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // Güncellemede YALNIZCA belirtilen alanlar değişti mi?
+    function onlyChanges(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    // Oluşturma sırasında temel alan doğrulamaları (koleksiyona göre)
+    function validCreate(collection, d) {
+      return (collection != 'dues'
+                || (d.unitId is string && d.period is string
+                    && d.amount is number && d.amount > 0))
+          && (collection != 'payments'
+                || (d.unitId is string && d.amount is number && d.amount > 0))
+          && (collection != 'extraCharges'
+                || (d.unitId is string && d.amount is number && d.amount > 0))
+          && (collection != 'announcements'
+                || (d.title is string && d.title.size() > 0 && d.title.size() <= 200))
+          && (collection != 'units'
+                || (d.blockId is string && d.number is string))
+          && (collection != 'tickets'
+                || (d.title is string && d.title.size() > 0 && d.status is string))
+          && (collection != 'reservations'
+                || (d.areaId is string && d.startsAt is timestamp && d.endsAt is timestamp
+                    && d.endsAt > d.startsAt));
+    }
+
+    // -----------------------------------------------------------------
+    //  users/{uid} – Kullanıcı profilleri
+    // -----------------------------------------------------------------
+    //  Alanlar: siteId, role, unitId, name, phone, email, createdAt…
+    //  - Kullanıcı kendi belgesini okur; yöneticiler kendi sitesindeki
+    //    tüm profilleri okur (sorguda where('siteId','==',…) şart).
+    //  - role / siteId / unitId alanları istemciden DEĞİŞTİRİLEMEZ;
+    //    bunları yalnızca yönetici veya Cloud Function yazar.
+    // -----------------------------------------------------------------
+    match /users/{uid} {
+      allow get: if isSignedIn()
+                    && (request.auth.uid == uid
+                        || isSuperadmin()
+                        || (isAdmin() && resource.data.siteId == mySite())
+                        || (isStaffLike() && resource.data.siteId == mySite()));
+
+      allow list: if isSuperadmin()
+                    || (isStaffLike() && resource.data.siteId == mySite());
+
+      // Kayıt sonrası kendi profilini oluşturma: rol/site/daire alanları OLMADAN
+      allow create: if (isSignedIn() && request.auth.uid == uid
+                         && !request.resource.data.keys().hasAny(['role', 'siteId', 'unitId']))
+                    || isSuperadmin()
+                    || (isAdmin()
+                         && request.resource.data.siteId == mySite()
+                         && request.resource.data.get('role', 'resident') != 'superadmin');
+
+      // Kendi profilini güncelleme: yetki alanlarına dokunmadan
+      // Yönetici: kendi sitesindeki kullanıcıları günceller (superadmin atayamaz)
+      allow update: if (isSignedIn() && request.auth.uid == uid
+                         && untouched(['role', 'siteId', 'unitId']))
+                    || isSuperadmin()
+                    || (isAdmin()
+                         && resource.data.siteId == mySite()
+                         && request.resource.data.siteId == mySite()
+                         && request.resource.data.get('role', 'resident') != 'superadmin');
+
+      allow delete: if isSuperadmin()
+                    || (isAdmin() && resource.data.siteId == mySite());
+    }
+
+    // -----------------------------------------------------------------
+    //  sites/{siteId} – Site belgesi
+    // -----------------------------------------------------------------
+    match /sites/{siteId} {
+      allow read: if isSiteMember(siteId);
+      allow create, delete: if isSuperadmin();
+      allow update: if isSiteAdmin(siteId);
+
+      // ===============================================================
+      //  GENEL KURAL: Site yöneticisi kendi sitesindeki her koleksiyonu
+      //  okur / yazar (alt koleksiyonlar dahil). Oluşturmada temel alan
+      //  doğrulaması uygulanır. Diğer roller için aşağıdaki özel kurallar
+      //  geçerlidir (kurallar birbirine "VEYA" ile bağlanır).
+      // ===============================================================
+      match /{collection}/{document=**} {
+        allow read, update, delete: if isSiteAdmin(siteId);
+        allow create: if isSiteAdmin(siteId)
+                         && validCreate(collection, request.resource.data);
+      }
+
+      // ===============================================================
+      //  Yapı: bloklar, daireler, sakinler, araçlar
+      // ===============================================================
+
+      // Bloklar – tüm üyeler okur
+      match /blocks/{blockId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // Daireler – tüm üyeler okur (ziyaretçi / kargo kaydında daire seçimi için)
+      match /units/{unitId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // Sakinler (kişi kayıtları) – kendi dairesi veya personel
+      match /residents/{residentId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && ownsUnit(resource.data));
+      }
+
+      // Araçlar – sakin kendi dairesinin araçlarını yönetir, personel okur
+      match /vehicles/{vehicleId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && ownsUnit(resource.data));
+        allow create: if isSiteMember(siteId) && forMyUnit()
+                         && request.resource.data.plate is string;
+        allow update: if isSiteMember(siteId) && ownsUnit(resource.data)
+                         && untouched(['unitId']);
+        allow delete: if isSiteMember(siteId) && ownsUnit(resource.data);
+      }
+
+      // ===============================================================
+      //  Finans: aidat, tahsilat, ek ücret, bütçe
+      // ===============================================================
+
+      // Aidatlar – sakin yalnızca kendi dairesininkini okur
+      match /dues/{duesId} {
+        allow read: if isSiteMember(siteId) && ownsUnit(resource.data);
+      }
+
+      // Ek ücretler (demirbaş, ceza, onarım payı…) – kendi dairesi
+      match /extraCharges/{chargeId} {
+        allow read: if isSiteMember(siteId) && ownsUnit(resource.data);
+      }
+
+      // Tahsilatlar – kendi dairesi okur; kayıt yalnızca yönetici/fonksiyon
+      match /payments/{paymentId} {
+        allow read: if isSiteMember(siteId) && ownsUnit(resource.data);
+      }
+
+      // Bütçeler – şeffaflık için tüm üyeler okur
+      match /budgets/{budgetId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // Giderler, projeler (özet), ihaleler – projeler üyelere açık,
+      // gider/ihale/teklif/satın alma/tedarikçi/sözleşme yalnızca yönetici (genel kural)
+      match /projects/{projectId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // ===============================================================
+      //  Otopark ve giriş/çıkış
+      // ===============================================================
+
+      // Otopark yerleri – herkes okur
+      match /parkingSpots/{spotId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // Otopark hareketleri – güvenlik/personel yazar, sakin kendi dairesini okur
+      match /parkingLog/{logId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && ownsUnit(resource.data));
+        allow create: if isSiteStaff(siteId);
+        allow update: if isSiteStaff(siteId) && untouched(['createdAt', 'createdBy']);
+      }
+
+      // Giriş/çıkış kayıtları – güvenlik/personel yazar, sakin kendi dairesini okur
+      match /accessLog/{logId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && ownsUnit(resource.data));
+        allow create: if isSiteStaff(siteId) && createdByMe()
+                         && request.resource.data.type is string;
+        allow update: if isSiteStaff(siteId) && untouched(['createdAt', 'createdBy']);
+      }
+
+      // Ziyaretçiler – sakin kendi dairesi için ön kayıt açar, güvenlik işler
+      match /visitors/{visitorId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && ownsUnit(resource.data));
+        allow create: if isSiteStaff(siteId)
+                         || (isSiteMember(siteId) && forMyUnit() && createdByMe()
+                             && request.resource.data.name is string);
+        allow update: if isSiteStaff(siteId)
+                         || (isSiteMember(siteId) && ownsUnit(resource.data)
+                             && resource.data.status == 'expected'
+                             && untouched(['unitId', 'createdBy', 'createdAt']));
+        allow delete: if isSiteMember(siteId) && ownsUnit(resource.data)
+                         && resource.data.status == 'expected';
+      }
+
+      // Kargo / teslimatlar – personel yazar, sakin kendi dairesini okur
+      match /deliveries/{deliveryId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && ownsUnit(resource.data));
+        allow create: if isSiteStaff(siteId) && createdByMe();
+        allow update: if isSiteStaff(siteId) && untouched(['createdAt', 'createdBy']);
+      }
+
+      // ===============================================================
+      //  Ortak alanlar ve rezervasyonlar
+      // ===============================================================
+
+      match /commonAreas/{areaId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // Rezervasyonlar – doluluk görülebilsin diye tüm üyeler okur,
+      // sakin kendi dairesi adına oluşturur / bekleyen rezervasyonunu düzenler
+      match /reservations/{reservationId} {
+        allow read: if isSiteMember(siteId);
+        allow create: if isSiteStaff(siteId)
+                         || (isSiteMember(siteId) && forMyUnit() && createdByMe()
+                             && request.resource.data.status == 'pending'
+                             && validCreate('reservations', request.resource.data));
+        allow update: if isSiteStaff(siteId)
+                         || (isSiteMember(siteId) && ownsDoc(resource.data)
+                             && resource.data.status == 'pending'
+                             && untouched(['unitId', 'createdBy', 'createdAt'])
+                             && request.resource.data.status in ['pending', 'cancelled']);
+        allow delete: if isSiteMember(siteId) && ownsDoc(resource.data)
+                         && resource.data.status == 'pending';
+      }
+
+      // ===============================================================
+      //  İletişim: duyurular, bildirimler, mesajlar
+      // ===============================================================
+
+      // Duyurular – yayınlanmış olanları üyeler okur
+      // (sorguda where('isPublished','==',true) kullanılmalı)
+      match /announcements/{announcementId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && resource.data.isPublished == true);
+      }
+
+      // Bildirimler – kullanıcı kendi bildirimlerini okur ve "okundu" işaretler
+      match /notifications/{notificationId} {
+        allow read: if isSiteMember(siteId) && resource.data.uid == request.auth.uid;
+        allow create: if isSiteStaff(siteId);
+        allow update: if isSiteMember(siteId) && resource.data.uid == request.auth.uid
+                         && onlyChanges(['isRead', 'readAt']);
+      }
+
+      // Mesajlar – yalnızca katılımcılar okur; gönderen kendisi olmalı
+      match /messages/{messageId} {
+        allow read: if isSiteMember(siteId)
+                       && request.auth.uid in resource.data.participants;
+        allow create: if isSiteMember(siteId)
+                         && request.resource.data.senderId == request.auth.uid
+                         && request.auth.uid in request.resource.data.participants
+                         && request.resource.data.text is string;
+      }
+
+      // ===============================================================
+      //  Talepler ve bakım
+      // ===============================================================
+
+      // Arıza / talep kayıtları – sakin kendi kaydını açar;
+      // durum/atama alanlarını yalnızca personel değiştirir
+      match /tickets/{ticketId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId)
+                           && (ownsDoc(resource.data) || ownsUnit(resource.data)));
+        allow create: if isSiteMember(siteId) && createdByMe()
+                         && (isStaffLike() || forMyUnit())
+                         && request.resource.data.status == 'open'
+                         && validCreate('tickets', request.resource.data);
+        allow update: if (isSiteStaff(siteId)
+                             && untouched(['createdBy', 'createdAt']))
+                         || (isSiteMember(siteId) && ownsDoc(resource.data)
+                             && untouched(['status', 'assignedTo', 'unitId',
+                                           'createdBy', 'createdAt', 'priority']));
+      }
+
+      // Bakım görevleri – personel okur ve durum günceller
+      match /maintenanceTasks/{taskId} {
+        allow read: if isSiteStaff(siteId);
+        allow update: if isSiteStaff(siteId)
+                         && onlyChanges(['status', 'notes', 'completedAt', 'updatedAt', 'updatedBy']);
+      }
+
+      // Demirbaşlar – personel okur
+      match /assets/{assetId} {
+        allow read: if isSiteStaff(siteId);
+      }
+
+      // ===============================================================
+      //  Personel ve vardiyalar
+      // ===============================================================
+
+      match /staff/{staffId} {
+        allow read: if isSiteStaff(siteId);
+      }
+
+      match /shifts/{shiftId} {
+        allow read: if isSiteStaff(siteId);
+      }
+
+      // ===============================================================
+      //  Belgeler, toplantılar, kararlar, oylamalar
+      // ===============================================================
+
+      // Belgeler – isPublic == true olanları üyeler okur
+      // (sorguda where('isPublic','==',true) kullanılmalı)
+      match /documents/{documentId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId) && resource.data.isPublic == true);
+      }
+
+      match /meetings/{meetingId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      match /decisions/{decisionId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      match /polls/{pollId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // Oylar – belge kimliği "{pollId}_{uid}" olmalı: kullanıcı başına tek oy
+      match /votes/{voteId} {
+        allow read: if isSiteMember(siteId) && ownsDoc(resource.data);
+        allow create: if isSiteMember(siteId) && createdByMe()
+                         && request.resource.data.pollId is string
+                         && voteId == request.resource.data.pollId + '_' + request.auth.uid
+                         && (myRole() == 'resident' ? forMyUnit() : true);
+      }
+
+      // ===============================================================
+      //  Topluluk: ilan panosu, kayıp-buluntu
+      // ===============================================================
+
+      // İlanlar – aktif ilanları herkes okur, sahibi tam yetkili
+      match /marketplace/{listingId} {
+        allow read: if isSiteStaff(siteId)
+                       || (isSiteMember(siteId)
+                           && (resource.data.status == 'active' || ownsDoc(resource.data)));
+        allow create: if isSiteMember(siteId) && createdByMe()
+                         && request.resource.data.title is string
+                         && request.resource.data.status in ['active', 'draft'];
+        allow update: if isSiteMember(siteId) && ownsDoc(resource.data)
+                         && untouched(['createdBy', 'createdAt']);
+        allow delete: if isSiteMember(siteId) && ownsDoc(resource.data);
+      }
+
+      // Kayıp-buluntu – üyeler okur ve kayıt açar, sahibi düzenler
+      match /lostFound/{itemId} {
+        allow read: if isSiteMember(siteId);
+        allow create: if isSiteMember(siteId) && createdByMe()
+                         && request.resource.data.title is string;
+        allow update: if isSiteStaff(siteId)
+                         || (isSiteMember(siteId) && ownsDoc(resource.data)
+                             && untouched(['createdBy', 'createdAt']));
+        allow delete: if isSiteMember(siteId) && ownsDoc(resource.data);
+      }
+
+      // ===============================================================
+      //  Ayarlar
+      // ===============================================================
+      //  settings/{docId} (ör. settings/dues, settings/general) üyeler
+      //  tarafından okunur. Gizli anahtarlar buraya DEĞİL, Cloud Functions
+      //  ortam değişkenlerine konmalıdır.
+      match /settings/{settingId} {
+        allow read: if isSiteMember(siteId);
+      }
+
+      // Yalnızca yönetici (genel kuralla kapsanır, burada hatırlatma amaçlı):
+      //   expenses, tenders, bids, purchases, suppliers, contracts,
+      //   adSpaces, adCampaigns, legalCases
+    }
+  }
+}

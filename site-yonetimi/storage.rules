@@ -1,0 +1,99 @@
+rules_version = '2';
+
+// =====================================================================
+//  Site Yönetimi – Cloud Storage Güvenlik Kuralları
+// ---------------------------------------------------------------------
+//  Yol düzeni:
+//    sites/{siteId}/documents/**              -> site belgeleri (yönetici yükler)
+//    sites/{siteId}/announcements/**          -> duyuru ekleri (yönetici yükler)
+//    sites/{siteId}/tickets/{ticketId}/**     -> arıza/talep ekleri (üyeler yükler)
+//    users/{uid}/avatar                       -> profil fotoğrafı (sahibi yükler)
+//
+//  Yetki, Firestore'daki gibi Auth custom claim'lerinden okunur
+//  (siteId, role). Varsayılan: her şey yasak.
+// =====================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ---------------- Yardımcılar ----------------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function myRole() {
+      return isSignedIn() ? request.auth.token.get('role', '') : '';
+    }
+
+    function mySite() {
+      return isSignedIn() ? request.auth.token.get('siteId', '') : '';
+    }
+
+    function isSuperadmin() {
+      return myRole() == 'superadmin';
+    }
+
+    function isAdmin() {
+      return isSignedIn() && myRole() in ['superadmin', 'admin'];
+    }
+
+    function sameSite(siteId) {
+      return isSignedIn() && (isSuperadmin() || mySite() == siteId);
+    }
+
+    // İzin verilen dosya türleri: görsel veya PDF
+    function isImageOrPdf() {
+      return request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf';
+    }
+
+    // Boyut sınırı (MB)
+    function maxSizeMb(mb) {
+      return request.resource.size <= mb * 1024 * 1024;
+    }
+
+    // ---------------- Site belgeleri ----------------
+    // Yönetici yükler/siler (20 MB), aynı sitenin üyeleri okur
+    match /sites/{siteId}/documents/{allPaths=**} {
+      allow read: if sameSite(siteId);
+      allow write: if sameSite(siteId) && isAdmin()
+                      && (request.resource == null || maxSizeMb(20));
+    }
+
+    // ---------------- Duyuru ekleri ----------------
+    match /sites/{siteId}/announcements/{allPaths=**} {
+      allow read: if sameSite(siteId);
+      allow write: if sameSite(siteId) && isAdmin()
+                      && (request.resource == null || maxSizeMb(20));
+    }
+
+    // ---------------- Talep / arıza ekleri ----------------
+    // Aynı sitedeki oturum açmış herkes yükler (görsel veya PDF, en fazla 10 MB)
+    match /sites/{siteId}/tickets/{ticketId}/{allPaths=**} {
+      allow read: if sameSite(siteId);
+      allow create, update: if sameSite(siteId) && isImageOrPdf() && maxSizeMb(10);
+      allow delete: if sameSite(siteId) && isAdmin();
+    }
+
+    // ---------------- Profil fotoğrafı ----------------
+    // Sahibi yükler (görsel, en fazla 5 MB); aynı sitenin üyeleri okur.
+    // Not: Storage kuralları Firestore'a bakamadığı için "aynı site" kontrolü
+    // dosya meta verisindeki siteId ile yapılır (yüklerken customMetadata.siteId gönderin).
+    match /users/{uid}/avatar {
+      allow read: if isSignedIn()
+                     && (request.auth.uid == uid
+                         || isSuperadmin()
+                         || resource.metadata.siteId == mySite());
+      allow write: if isSignedIn() && request.auth.uid == uid
+                      && (request.resource == null
+                          || (request.resource.contentType.matches('image/.*')
+                              && maxSizeMb(5)
+                              && request.resource.metadata.siteId == mySite()));
+    }
+
+    // Diğer tüm yollar: yasak (varsayılan)
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

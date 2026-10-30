@@ -1,0 +1,22 @@
+# Bağımlılıklar
+node_modules/
+functions/node_modules/
+scripts/node_modules/
+
+# Firebase CLI önbelleği ve günlükleri
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+firestore-debug.log
+database-debug.log
+pubsub-debug.log
+
+# Derleme çıktıları
+functions/lib/
+
+# Gizli bilgiler / yerel ayarlar
+.env
+.env.*
+*.local
+serviceAccountKey*.json
