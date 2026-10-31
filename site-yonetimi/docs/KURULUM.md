@@ -118,8 +118,8 @@ erişebildiğiniz projeleri görebilirsiniz.
 
 ## 5. Projeyi CLI'ya bağlama
 
-`site-yonetimi/.firebaserc` dosyasında `"default": "sitem-54bfe"` yalnızca
-bir **yer tutucudur**. Gerçek projenizi bağlamak için:
+`site-yonetimi/.firebaserc` dosyasında `"default": "sitem-54bfe"` (konsolda
+oluşturulan proje) tanımlıdır. CLI'daki hesabın bu projeyi görebildiğini doğrulayın:
 
 ```bash
 cd site-yonetimi
