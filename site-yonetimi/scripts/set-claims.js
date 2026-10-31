@@ -17,7 +17,7 @@
  *      ve GCLOUD_PROJECT=<proje-id> (ya da FIREBASE_PROJECT)
  *   2) Emülatör: FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
  *                FIRESTORE_EMULATOR_HOST=localhost:8080
- *                GCLOUD_PROJECT=site-yonetimi-demo
+ *                GCLOUD_PROJECT=sitem-54bfe
  *
  * Betik hem Auth custom claims'i yazar hem de users/{uid} belgesine
  * (siteId, role, unitId) alanlarını merge eder.

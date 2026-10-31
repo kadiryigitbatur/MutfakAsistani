@@ -118,7 +118,7 @@ erişebildiğiniz projeleri görebilirsiniz.
 
 ## 5. Projeyi CLI'ya bağlama
 
-`site-yonetimi/.firebaserc` dosyasında `"default": "site-yonetimi-demo"` yalnızca
+`site-yonetimi/.firebaserc` dosyasında `"default": "sitem-54bfe"` yalnızca
 bir **yer tutucudur**. Gerçek projenizi bağlamak için:
 
 ```bash
@@ -145,10 +145,10 @@ edebilirsiniz. Emülatöre demo veri basmak için:
 
 ```bash
 cd scripts && npm install
-FIRESTORE_EMULATOR_HOST=localhost:8080 GCLOUD_PROJECT=site-yonetimi-demo node seed-demo.js
+FIRESTORE_EMULATOR_HOST=localhost:8080 GCLOUD_PROJECT=sitem-54bfe node seed-demo.js
 ```
 > Windows PowerShell'de ortam değişkenleri şöyle verilir:
-> `$env:FIRESTORE_EMULATOR_HOST="localhost:8080"; $env:GCLOUD_PROJECT="site-yonetimi-demo"; node seed-demo.js`
+> `$env:FIRESTORE_EMULATOR_HOST="localhost:8080"; $env:GCLOUD_PROJECT="sitem-54bfe"; node seed-demo.js`
 
 Emülatör verisini oturumlar arasında saklamak için:
 `firebase emulators:start --import=./.emulator-data --export-on-exit`

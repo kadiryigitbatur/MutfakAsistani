@@ -7,7 +7,7 @@
  *   node seed-demo.js [siteId]          (varsayılan siteId: demo-site)
  *
  * Emülatöre yazmak için (önce `firebase emulators:start` çalışıyor olmalı):
- *   FIRESTORE_EMULATOR_HOST=localhost:8080 GCLOUD_PROJECT=site-yonetimi-demo node seed-demo.js
+ *   FIRESTORE_EMULATOR_HOST=localhost:8080 GCLOUD_PROJECT=sitem-54bfe node seed-demo.js
  *
  * Gerçek projeye yazmak için:
  *   GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json GCLOUD_PROJECT=<proje-id> node seed-demo.js
