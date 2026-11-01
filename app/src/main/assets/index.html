@@ -705,7 +705,7 @@ const I18N = {
     loadingMore:'Yeni tarifler hazırlanıyor…',
     modePantry:'Dolabımda ne var', modeCrave:'Canım ne istiyor',
     craveTitle:'Ne yemek istiyorsun?', cravePh:'mantı, lazanya, sushi…', craveEmptyTitle:'Canın ne çekiyor?', craveEmptyText:'Yemeğin adını yaz, "Tarifi bul" ile tarifini, "Restoranları bul" ile yakınındaki yerleri getir.', craveFind:'🍳 Tarifi bul', restFind:'🍽️ Restoranları bul', craveMore:'Hızlı ve hafif sürümleri de getir', restSearching:'Restoranlar aranıyor…', restAI:'Yapay zekâ güncel web ve harita verisinden derledi; puanları haritada doğrula.', restPlain:'Yapay zekâ önerisi: güncel puan ve açık/kapalı bilgisi için haritada doğrula.', craveSugg:['mantı','karnıyarık','lahmacun','lazanya','ramen','burger','sushi','pizza','köfte','brownie'],
-    cityTitle:'Konum', cityPh:'Kadıköy, İstanbul', cityHelp:'İlçe ve şehir yaz ya da 📍 ile konumunu kullan. Restoranlar önce bu ilçede aranır.', locating:'Konum alınıyor…', locateFail:'Konum alınamadı, şehri elle yaz.',
+    cityTitle:'Konum', cityPh:'Kadıköy, İstanbul', cityHelp:'İlçe ve şehir yaz ya da 📍 ile konumunu kullan. Restoranlar önce bu ilçede aranır.', locating:'Konum alınıyor…', locateFail:'Konum alınamadı, ilçe ve şehri elle yaz.', locateOff:'Telefonun konum servisi kapalı. Açıp tekrar dene.', locateDenied:'Konum izni verilmedi. İlçe ve şehri elle yazabilirsin.', locateApprox:'konum yaklaşık, ilçeyi kontrol et', locateApproxPerm:'"Yaklaşık konum" seçildi; ilçe yanlış çıkabilir. Ayarlar\'dan "Hassas konum"u açabilirsin.',
     craveNeed:'Önce ne yemek istediğini yaz.', craveLoading:['Tarif kitapları açılıyor…','Klasik sürüm hazırlanıyor…','Hızlı sürüm ekleniyor…','Restoranlar taranıyor…'],
     restTitle:'{dish} yiyebileceğin yerler · {city}', restNone:'Bu şehirde sonuç bulunamadı.', restMaps:'Haritada aç', restCall:'Ara', restSponsored:'Sponsorlu', restOpen:'Açık', restClosed:'Kapalı',
     restNoKey:'Restoran puanları için Google Haritalar\'da aç:', restMapsBtn:'🗺️ Google Haritalar\'da {dish} · {city}', restCity:'Restoranlar için ilçe ve şehrini yaz.', reviews:'değerlendirme',
@@ -790,7 +790,7 @@ const I18N = {
     loadingMore:'Preparing new recipes…',
     modePantry:'What\'s in my fridge', modeCrave:'What I\'m craving',
     craveTitle:'What do you feel like eating?', cravePh:'lasagna, ramen, tacos…', craveEmptyTitle:'What are you craving?', craveEmptyText:'Type a dish, then "Find the recipe" for the recipe or "Find restaurants" for places near you.', craveFind:'🍳 Find the recipe', restFind:'🍽️ Find restaurants', craveMore:'Also get the quick & light versions', restSearching:'Searching restaurants…', restAI:'Compiled by AI from current web and map data; verify ratings on the map.', restPlain:'AI suggestion: check current ratings and opening hours on the map.', craveSugg:['lasagna','ramen','tacos','burger','sushi','pizza','pad thai','curry','meatballs','brownies'],
-    cityTitle:'Location', cityPh:'Shoreditch, London', cityHelp:'Type district and city or tap 📍. Restaurants are searched in this district first.', locating:'Getting location…', locateFail:'Couldn\'t get location, type your city.',
+    cityTitle:'Location', cityPh:'Shoreditch, London', cityHelp:'Type district and city or tap 📍. Restaurants are searched in this district first.', locating:'Getting location…', locateFail:'Couldn\'t get location, type your district and city.', locateOff:'Location services are off. Turn them on and try again.', locateDenied:'Location permission denied. You can type your district and city.', locateApprox:'approximate, check the district', locateApproxPerm:'"Approximate location" was chosen; the district may be off. Enable "Precise location" in Settings.',
     craveNeed:'Type what you\'re craving first.', craveLoading:['Opening the cookbooks…','Preparing the classic version…','Adding a quick version…','Scanning restaurants…'],
     restTitle:'Where to eat {dish} · {city}', restNone:'No results in this city.', restMaps:'Open in Maps', restCall:'Call', restSponsored:'Sponsored', restOpen:'Open', restClosed:'Closed',
     restNoKey:'For restaurant ratings, open in Google Maps:', restMapsBtn:'🗺️ {dish} in {city} on Google Maps', restCity:'Type your district and city for restaurants.', reviews:'reviews',
@@ -1501,14 +1501,32 @@ $('#btn-rest').addEventListener('click', () => {
 $('#crave-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); findCrave(); } });
 $('#btn-crave').addEventListener('click', findCrave);
 $('#city-input').addEventListener('change', e => { city = e.target.value.trim(); store.set('city', city); geo = null; store.set('geo', null); });
+let locating = false;
+function setLocating(on) {
+  locating = on; const b = $('#btn-locate');
+  b.disabled = on; b.innerHTML = on ? '<span class="spinner" style="color:var(--accent)"></span>' : '📍';
+  if (on) { $('#city-input').placeholder = t('locating'); } else { $('#city-input').placeholder = t('cityPh'); }
+}
+async function applyLocation(lat, lng, acc, district, cityName) {
+  geo = { lat, lng, acc, at: Date.now() }; store.set('geo', geo);
+  let name = district && cityName && norm(district) !== norm(cityName) ? `${district}, ${cityName}` : (cityName || district || '');
+  if (!name) name = await reverseCity(geo);           // adres servisi yoksa yedek
+  setLocating(false);
+  if (name) { city = name; store.set('city', city); $('#city-input').value = city; }
+  toast('📍 ' + (name || t('locateFail')) + (acc && acc > 1500 ? ' · ' + t('locateApprox') : ''));
+}
+window.onNativeLocation = (lat, lng, acc, d, c) => applyLocation(lat, lng, acc, d, c);
+window.onNativeLocationError = code => { setLocating(false); toast(t(code === 'off' ? 'locateOff' : code === 'denied' ? 'locateDenied' : 'locateFail')); };
+window.onNativeLocationNote = () => toast(t('locateApproxPerm'));
 $('#btn-locate').addEventListener('click', () => {
-  if (!navigator.geolocation) { toast(t('locateFail')); return; }
-  toast(t('locating'));
-  navigator.geolocation.getCurrentPosition(async pos => {
-    geo = { lat: pos.coords.latitude, lng: pos.coords.longitude, at: Date.now() }; store.set('geo', geo);
-    const name = await reverseCity(geo); if (name) { city = name; store.set('city', city); $('#city-input').value = city; }
-    toast('📍 ' + (city || 'OK'));
-  }, () => toast(t('locateFail')), { timeout: 10000, maximumAge: 600000 });
+  if (locating) return;
+  setLocating(true);
+  if (NATIVE && NATIVE.locate) { NATIVE.locate(lang); return; }
+  if (!navigator.geolocation) { setLocating(false); toast(t('locateFail')); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos => applyLocation(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy, '', ''),
+    err => { setLocating(false); toast(t(err.code === 1 ? 'locateDenied' : 'locateFail')); },
+    { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 });
 });
 async function reverseCity(g) {
   // Şehir adını Gemini'den iste (ek servis gerekmez); kısa ve ucuz bir istek

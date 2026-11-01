@@ -53,6 +53,14 @@ class MainActivity : ComponentActivity() {
     private lateinit var web: WebView
     private lateinit var billing: BillingManager
     private lateinit var voice: VoiceHelper
+    private lateinit var locator: LocationHelper
+    private var pendingLocLang = "tr"
+    private val askLocPerms = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()) { res ->
+        if (res.values.any { it }) {
+            if (res[Manifest.permission.ACCESS_FINE_LOCATION] != true) js("window.onNativeLocationNote && window.onNativeLocationNote('approx')")
+            locator.locate(pendingLocLang)
+        } else js("window.onNativeLocationError && window.onNativeLocationError('denied')")
+    }
     private var fileCallback: ValueCallback<Array<Uri>>? = null
     private var cameraUri: Uri? = null
 
@@ -110,6 +118,9 @@ class MainActivity : ComponentActivity() {
             onPrice = { p -> js("window.onProPrice && window.onProPrice(${jsStr(p)})") },
             onError = { c -> js("window.onProError && window.onProError('$c')") })
         billing.start()
+        locator = LocationHelper(this,
+            onResult = { lat, lng, acc, d, c -> js("window.onNativeLocation && window.onNativeLocation($lat, $lng, $acc, ${jsStr(d)}, ${jsStr(c)})") },
+            onError = { code -> js("window.onNativeLocationError && window.onNativeLocationError('$code')") })
         voice = VoiceHelper(this,
             onText = { txt -> js("window.onVoice && window.onVoice(${jsStr(txt)})") },
             onState = { st -> js("window.onVoiceState && window.onVoiceState('$st')") })
@@ -288,6 +299,15 @@ class MainActivity : ComponentActivity() {
         }
         @JavascriptInterface fun stopVoice() = runOnUiThread { voice.stop() }
         @JavascriptInterface fun speak(text: String, lang: String) = runOnUiThread { voice.speak(text, lang) }
+
+        @JavascriptInterface fun locate(lang: String) = runOnUiThread {
+            pendingLocLang = lang
+            val fine = ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            val coarse = ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            if (fine) locator.locate(lang)
+            else askLocPerms.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+            if (!fine && coarse) { /* kullanıcıya hassas konum seçeneği tekrar sunulur */ }
+        }
 
         @JavascriptInterface fun pendingRecipe(): String { val id = pendingRecipeId ?: ""; pendingRecipeId = null; return id }
 
