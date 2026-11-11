@@ -8,15 +8,15 @@ val ksPass: String? = System.getenv("KEYSTORE_PASSWORD")
 
 android {
     namespace = "com.mutfak.asistan"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mutfak.asistan"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         // Her derlemede sürüm numarası artar, güncelleme eskisinin üzerine kurulur
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
-        versionName = "1.4"
+        versionName = "1.5"
     }
 
     signingConfigs {
