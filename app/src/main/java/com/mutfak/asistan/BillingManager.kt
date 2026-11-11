@@ -8,6 +8,7 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
@@ -36,7 +37,8 @@ class BillingManager(
     private val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     private var client: BillingClient = BillingClient.newBuilder(context)
         .setListener(this)
-        .enablePendingPurchases()
+        .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+        .enableAutoServiceReconnection()
         .build()
     private var details: ProductDetails? = null
     private var pendingAction: (() -> Unit)? = null
@@ -76,7 +78,8 @@ class BillingManager(
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build())
         ).build()
-        client.queryProductDetailsAsync(params) { result, list ->
+        client.queryProductDetailsAsync(params) { result, queryResult ->
+            val list = queryResult.productDetailsList
             if (result.responseCode == BillingClient.BillingResponseCode.OK && list.isNotEmpty()) {
                 details = list[0]
                 val p = list[0].oneTimePurchaseOfferDetails?.formattedPrice ?: ""
