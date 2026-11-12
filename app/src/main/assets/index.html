@@ -768,7 +768,7 @@ const I18N = {
     errorTitle:'Tarifler alınamadı', retry:'Tekrar dene',
     err_noKey:'Önce Ayarlar’dan Gemini API anahtarını ekle.', err_badKey:'API anahtarı geçersiz ya da bu istek için yetkisiz.',
     err_rate:'İstek sınırına ulaşıldı. Biraz bekleyip tekrar dene.', err_network:'Bağlantı kurulamadı. İnternetini kontrol et.',
-    err_timeout:'İstek zaman aşımına uğradı. Tekrar dene.', err_parse:'Yanıt okunamadı. Tekrar dene.', err_generic:'Sunucu hata verdi.',
+    err_timeout:'İstek zaman aşımına uğradı. Tekrar dene.', err_parse:'Yanıt okunamadı. Tekrar dene.', err_generic:'Sunucu hata verdi.', err_busy:'Google’ın yapay zekâ sunucuları şu an çok yoğun. Bir dakika sonra tekrar dene; bu deneme hakkından düşülmedi.',
     noIng:'En az bir malzeme ekle.',
     ready:'Hepsi elinde', missing:'{n} eksik', match:'%{n} uyum', min:'dk', kcal:'kcal', perServing:'porsiyon başı',
     ingredients:'Malzemeler', steps:'Yapılışı', tip:'İpucu', prep:'Hazırlık', cook:'Pişirme', total:'Toplam', difficulty:'Zorluk',
@@ -853,7 +853,7 @@ const I18N = {
     errorTitle:'Couldn’t get recipes', retry:'Try again',
     err_noKey:'Add your Gemini API key in Settings first.', err_badKey:'The API key is invalid or not allowed for this request.',
     err_rate:'Rate limit reached. Wait a moment and try again.', err_network:'Couldn’t connect. Check your internet.',
-    err_timeout:'The request timed out. Try again.', err_parse:'Couldn’t read the response. Try again.', err_generic:'The server returned an error.',
+    err_timeout:'The request timed out. Try again.', err_parse:'Couldn’t read the response. Try again.', err_generic:'The server returned an error.', err_busy:'Google’s AI servers are very busy right now. Try again in a minute; this attempt didn’t count against your searches.',
     noIng:'Add at least one ingredient.',
     ready:'You have everything', missing:'{n} missing', match:'{n}% match', min:'min', kcal:'kcal', perServing:'per serving',
     ingredients:'Ingredients', steps:'Method', tip:'Tip', prep:'Prep', cook:'Cook', total:'Total', difficulty:'Difficulty',
@@ -881,6 +881,31 @@ const store = {
 };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+/* Gemini yoğunluk koruması: 429/5xx'te bekleyip yeniden dener, olmazsa yedek modellere geçer */
+const FALLBACK_MODELS = ['gemini-flash-lite-latest', 'gemini-2.5-flash-lite', 'gemini-flash-latest', 'gemini-2.5-flash'];
+const _fetch = window.fetch.bind(window);
+window.fetch = async function (input, init) {
+  const url = typeof input === 'string' ? input : '';
+  const m = url.match(/^(https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/)([^:]+)(:generateContent.*)$/);
+  if (!m) return _fetch(input, init);
+  const first = decodeURIComponent(m[2]);
+  const models = [first, ...FALLBACK_MODELS.filter(x => x !== first)];
+  const transient = st => st === 429 || st === 500 || st === 502 || st === 503 || st === 504;
+  let last;
+  for (let i = 0; i < models.length; i++) {
+    const tries = i === 0 ? 3 : 1;
+    for (let k = 0; k < tries; k++) {
+      last = await _fetch(m[1] + encodeURIComponent(models[i]) + m[3], init);
+      if (last.ok) return last;
+      if (!transient(last.status)) break;
+      if (k < tries - 1) await sleep(1500 * (k + 1));
+    }
+    // anahtar hatası gibi kalıcı hatalarda diğer modelleri deneme (404 = model yok → sıradakine geç)
+    if (!last.ok && !transient(last.status) && last.status !== 404) return last;
+  }
+  return last;
+};
+const busyStatus = st => st === 500 || st === 502 || st === 503 || st === 504;
 const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
 const slug = s => String(s).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');
 
@@ -959,6 +984,7 @@ function canSearch() {
   return used < LIMITS.freeSearchesPerDay;
 }
 function noteSearch() { quotaUsed(); quota.used++; store.set('quota', quota); paintQuota(); }
+function refundSearch() { quotaUsed(); quota.used = Math.max(0, quota.used - 1); store.set('quota', quota); paintQuota(); }
 function paintQuota() {
   const el = $('#quota'); if (!el) return;
   if (pro) el.innerHTML = esc(t('quotaPro'));
@@ -1235,10 +1261,10 @@ async function requestRecipes(exclude, promptText) {
         return (parsed.recipes || []).map(normalize).filter(r => r.name && r.ingredients.length && r.steps.length);
       } catch { throw new AppError('parse'); }
     }
-    if ((res.status === 429 || res.status >= 500) && attempt < 2) { await sleep(1500 * (attempt + 1)); continue; }
     const body = await res.text().catch(() => '');
     if (res.status === 401 || res.status === 403 || /API key/i.test(body)) throw new AppError('badKey', res.status);
     if (res.status === 429) throw new AppError('rate', res.status);
+    if (busyStatus(res.status)) throw new AppError('busy');
     console.error('API error', res.status, body);
     throw new AppError('generic', res.status);
   }
@@ -1264,6 +1290,7 @@ async function findRecipes(append = false) {
     recipes.push(...list.filter(r => !seen.has(r.id)));
     if (!recipes.length) lastError = 'empty';
   } catch (e) {
+    refundSearch();
     if (append) toast(t('err_' + e.code) + (e.status ? ` (${e.status})` : ''));
     else lastError = e.code + (e.status ? ':' + e.status : '');
   } finally {
@@ -1559,7 +1586,7 @@ Base servings: ${prefs.servings}. "cuisine" must be exactly one of: ${CUISINES.m
   try {
     const list = await requestRecipes([], prompt);
     recipes = list; if (!recipes.length) lastError = 'empty';
-  } catch (e) { lastError = e.code + (e.status ? ':' + e.status : ''); }
+  } catch (e) { refundSearch(); lastError = e.code + (e.status ? ':' + e.status : ''); }
   finally { busy = false; $('#btn-crave').disabled = false; render(); }
 }
 async function craveMore() {
@@ -1571,7 +1598,7 @@ async function craveMore() {
 Ingredients the cook has on hand: ${pantry.length ? pantry.join(', ') : 'unknown, assume a basic pantry'}; mark have=true for those plus salt, pepper, oil, water; others have=false.${contextLines()}
 Base servings: ${prefs.servings}. "cuisine" must be exactly one of: ${CUISINES.map(c => c[0]).join(', ')}, Other. Each ingredient has name, amount, unit, have. Each step has text and minutes. Include emoji, calories, proteinGrams, carbsGrams, fatGrams, estimatedCost (one serving, ${lang === 'tr' ? 'TRY' : 'USD'}), description and tip.`;
   try { const list = await requestRecipes([], prompt); const seen = new Set(recipes.map(r => r.id)); recipes.push(...list.filter(r => !seen.has(r.id))); }
-  catch (e) { toast(t('err_' + (e.code || 'generic'))); }
+  catch (e) { refundSearch(); toast(t('err_' + (e.code || 'generic'))); }
   finally { busy = false; moreBtn.disabled = false; moreBtn.innerHTML = `<span>${esc(t('more'))}</span>`; render(); }
 }
 
@@ -1821,7 +1848,7 @@ For each recipe set "schedule" to when the cook should start it, counted back fr
     if (list.length < 2) throw new AppError('parse');
     const order = { starter: 0, main: 1, dessert: 2 };
     guest.menu = list.slice(0, 3).sort((a, b) => (order[a.course] ?? 1) - (order[b.course] ?? 1)); store.set('guest', guest);
-  } catch (e) { toast(t('err_' + (e.code || 'generic'))); }
+  } catch (e) { refundSearch(); toast(t('err_' + (e.code || 'generic'))); }
   finally { guestBusy = false; renderGuest(); }
 }
 $('#btn-guest').addEventListener('click', () => { if (!requirePro('proLockFeature')) return; renderGuest(); openOverlay($('#guest-modal')); });
@@ -1893,12 +1920,12 @@ async function scanPhoto(file) {
   try {
     noteSearch();
     const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey() }, body: JSON.stringify(payload) });
-    if (!res.ok) throw new AppError(res.status === 429 ? 'rate' : res.status === 403 || res.status === 401 ? 'badKey' : 'generic', res.status);
+    if (!res.ok) throw new AppError(res.status === 429 ? 'rate' : res.status === 403 || res.status === 401 ? 'badKey' : busyStatus(res.status) ? 'busy' : 'generic', res.status);
     const data = await res.json();
     const list = JSON.parse(data.candidates[0].content.parts[0].text).ingredients || [];
     scanFound = [...new Set(list.map(x => String(x).trim().toLowerCase()).filter(x => x && x.length < 40))].slice(0, 40);
     renderScan('done', dataUrl);
-  } catch (e) { toast(t('err_' + (e.code || 'network'))); renderScan('idle'); }
+  } catch (e) { refundSearch(); toast(t('err_' + (e.code || 'network'))); renderScan('idle'); }
 }
 $('#btn-scan').addEventListener('click', () => { renderScan('idle'); openOverlay($('#scan-modal')); });
 $('#sc-foot').addEventListener('click', e => {
@@ -2011,7 +2038,7 @@ ${recipeText(base, base.servings)}`;
     current = r; currentServings = r.servings; renderModal(); render();
     $('#recipe-modal .sheet-body').scrollTop = 0;
     toast(t('twistDone'));
-  } catch (e) { toast(t('err_' + (e.code || 'generic'))); renderModal(); }
+  } catch (e) { refundSearch(); toast(t('err_' + (e.code || 'generic'))); renderModal(); }
   finally { twisting = false; }
 }
 
@@ -2060,7 +2087,7 @@ Also give "estimatedCost": the estimated cost of ONE serving in ${lang === 'tr' 
     const list = await requestRecipes([], prompt);
     if (list.length < 3) throw new AppError('parse');
     plan = list.slice(0, 7); store.set('plan', plan);
-  } catch (e) { toast(t('err_' + (e.code || 'generic'))); }
+  } catch (e) { refundSearch(); toast(t('err_' + (e.code || 'generic'))); }
   finally { planning = false; renderPlan(); }
 }
 $('#btn-plan').addEventListener('click', () => { if (!requirePro('proLockFeature')) return; renderPlan(); openOverlay($('#plan-modal')); });
