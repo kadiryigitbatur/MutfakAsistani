@@ -889,13 +889,14 @@ window.fetch = async function (input, init) {
   const m = url.match(/^(https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/)([^:]+)(:generateContent.*)$/);
   if (!m) return _fetch(input, init);
   const first = decodeURIComponent(m[2]);
-  const models = [first, ...FALLBACK_MODELS.filter(x => x !== first)];
+  const quick = !!(init && init.quick);   // restoran araması: uzun bekletme yok
+  const models = quick ? [first, FALLBACK_MODELS.find(x => x !== first)] : [first, ...FALLBACK_MODELS.filter(x => x !== first)];
   const transient = st => st === 429 || st === 500 || st === 502 || st === 503 || st === 504;
   let last;
   // İki tur: önce ana model (4 deneme) + yedekler, olmazsa biraz bekleyip tümünü bir kez daha dene
-  for (let round = 0; round < 2; round++) {
+  for (let round = 0; round < (quick ? 1 : 2); round++) {
     for (let i = 0; i < models.length; i++) {
-      const tries = i === 0 && round === 0 ? 4 : 2;
+      const tries = quick ? 1 : i === 0 && round === 0 ? 4 : 2;
       for (let k = 0; k < tries; k++) {
         try { last = await _fetch(m[1] + encodeURIComponent(models[i]) + m[3], init); }
         catch (e) { if (e.name === 'AbortError') throw e; last = null; await sleep(1500); continue; }
@@ -904,7 +905,8 @@ window.fetch = async function (input, init) {
         if (k < tries - 1) await sleep(Math.min(8000, 2000 * 2 ** k) + Math.random() * 800);
       }
       // anahtar hatası gibi kalıcı hatalarda diğer modelleri deneme (404/400 = model yok → sıradakine geç)
-      if (last && !last.ok && !transient(last.status) && last.status !== 404 && last.status !== 400) return last;
+      if (last && !last.ok && !transient(last.status) && (quick || (last.status !== 404 && last.status !== 400))) return last;
+      if (quick && last && last.status === 429) return last;   // kota doldu: yedek modelde bekleme
     }
     if (round === 0) await sleep(5000);
   }
@@ -1650,8 +1652,11 @@ async function mapsGrounded(dish, cityName, kind) {
   if (kind === 'maps') body.tools = [{ googleMaps: {} }];
   if (kind === 'search') body.tools = [{ googleSearch: {} }];
   if (kind === 'maps' && geo && norm(cityName) === norm(city)) body.toolConfig = { retrievalConfig: { latLng: { latitude: geo.lat, longitude: geo.lng } } };
-  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey() }, body: JSON.stringify(body) });
-  if (!res.ok) throw new Error('maps grounding ' + res.status);
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), kind === 'plain' ? 20000 : 18000);
+  let res;
+  try { res = await fetch(url, { method: 'POST', quick: true, signal: ctrl.signal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey() }, body: JSON.stringify(body) }); }
+  finally { clearTimeout(timer); }
+  if (!res.ok) throw Object.assign(new Error('grounding ' + res.status), { status: res.status });
   const data = await res.json();
   const cand = data.candidates && data.candidates[0]; if (!cand) throw new Error('no candidate');
   const text = (cand.content.parts || []).map(p => p.text || '').join('');
@@ -1664,10 +1669,23 @@ async function mapsGrounded(dish, cityName, kind) {
     return { name: String(r.name), rating: Number(r.rating) || 0, count: Number(r.count) || 0, address: dist && !norm(addr).includes(norm(dist)) ? (addr ? addr + ', ' : '') + dist : addr, open: kind === 'plain' ? null : (typeof r.open === 'boolean' ? r.open : null), phone: String(r.phone || ''), maps: ch ? ch.uri : '', ai: kind };
   });
 }
+// Çalışmayan yöntem (ör. ücretsiz katmanda Haritalar aracı) 3 gün boyunca atlanır; böylece her aramada boşuna beklenmez
+let restFail = store.get('restFail', {});
+const restCache = new Map();
 async function aiRestaurants(dish, cityName) {
-  for (const kind of ['maps', 'search', 'plain']) {
-    try { const l = await mapsGrounded(dish, cityName, kind); if (l && l.length) { console.info('restaurants via', kind); return { list: l, kind }; } }
-    catch (e) { console.warn('restaurants', kind, e.message || e); }
+  const key = norm(dish) + '|' + norm(cityName);
+  if (restCache.has(key)) return restCache.get(key);
+  const now = Date.now(), DAY = 864e5;
+  let kinds = ['maps', 'search', 'plain'].filter(k => k === 'plain' || !(restFail[k] && now - restFail[k] < 3 * DAY));
+  for (const kind of kinds) {
+    try {
+      const l = await mapsGrounded(dish, cityName, kind);
+      if (l && l.length) { if (restFail[kind]) { delete restFail[kind]; store.set('restFail', restFail); } const out = { list: l, kind }; restCache.set(key, out); return out; }
+    } catch (e) {
+      console.warn('restaurants', kind, e.message || e);
+      // kalıcı görünen hatalar (desteklenmiyor / kota yok / zaman aşımı) → bu yöntemi bir süre atla
+      if (kind !== 'plain' && (e.name === 'AbortError' || [400, 403, 404, 429].includes(e.status) || /no json|no candidate/.test(e.message))) { restFail[kind] = now; store.set('restFail', restFail); }
+    }
   }
   return { list: null, kind: '' };
 }
@@ -1686,10 +1704,11 @@ async function loadRestaurants(dish, cityName) {
   const box = $('#restaurants'); box.hidden = false;
   if (!cityName) { box.innerHTML = `<div class="rest-head"><h2>🍽️ ${esc(dish)}</h2></div><p class="hint">${esc(t('restCity'))}</p>`; return; }
   box.innerHTML = `<div class="rest-head"><h2>${esc(t('restTitle', { dish, city: cityName }))}</h2></div><div class="cooking" style="padding:16px 0"><div class="dots"><i></i><i></i><i></i></div><div class="sub">${esc(t('restSearching'))}</div></div>`;
-  const sp = matchSponsors(await loadSponsors(), dish, cityName);
+  const spP = loadSponsors();   // sponsorlar arama ile paralel yüklenir
   let list = null, viaAI = false;
   try { list = await placesSearch(dish, cityName); } catch (e) { console.warn(e); list = null; }
   if (list === null && apiKey()) { const r = await aiRestaurants(dish, cityName); list = r.list; viaAI = r.kind; }
+  const sp = matchSponsors(await spP, dish, cityName);
   const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(dish + ' ' + (lang === 'tr' ? 'restoran ' : 'restaurant ') + cityName)}` + (geo && norm(cityName) === norm(city) ? `/@${geo.lat},${geo.lng},14z` : '');
   let html = `<div class="rest-head"><h2>${esc(t('restTitle', { dish, city: cityName }))}</h2></div>`;
   const cards = sp.map(restCard).join('') + (list ? list.filter(r => !sp.some(x => norm(x.name) === norm(r.name))).map(restCard).join('') : '');
