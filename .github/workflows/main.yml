@@ -30,8 +30,6 @@ jobs:
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 -d > app/release.keystore
             echo "::notice::Imza anahtari GitHub secret'tan alindi"
-          elif [ -f app/release.keystore ]; then
-            echo "::warning::Imza anahtari hala depoda; KEYSTORE_BASE64 secret'ini ekleyin"
           else
             echo "::error::KEYSTORE_BASE64 secret'i yok"; exit 1
           fi

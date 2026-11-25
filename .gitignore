@@ -1,0 +1,5 @@
+
+# imza anahtari GitHub secret KEYSTORE_BASE64 ile gelir
+app/release.keystore
+*.jks
+*.keystore
