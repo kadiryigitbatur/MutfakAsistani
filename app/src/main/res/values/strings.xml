@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mutfak Asistanı</string>
+    <string name="app_name">World Wide Kitchen</string>
     <string name="widget_title">Bugün ne pişirsem?</string>
     <string name="widget_default">Dolabındakileri yaz, akşam yemeğini birlikte bulalım.</string>
 </resources>

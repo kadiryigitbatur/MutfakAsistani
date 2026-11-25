@@ -24,7 +24,7 @@ class ReminderReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val n = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_notif)
-            .setContentTitle(p.getString("title", "Mutfak Asistanı"))
+            .setContentTitle(p.getString("title", "World Wide Kitchen"))
             .setContentText(p.getString("body", ""))
             .setStyle(NotificationCompat.BigTextStyle().bigText(p.getString("body", "")))
             .setContentIntent(open)
@@ -42,7 +42,7 @@ class ReminderReceiver : BroadcastReceiver() {
             if (Build.VERSION.SDK_INT < 26) return
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             if (nm.getNotificationChannel(CHANNEL) == null)
-                nm.createNotificationChannel(NotificationChannel(CHANNEL, "Günlük hatırlatma", NotificationManager.IMPORTANCE_DEFAULT))
+                nm.createNotificationChannel(NotificationChannel(CHANNEL, if (java.util.Locale.getDefault().language == "tr") "Günlük hatırlatma" else "Daily reminder", NotificationManager.IMPORTANCE_DEFAULT))
         }
 
         private fun pending(context: Context) = PendingIntent.getBroadcast(context, 7,

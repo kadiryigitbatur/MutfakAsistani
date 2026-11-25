@@ -1,5 +1,7 @@
 package com.mutfak.asistan
 
+import java.util.Locale
+
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.ClipData
@@ -242,7 +244,7 @@ class MainActivity : ComponentActivity() {
                 topMargin = (-28 * d).toInt()
             })
             addView(TextView(context).apply {
-                text = "Yapay zekâ destekli tarif yardımcın"
+                text = if (Locale.getDefault().language == "tr") "Yapay zekâ destekli tarif yardımcın" else "Your AI-powered recipe helper"
                 textSize = 15f
                 setTextColor(Color.parseColor("#3D5A47"))
                 gravity = Gravity.CENTER
@@ -337,7 +339,7 @@ class MainActivity : ComponentActivity() {
         @JavascriptInterface
         fun copy(text: String) {
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            cm.setPrimaryClip(ClipData.newPlainText("Mutfak Asistanı", text))
+            cm.setPrimaryClip(ClipData.newPlainText("World Wide Kitchen", text))
         }
 
         @JavascriptInterface

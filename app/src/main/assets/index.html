@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mutfak Asistanı · AI Kitchen Assistant</title>
+<title>World Wide Kitchen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -64,6 +64,8 @@ html, body { max-width:100%; overflow-x:hidden; }
 @media (min-width: 961px) { .panel { position:sticky; top:16px; max-height:calc(100vh - 32px); overflow-y:auto; } }
 .field-title { font-size:1.05rem; font-weight:700; margin-bottom:10px; font-family:var(--font-display); }
 .hint { color:var(--muted); font-size:.85rem; margin:6px 0 0; }
+.ai-note { color:var(--muted); font-size:.8rem; line-height:1.45; margin:16px 0 0; }
+.linkish { border:0; background:none; padding:0; color:var(--muted); text-decoration:underline; font:inherit; font-size:inherit; cursor:pointer; }
 
 /* Malzeme giriş kutusu */
 .chipbox { display:flex; flex-wrap:wrap; gap:6px; padding:8px; border:1.5px solid var(--line); border-radius:14px; background:var(--surface-2); min-height:56px; cursor:text; }
@@ -385,7 +387,7 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
   <div class="brand">
     <div class="brand-mark" aria-hidden="true">🍳</div>
     <div>
-      <h1 data-i18n="appTitle">Mutfak Asistanı</h1>
+      <h1 data-i18n="appTitle">World Wide Kitchen</h1>
       <p data-i18n="tagline"></p>
     </div>
   </div>
@@ -597,6 +599,19 @@ textarea.note { width:100%; min-height:64px; border:1.5px solid var(--line); bor
   </div>
 </div>
 
+<!-- Yapay zekâ içeriğini bildir -->
+<div class="overlay" id="report-modal" role="dialog" aria-modal="true" aria-labelledby="rp-title" hidden>
+  <div class="sheet" style="max-width:440px">
+    <div class="sheet-head"><h2 id="rp-title" data-i18n="reportTitle"></h2><button class="x" data-close aria-label="Close">&times;</button></div>
+    <div class="sheet-body">
+      <p class="hint" data-i18n="reportHint" style="margin:0 0 12px"></p>
+      <div class="toggles" id="rp-reasons"></div>
+      <textarea id="rp-note" class="note" rows="3" maxlength="500" data-i18n-ph="reportNotePh" style="margin-top:12px"></textarea>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-primary btn-sm" id="rp-send" data-i18n="reportSend"></button></div>
+  </div>
+</div>
+
 <!-- Kiler öğesi: son kullanma -->
 <div class="overlay" id="item-modal" role="dialog" aria-modal="true" aria-labelledby="it-title" hidden>
   <div class="sheet" style="max-width:440px">
@@ -697,7 +712,7 @@ const DIETS = ['vegan','vegetarian','gluten-free','dairy-free','nut-free','halal
 
 const I18N = {
   tr: {
-    appTitle:'Mutfak Asistanı', tagline:'Elindekileri yaz, yapay zekâ sana uyan tarifleri çıkarsın.',
+    appTitle:'World Wide Kitchen', tagline:'Elindekileri yaz, yapay zekâ sana uyan tarifleri çıkarsın.',
     pantryTitle:'Dolabında ne var?', pantryPh:'Malzeme yaz, Enter’a bas', cuisineTitle:'Mutfak (isteğe bağlı)', dietTitle:'Beslenme tercihleri',
     timeLabel:'En fazla süre (dk)', diffLabel:'Zorluk', servingsLabel:'Kişi sayısı', countLabel:'Tarif sayısı',
     any:'Fark etmez', easy:'Kolay', medium:'Orta', hard:'Zor', find:'Tarif bul', more:'Daha fazla tarif',
@@ -710,14 +725,14 @@ const I18N = {
     restTitle:'{dish} yiyebileceğin yerler · {city}', restNone:'Bu şehirde sonuç bulunamadı.', restMaps:'Haritada aç', restCall:'Ara', restSponsored:'Sponsorlu', restOpen:'Açık', restClosed:'Kapalı',
     restNoKey:'Restoran puanları için Google Haritalar\'da aç:', restMapsBtn:'🗺️ Google Haritalar\'da {dish} · {city}', restCity:'Restoranlar için ilçe ve şehrini yaz.', reviews:'değerlendirme',
     scoreTitle:'Dolap skoru', scoreText:'Dolabınla {n} farklı yemek yapılabilir, en hızlısı {m} dk.', scoreShare:'Skoru paylaş', scoreCardSub:'Senin dolabından kaç yemek çıkar?',
-    challenge:'Arkadaşına sor', challengeText:'Dolabımda {list} var. Sen olsan ne yapardın? 🤔 Ben Mutfak Asistanı ile "{dish}" yaptım. Sen de dene:',
+    challenge:'Arkadaşına sor', challengeText:'Dolabımda {list} var. Sen olsan ne yapardın? 🤔 Ben World Wide Kitchen ile "{dish}" yaptım. Sen de dene:',
     upsellTitle:'Bu tariflerden daha fazlası var', upsellText:'Pro ile sınırsız arama, 12 sonuç, haftalık plan ve misafir menüsü.', upsellCook:'Afiyet olsun! 🍳', upsellCookText:'Pro ile haftanın planını da çıkarayım mı? Dolabına göre 7 akşam yemeği, eksikler tek dokunuşla listede.', later:'Belki sonra', seePro:'Pro\'yu gör',
     photoTitle:'Yemeğinin fotoğrafını ekle', photoShare:'📸 Pişirdim kartı', photoPick:'Fotoğraf çek / seç', cookedShare:'Bunu ben pişirdim 👩‍🍳',
     savingsTitle:'Tasarruf', savingsText:'Bu ay {n} kez sipariş yerine pişirdin', savingsEst:'tahmini, sipariş başına ~{d} kabul edildi', savingsPro:'Bir haftalık tasarruf = yıllık Pro',
     nutriToday:'Bugün', nutriWeek:'Son 7 gün (günlük ort.)', kcalShort:'kcal', protShort:'g protein',
     weekendTask:'Hafta sonu görevi: yeni bir mutfaktan tarif pişir', weekendDone:'Hafta sonu görevi tamamlandı 🏅', badgeExplorer:'Gezgin',
     monthCard:'Aylık özet kartı', monthTitle:'{month} özetim', monthMeals:'{n} yemek', monthCuis:'{n} mutfak', monthTop:'En çok: {c}', monthSave:'~{s} tasarruf',
-    dislike:'Beğenmedim', disliked:'Not alındı, benzerlerini önermeyeceğim', memoryOn:'Şef hafızası açık: beğendiklerin ve pişirdiklerin önerilere yansıyor.',
+    dislike:'Beğenmedim', report:'Bildir', reportTitle:'İçeriği bildir', reportHint:'Bu içerik yapay zekâ ile üretildi. Sorunu seç; bildirimin kaydedilir ve bu tarif sana bir daha önerilmez.', reportPick:'Bir sebep seç', reportNotePh:'İstersen kısaca açıkla (isteğe bağlı)', reportSend:'Gönder', reportThanks:'Teşekkürler, bildirimin kaydedildi.', reportReasons:{offensive:'Uygunsuz veya rahatsız edici', unsafe:'Tehlikeli ya da sağlığa zararlı', wrong:'Yanlış veya yanıltıcı bilgi', other:'Diğer'}, aiDisclaimer:'Tarifler yapay zekâ ile üretilir ve hatalı olabilir. Alerjenleri, pişme sürelerini ve pişme derecesini kendin kontrol et. Tıbbi veya beslenme tavsiyesi değildir.', disliked:'Not alındı, benzerlerini önermeyeceğim', memoryOn:'Şef hafızası açık: beğendiklerin ve pişirdiklerin önerilere yansıyor.',
     guestCuisine:'Mutfak', guestCuisineHelp:'Boş bırakırsan Türk mutfağı ağırlıklı bir menü kurulur.', guestTitle:'Misafir menüsü', guestIntro:'Kaç kişi, kimler var, ne kadar vaktin var? Başlangıç, ana yemek, tatlı ve dakika dakika hazırlık planı.', guestPeople:'Kişi sayısı', guestTime:'Toplam vaktin (dk)', guestNote:'Kimler var? (örn. 1 vejetaryen, 2 çocuk, baharat sevmezler)', guestMake:'Menüyü hazırla', guestMaking:'Menü kuruluyor…', guestTimeline:'Hazırlık planı', guestShop:'Eksikleri listeye ekle', courseStarter:'Başlangıç', courseMain:'Ana yemek', courseDessert:'Tatlı',
     planPrint:'Yazdır', printShop:'Alışveriş listesi',
     remindSmart:'Dolabındaki {a} ile {m} dakikada {r}?',
@@ -738,7 +753,7 @@ const I18N = {
     famTitle:'Aile profilleri', famHelp:'Ev halkının alerjileri ve sevmedikleri; tarifler hepsini gözetir.', famAdd:'+ Kişi ekle', famName:'İsim', famNotes:'alerji / sevmediği (örn. fıstık alerjisi, mantar sevmez)',
     planProtein:'Porsiyon başı protein hedefi (g)', planBudget:'Haftalık bütçe (₺)', planEst:'tahmini', planTotal:'Haftalık tahmini maliyet', planShare:'Planı paylaş',
     proF7:'Aile profilleri, makro ve bütçe hedefleri', proF7s:'Alerjiler ve sevmedikler her tarifte gözetilir; plan protein hedefine ve bütçene göre kurulur.',
-    proTitle:'Mutfak Asistanı Pro', proBadge:'Pro', proActive:'Pro üyeliğin aktif. Teşekkürler!',
+    proTitle:'World Wide Kitchen Pro', proBadge:'Pro', proActive:'Pro üyeliğin aktif. Teşekkürler!',
     proHeroTitle:'Mutfağını bir üst seviyeye taşı', proHeroText:'Tek seferlik ödeme, ömür boyu Pro. Abonelik yok.',
     proF1:'Sınırsız tarif arama', proF1s:'Ücretsiz sürümde günde {n} arama.',
     proF2:'Haftalık yemek planı', proF2s:'Dolabına göre 7 günlük akşam yemeği planı, eksikler tek dokunuşla listeye.',
@@ -782,7 +797,7 @@ const I18N = {
     diet:{vegan:'Vegan',vegetarian:'Vejetaryen','gluten-free':'Glutensiz','dairy-free':'Sütsüz','nut-free':'Kuruyemişsiz',halal:'Helal','alcohol-free':'Alkolsüz'}
   },
   en: {
-    appTitle:'Kitchen Assistant', tagline:'List what you have and get recipes that actually fit.',
+    appTitle:'World Wide Kitchen', tagline:'List what you have and get recipes that actually fit.',
     pantryTitle:'What’s in your kitchen?', pantryPh:'Type an ingredient, press Enter', cuisineTitle:'Cuisine (optional)', dietTitle:'Dietary needs',
     timeLabel:'Max time (min)', diffLabel:'Difficulty', servingsLabel:'Servings', countLabel:'Recipes',
     any:'Any', easy:'Easy', medium:'Medium', hard:'Hard', find:'Find recipes', more:'More recipes',
@@ -795,14 +810,14 @@ const I18N = {
     restTitle:'Where to eat {dish} · {city}', restNone:'No results in this city.', restMaps:'Open in Maps', restCall:'Call', restSponsored:'Sponsored', restOpen:'Open', restClosed:'Closed',
     restNoKey:'For restaurant ratings, open in Google Maps:', restMapsBtn:'🗺️ {dish} in {city} on Google Maps', restCity:'Type your district and city for restaurants.', reviews:'reviews',
     scoreTitle:'Fridge score', scoreText:'Your fridge can make {n} different meals, the fastest in {m} min.', scoreShare:'Share score', scoreCardSub:'How many meals are hiding in your fridge?',
-    challenge:'Ask a friend', challengeText:'I\'ve got {list} in my fridge. What would you make? 🤔 I made "{dish}" with Kitchen Assistant. Try it:',
+    challenge:'Ask a friend', challengeText:'I\'ve got {list} in my fridge. What would you make? 🤔 I made "{dish}" with World Wide Kitchen. Try it:',
     upsellTitle:'There\'s more where these came from', upsellText:'Pro: unlimited searches, 12 results, weekly plan and guest menu.', upsellCook:'Enjoy your meal! 🍳', upsellCookText:'Want me to plan your week too? Pro builds 7 dinners from your pantry, missing items in one tap.', later:'Maybe later', seePro:'See Pro',
     photoTitle:'Add a photo of your dish', photoShare:'📸 "I cooked this" card', photoPick:'Take / choose photo', cookedShare:'I cooked this 👩‍🍳',
     savingsTitle:'Savings', savingsText:'You cooked instead of ordering {n} times this month', savingsEst:'estimate, assuming ~{d} per order', savingsPro:'One week of savings = a year of Pro',
     nutriToday:'Today', nutriWeek:'Last 7 days (daily avg.)', kcalShort:'kcal', protShort:'g protein',
     weekendTask:'Weekend challenge: cook from a cuisine you haven\'t tried', weekendDone:'Weekend challenge done 🏅', badgeExplorer:'Explorer',
     monthCard:'Monthly recap card', monthTitle:'My {month}', monthMeals:'{n} meals', monthCuis:'{n} cuisines', monthTop:'Top: {c}', monthSave:'~{s} saved',
-    dislike:'Not for me', disliked:'Noted, I\'ll avoid similar recipes', memoryOn:'Chef memory on: your likes and cooking history shape suggestions.',
+    dislike:'Not for me', report:'Report', reportTitle:'Report content', reportHint:'This content was generated by AI. Pick the problem; your report is saved and this recipe won\'t be suggested to you again.', reportPick:'Pick a reason', reportNotePh:'Add a short note if you like (optional)', reportSend:'Send', reportThanks:'Thanks, your report was saved.', reportReasons:{offensive:'Inappropriate or offensive', unsafe:'Dangerous or unhealthy', wrong:'Wrong or misleading', other:'Other'}, aiDisclaimer:'Recipes are generated by AI and may contain mistakes. Check allergens, cooking times and doneness yourself. This is not medical or nutrition advice.', disliked:'Noted, I\'ll avoid similar recipes', memoryOn:'Chef memory on: your likes and cooking history shape suggestions.',
     guestCuisine:'Cuisine', guestCuisineHelp:'Leave empty for a menu in your local cuisine.', guestTitle:'Guest menu', guestIntro:'How many people, who\'s coming, how much time? Starter, main, dessert and a minute-by-minute prep plan.', guestPeople:'People', guestTime:'Time available (min)', guestNote:'Who\'s coming? (e.g. 1 vegetarian, 2 kids, no spicy food)', guestMake:'Build the menu', guestMaking:'Building your menu…', guestTimeline:'Prep plan', guestShop:'Add missing to list', courseStarter:'Starter', courseMain:'Main', courseDessert:'Dessert',
     planPrint:'Print', printShop:'Shopping list',
     remindSmart:'{r} in {m} minutes with the {a} in your fridge?',
@@ -823,7 +838,7 @@ const I18N = {
     famTitle:'Family profiles', famHelp:'Allergies and dislikes of your household; every recipe respects them.', famAdd:'+ Add person', famName:'Name', famNotes:'allergies / dislikes (e.g. peanut allergy, hates mushrooms)',
     planProtein:'Protein target per serving (g)', planBudget:'Weekly budget ($)', planEst:'est.', planTotal:'Estimated weekly cost', planShare:'Share plan',
     proF7:'Family profiles, macro & budget targets', proF7s:'Allergies and dislikes respected in every recipe; the plan follows your protein target and budget.',
-    proTitle:'Kitchen Assistant Pro', proBadge:'Pro', proActive:'Your Pro membership is active. Thank you!',
+    proTitle:'World Wide Kitchen Pro', proBadge:'Pro', proActive:'Your Pro membership is active. Thank you!',
     proHeroTitle:'Take your kitchen up a level', proHeroText:'One-time payment, Pro for life. No subscription.',
     proF1:'Unlimited recipe searches', proF1s:'Free plan: {n} searches a day.',
     proF2:'Weekly meal plan', proF2s:'A 7-day dinner plan from your pantry, missing items added to your list in one tap.',
@@ -1074,6 +1089,7 @@ let current = null, currentServings = 2;
    Çeviri uygulama + sabit arayüz parçaları
    ===================================================================== */
 function applyI18n() {
+  document.documentElement.lang = lang;
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
@@ -1468,6 +1484,7 @@ function renderModal() {
       <ol class="steps">${r.steps.map(s => `<li><div class="t">${esc(s.text)}${s.minutes ? `<br><span class="tm">⏱ ${s.minutes} ${esc(t('min'))}</span>` : ''}</div></li>`).join('')}</ol>
     </section>
     ${r.tip ? `<div class="tip"><b>💡 ${esc(t('tip'))}:</b> ${esc(r.tip)}</div>` : ''}
+    <p class="ai-note">⚠️ ${esc(t('aiDisclaimer'))}</p>
     ${(r.protein || r.carbs || r.fat) ? `<section><div class="sec-title">${esc(t('macros'))} ${pro ? '' : '<span class="pro-tag">Pro</span>'}</div>
       ${pro ? `<div class="macros"><div class="macro"><b>${r.protein} g</b><span>${esc(t('protein'))}</span></div><div class="macro"><b>${r.carbs} g</b><span>${esc(t('carbs'))}</span></div><div class="macro"><b>${r.fat} g</b><span>${esc(t('fat'))}</span></div></div>`
             : `<div class="lock-row" data-pro-open>🔒 ${esc(t('macrosLock'))}</div>`}</section>` : ''}
@@ -1485,6 +1502,7 @@ function renderModal() {
     <button class="btn btn-ghost btn-sm dislike" data-act="dislike" aria-pressed="${dislikes.includes(r.name)}">👎 ${esc(t('dislike'))}</button>
     <button class="btn btn-ghost btn-sm" data-act="copy">${esc(t('copy'))}</button>
     <button class="btn btn-ghost btn-sm" data-act="print">${esc(t('print'))}</button>
+    <button class="btn btn-ghost btn-sm" data-act="report">🚩 ${esc(t('report'))}</button>
     <a class="btn btn-ghost btn-sm" href="${yt}" target="_blank" rel="noopener">▶ ${esc(t('video'))}</a>`;
 }
 
@@ -1511,6 +1529,42 @@ $('#m-body').addEventListener('click', e => {
   currentServings = Math.min(24, Math.max(1, currentServings + Number(b.dataset.srv)));
   renderModal();
 });
+
+/* =====================================================================
+   Yapay zekâ içeriğini bildir (Google Play üretken yapay zekâ politikası)
+   ===================================================================== */
+const REPORT_URL = '';   // sunucu aracısı kurulunca bildirimler buraya da gönderilir
+let reports = store.get('reports', []);
+let reportTarget = null, reportReason = '';
+function openReport(target) {
+  reportTarget = target; reportReason = '';
+  const rs = t('reportReasons');
+  $('#rp-reasons').innerHTML = Object.keys(rs).map(k => `<button type="button" class="toggle" data-rp="${k}" aria-pressed="false">${esc(rs[k])}</button>`).join('');
+  $('#rp-note').value = '';
+  openOverlay($('#report-modal'));
+}
+$('#rp-reasons').addEventListener('click', e => {
+  const b = e.target.closest('[data-rp]'); if (!b) return;
+  reportReason = b.dataset.rp;
+  $('#rp-reasons').querySelectorAll('[data-rp]').forEach(x => x.setAttribute('aria-pressed', x === b));
+});
+$('#rp-send').addEventListener('click', () => {
+  if (!reportTarget) return;
+  if (!reportReason) { toast(t('reportPick')); return; }
+  const entry = { at: new Date().toISOString(), kind: reportTarget.kind, name: reportTarget.name, reason: reportReason, note: $('#rp-note').value.trim().slice(0, 500), text: reportTarget.text || '', lang };
+  reports.unshift(entry); reports = reports.slice(0, 100); store.set('reports', reports);
+  if (REPORT_URL) { try { fetch(REPORT_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(entry) }); } catch {} }
+  if (reportTarget.kind === 'recipe') {
+    // bu tarifi bir daha önerme ve listeden kaldır
+    if (!dislikes.includes(reportTarget.name)) { dislikes.unshift(reportTarget.name); dislikes = dislikes.slice(0, 30); store.set('dislikes', dislikes); }
+    recipes = recipes.filter(r => r.id !== reportTarget.id);
+    if (!$('#recipe-modal').hidden) closeOverlay($('#recipe-modal'));
+    render();
+  }
+  closeOverlay($('#report-modal')); reportTarget = null;
+  toast(t('reportThanks'));
+});
+$('#report-modal').addEventListener('click', e => { if (e.target === e.currentTarget || e.target.closest('[data-close]')) { closeOverlay($('#report-modal')); reportTarget = null; } });
 
 /* =====================================================================
    Mod: Dolabımda ne var / Canım ne istiyor
@@ -1690,16 +1744,23 @@ async function aiRestaurants(dish, cityName) {
   return { list: null, kind: '' };
 }
 function stars(r) { const f = Math.round(r); return '★'.repeat(f) + '☆'.repeat(Math.max(0, 5 - f)); }
+const safeUrl = u => /^https:\/\//i.test(String(u || '')) ? String(u) : '';
 function restCard(r) {
-  const maps = r.maps || `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + (r.address || city))}`;
+  const maps = safeUrl(r.maps) || `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + (r.address || city))}`;
+  const rating = Number(r.rating) || 0, count = Math.round(Number(r.count) || 0), phone = String(r.phone || '').replace(/[^\d+]/g, '');
   return `<div class="rest ${r.sponsored ? 'sponsored' : ''}">${r.sponsored ? `<span class="sp">${esc(t('restSponsored'))}</span>` : ''}
     <h3>${esc(r.name)}</h3>
-    ${r.rating ? `<div class="rate"><span class="stars" aria-hidden="true">${stars(r.rating)}</span>${Number(r.rating).toFixed(1)} <small style="color:var(--muted);font-weight:500">(${r.count} ${esc(t('reviews'))})</small></div>` : ''}
+    ${rating ? `<div class="rate"><span class="stars" aria-hidden="true">${stars(Math.min(5, rating))}</span>${rating.toFixed(1)} <small style="color:var(--muted);font-weight:500">(${count} ${esc(t('reviews'))})</small></div>` : ''}
     ${r.address ? `<div class="addr">${esc(r.address)}</div>` : ''}${r.note ? `<div class="addr">${esc(r.note)}</div>` : ''}
     ${r.open === true ? `<span class="open-now">● ${esc(t('restOpen'))}</span>` : r.open === false ? `<span class="closed-now">● ${esc(t('restClosed'))}</span>` : ''}
-    <div class="act"><a href="${esc(maps)}" target="_blank" rel="noopener">🗺️ ${esc(t('restMaps'))}</a>${r.phone ? `<a href="tel:${esc(r.phone)}">📞 ${esc(t('restCall'))}</a>` : ''}</div>
+    <div class="act"><a href="${esc(maps)}" target="_blank" rel="noopener">🗺️ ${esc(t('restMaps'))}</a>${phone ? `<a href="tel:${esc(phone)}">📞 ${esc(t('restCall'))}</a>` : ''}</div>
   </div>`;
 }
+$('#restaurants').addEventListener('click', e => {
+  if (!e.target.closest('[data-report-rest]')) return;
+  const box = $('#restaurants');
+  openReport({ kind: 'restaurant', name: `${box.dataset.dish || ''} · ${box.dataset.city || ''}`, text: box.innerText.slice(0, 1500) });
+});
 async function loadRestaurants(dish, cityName) {
   const box = $('#restaurants'); box.hidden = false;
   if (!cityName) { box.innerHTML = `<div class="rest-head"><h2>🍽️ ${esc(dish)}</h2></div><p class="hint">${esc(t('restCity'))}</p>`; return; }
@@ -1714,7 +1775,8 @@ async function loadRestaurants(dish, cityName) {
   const cards = sp.map(restCard).join('') + (list ? list.filter(r => !sp.some(x => norm(x.name) === norm(r.name))).map(restCard).join('') : '');
   if (list === null) html += `${cards ? `<div class="rest-list">${cards}</div>` : ''}<p class="hint" style="margin-top:12px">${esc(t('restNoKey'))}</p><a class="btn btn-ghost btn-sm" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMapsBtn', { dish, city: cityName }))}</a>`;
   else if (!cards) html += `<p class="hint">${esc(t('restNone'))}</p><a class="btn btn-ghost btn-sm" href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMapsBtn', { dish, city: cityName }))}</a>`;
-  else html += `<div class="rest-list">${cards}</div>` + (viaAI ? `<p class="hint" style="margin-top:10px">${esc(t(viaAI === 'plain' ? 'restPlain' : 'restAI'))} · <a href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMaps'))}</a></p>` : '');
+  else html += `<div class="rest-list">${cards}</div>` + (viaAI ? `<p class="hint" style="margin-top:10px">${esc(t(viaAI === 'plain' ? 'restPlain' : 'restAI'))} · <a href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('restMaps'))}</a> · <button type="button" class="linkish" data-report-rest>🚩 ${esc(t('report'))}</button></p>` : '');
+  box.dataset.dish = dish; box.dataset.city = cityName;
   box.innerHTML = html;
 }
 
@@ -2201,16 +2263,23 @@ function backupText() {
 $('#bk-export').addEventListener('click', () => {
   if (!requirePro('proLockFeature')) return;
   const txt = backupText();
-  if (NATIVE && NATIVE.share) NATIVE.share('Mutfak Asistanı backup', txt); else copyText(txt).then(() => toast(t('backupCopied')));
+  if (NATIVE && NATIVE.share) NATIVE.share('World Wide Kitchen backup', txt); else copyText(txt).then(() => toast(t('backupCopied')));
 });
+// içe aktarılan yedekte sayı olması gereken alanları sayıya çevir (sayfaya kaçışsız yazılıyorlar)
+const NUM_KEYS = new Set(['prep','cook','calories','protein','carbs','fat','servings','minutes','cost','count','rank','rating']);
+function scrubNums(o) {
+  if (Array.isArray(o)) return o.map(scrubNums);
+  if (o && typeof o === 'object') { for (const k of Object.keys(o)) o[k] = NUM_KEYS.has(k) ? (Number(o[k]) || 0) : scrubNums(o[k]); }
+  return o;
+}
 $('#bk-import').addEventListener('click', () => {
   if (!requirePro('proLockFeature')) return;
   const ta = $('#bk-text');
   if (ta.hidden) { ta.hidden = false; ta.placeholder = t('backupPaste'); ta.focus(); return; }
   try {
-    const d = JSON.parse(ta.value); if (d.app !== 'mutfak-asistani') throw 0;
+    const d = scrubNums(JSON.parse(ta.value)); if (d.app !== 'mutfak-asistani') throw 0;
     favs = Array.isArray(d.favs) ? d.favs : favs; shop = Array.isArray(d.shop) ? d.shop : shop; pantry = Array.isArray(d.pantry) ? d.pantry : pantry;
-    pantrySets = Array.isArray(d.pantrySets) ? d.pantrySets : pantrySets; prefs = Object.assign(prefs, d.prefs || {});
+    pantrySets = Array.isArray(d.pantrySets) ? d.pantrySets : pantrySets; prefs = Object.assign(prefs, d.prefs || {}); prefs.count = Math.min(12, Math.max(1, Number(prefs.count) || 6)); prefs.servings = Math.min(24, Math.max(1, Number(prefs.servings) || 2));
     selCuisines = Array.isArray(d.cuisines) ? d.cuisines : selCuisines; selDiets = Array.isArray(d.diets) ? d.diets : selDiets; plan = Array.isArray(d.plan) ? d.plan : plan;
     expiry = d.expiry && typeof d.expiry === 'object' ? d.expiry : expiry; leftovers = Array.isArray(d.leftovers) ? d.leftovers : leftovers; cooked = Array.isArray(d.cooked) ? d.cooked : cooked; family = Array.isArray(d.family) ? d.family : family; planOpts = d.planOpts || planOpts;
     store.set('expiry', expiry); store.set('leftovers', leftovers); store.set('cooked', cooked); store.set('family', family); store.set('planOpts', planOpts); renderFamily();
@@ -2232,6 +2301,7 @@ $('#m-foot').addEventListener('click', e => {
   if (a === 'photo') cookedPhoto(current);
   if (a === 'dislike') { if (dislikes.includes(current.name)) dislikes = dislikes.filter(d => d !== current.name); else { dislikes.unshift(current.name); dislikes = dislikes.slice(0, 30); toast(t('disliked')); } store.set('dislikes', dislikes); renderModal(); }
   if (a === 'print') { NATIVE ? NATIVE.print(current.name) : window.print(); }
+  if (a === 'report') openReport({ kind: 'recipe', id: current.id, name: current.name, text: recipeText(current, current.servings).slice(0, 1500) });
 });
 
 /* =====================================================================
